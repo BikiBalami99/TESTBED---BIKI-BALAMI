@@ -1,0 +1,256 @@
+/* macOS Window Styling */
+
+.window {
+	position: absolute;
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow:
+    /* Main window shadow */ 0 10px 40px rgba(0, 0, 0, 0.3),
+		0 4px 20px rgba(0, 0, 0, 0.2), /* Subtle border */ 0 0 0 1px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	min-width: 300px;
+	min-height: 200px;
+	user-select: none;
+	transition: box-shadow 0.2s ease;
+}
+
+.window.focused {
+	box-shadow:
+    /* Enhanced shadow when focused */ 0 20px 60px rgba(0, 0, 0, 0.4),
+		0 8px 30px rgba(0, 0, 0, 0.25), /* Subtle border */ 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+/* Window Chrome - macOS Title Bar */
+.windowChrome {
+	background:
+    /* Ultra-realistic metal gradient */ linear-gradient(
+			180deg,
+			#3a3a3b 0%,
+			#323233 15%,
+			#2a2a2b 40%,
+			#232324 60%,
+			#1f1f20 85%,
+			#1c1c1d 100%
+		),
+		/* Subtle brushed texture */
+			radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 30%);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+	padding: 0.75rem 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: relative;
+	height: 52px;
+	/* Enhanced inner highlights and shadows */
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		inset 0 0.5px 1px rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.windowChrome::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.02) 20%,
+		transparent 80%
+	);
+	pointer-events: none;
+}
+
+/* Traffic Light Buttons - macOS Window Controls */
+.trafficLights {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.trafficLight {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	position: relative;
+	/* 3D button effect */
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
+		inset 0 0.5px 1px rgba(255, 255, 255, 0.2), 0 0.5px 1px rgba(0, 0, 0, 0.2),
+		0 1px 2px rgba(0, 0, 0, 0.1);
+	transition: all 0.1s ease;
+}
+
+.trafficLight:hover {
+	transform: scale(1.1);
+}
+
+.trafficLight:active {
+	transform: scale(0.95);
+}
+
+.trafficLight::before {
+	content: "";
+	position: absolute;
+	inset: 1px;
+	border-radius: 50%;
+	background:
+    /* Glass sphere effect */ radial-gradient(
+		circle at 30% 30%,
+		rgba(255, 255, 255, 0.9) 0%,
+		rgba(255, 255, 255, 0.6) 30%,
+		rgba(255, 255, 255, 0.3) 60%,
+		rgba(255, 255, 255, 0.1) 100%
+	);
+	/* Inner shadow for depth */
+	box-shadow: inset 0 0.5px 1px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.trafficLight.close {
+	background: radial-gradient(circle at 35% 35%, #ff7a70 0%, #ff5f57 50%, #d44c47 100%);
+}
+
+.trafficLight.minimize {
+	background: radial-gradient(circle at 35% 35%, #ffdb47 0%, #ffbd2e 50%, #e6a72a 100%);
+}
+
+.trafficLight.maximize {
+	background: radial-gradient(circle at 35% 35%, #4ade5c 0%, #28ca42 50%, #22b73d 100%);
+}
+
+/* Window Title */
+.windowTitle {
+	color: #e0e0e0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+	letter-spacing: -0.01em;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	flex: 1;
+	text-align: center;
+	margin: 0 1rem;
+	cursor: default;
+}
+
+/* Content Area */
+.contentArea {
+	padding: 1.5rem;
+	height: calc(100% - 52px);
+	overflow: auto;
+	background: #ffffff;
+	/* Subtle texture */
+	background-image: radial-gradient(
+			circle at 25% 25%,
+			rgba(0, 0, 0, 0.002) 0%,
+			transparent 50%
+		),
+		linear-gradient(45deg, transparent 49%, rgba(0, 0, 0, 0.001) 50%, transparent 51%);
+	background-size: 20px 20px, 10px 10px;
+}
+
+/* Resize Handles */
+.resizeHandle {
+	position: absolute;
+	background: transparent;
+	z-index: 10;
+}
+
+.resizeHandle.nw {
+	top: -3px;
+	left: -3px;
+	width: 12px;
+	height: 12px;
+	cursor: nw-resize;
+}
+
+.resizeHandle.ne {
+	top: -3px;
+	right: -3px;
+	width: 12px;
+	height: 12px;
+	cursor: ne-resize;
+}
+
+.resizeHandle.sw {
+	bottom: -3px;
+	left: -3px;
+	width: 12px;
+	height: 12px;
+	cursor: sw-resize;
+}
+
+.resizeHandle.se {
+	bottom: -3px;
+	right: -3px;
+	width: 12px;
+	height: 12px;
+	cursor: se-resize;
+}
+
+.resizeHandle.n {
+	top: -3px;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	cursor: n-resize;
+}
+
+.resizeHandle.s {
+	bottom: -3px;
+	left: 12px;
+	right: 12px;
+	height: 6px;
+	cursor: s-resize;
+}
+
+.resizeHandle.w {
+	top: 12px;
+	left: -3px;
+	bottom: 12px;
+	width: 6px;
+	cursor: w-resize;
+}
+
+.resizeHandle.e {
+	top: 12px;
+	right: -3px;
+	bottom: 12px;
+	width: 6px;
+	cursor: e-resize;
+}
+
+/* Hover effects for resize handles */
+.resizeHandle:hover {
+	background: rgba(0, 122, 255, 0.1);
+	border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.window {
+		min-width: 250px;
+		min-height: 150px;
+	}
+
+	.windowChrome {
+		padding: 0.5rem 0.75rem;
+		height: 44px;
+	}
+
+	.contentArea {
+		height: calc(100% - 44px);
+		padding: 1rem;
+	}
+
+	.windowTitle {
+		font-size: 0.8rem;
+		margin: 0 0.5rem;
+	}
+
+	.trafficLight {
+		width: 10px;
+		height: 10px;
+	}
+}

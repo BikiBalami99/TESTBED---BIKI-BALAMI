@@ -1,0 +1,63 @@
+/* JavaScript ES6+ Feature Styles */
+
+.container {
+	padding: 2rem;
+	font-family: system-ui, sans-serif;
+}
+
+.title {
+	color: #1d1d1f;
+	margin-bottom: 1.5rem;
+	font-size: 2rem;
+	font-weight: 600;
+}
+
+.section {
+	margin-bottom: 2rem;
+}
+
+.sectionTitle {
+	color: #1d1d1f;
+	margin-bottom: 1rem;
+	font-size: 1.5rem;
+}
+
+.featureList {
+	color: #86868b;
+	line-height: 1.8;
+	padding-left: 1.5rem;
+	margin: 0;
+}
+
+.featureList li {
+	margin-bottom: 0.5rem;
+}
+
+.codeBlock {
+	background: #f8f8f8;
+	padding: 1.5rem;
+	border-radius: 8px;
+	font-family: monospace;
+	font-size: 0.9rem;
+	margin-bottom: 2rem;
+	white-space: pre-line;
+	line-height: 1.4;
+}
+
+.callToAction {
+	background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+	color: #1d1d1f;
+	padding: 2rem;
+	border-radius: 12px;
+	text-align: center;
+}
+
+.callToActionTitle {
+	margin: 0 0 1rem 0;
+	font-size: 1.25rem;
+}
+
+.callToActionText {
+	margin: 0;
+	opacity: 0.8;
+}
