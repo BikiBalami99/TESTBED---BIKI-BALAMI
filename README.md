@@ -12,3 +12,7 @@ This repo is basically my personal brain dump for all the development stuff I ke
 - Solutions to problems I always seem to run into
 
 **The goal:** Never have to reinvent the wheel for the same problems I keep solving over and over.
+
+## Can you steal my code?
+
+Yes. If you find anything cool or fun, please feel free to re-use them withou asking. I'd appreciate a star though.
