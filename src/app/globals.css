@@ -1,0 +1,7 @@
+/* Minimal global styles - let each tutorial/feature have its own look */
+
+body {
+	font-family: system-ui, -apple-system, sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+}

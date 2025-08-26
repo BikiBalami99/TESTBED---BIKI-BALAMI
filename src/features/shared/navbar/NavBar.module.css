@@ -1,0 +1,33 @@
+/* Apple-inspired Navigation Bar */
+.navbar {
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(20px);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+	padding: 1rem 0;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+		system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.navbarContainer {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.navbarBrand {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	text-decoration: none;
+	letter-spacing: -0.02em;
+	transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbarBrand:hover {
+	color: #007aff;
+}
