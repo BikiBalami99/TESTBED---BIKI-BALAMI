@@ -1,0 +1,324 @@
+/* Hyper Realistic MacBook Monitor Styling */
+
+/* Monitor Container - The physical laptop screen */
+.monitorContainer {
+	position: relative;
+
+	height: 100%;
+	width: 70%;
+	margin: 0 auto;
+
+	padding: 1rem;
+	background:
+		/* Screen bezel - top portion */ linear-gradient(
+			145deg,
+			#2c2c2e 0%,
+			#1c1c1e 30%,
+			#0f0f0f 70%,
+			#0a0a0a 100%
+		),
+		/* Subtle brushed metal texture */
+			radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+	border-radius: 2rem;
+	box-shadow:
+		/* Dramatic main shadow */ 0 35px 70px rgba(0, 0, 0, 0.6),
+		0 15px 30px rgba(0, 0, 0, 0.4),
+		/* Inner rim highlight */ inset 0 2px 0 rgba(255, 255, 255, 0.15),
+		inset 0 1px 2px rgba(255, 255, 255, 0.1),
+		/* Inner rim shadow */ inset 0 0 0 1px rgba(0, 0, 0, 0.9),
+		inset 0 0 0 2px rgba(0, 0, 0, 0.7), inset 0 0 0 3px #1a1a1a, inset 0 0 0 4px #3a3a3c,
+		/* Ambient lighting effect */ 0 0 100px rgba(0, 122, 255, 0.03);
+}
+
+/* Laptop Base - The bottom part of the MacBook */
+.laptopBase {
+	position: absolute;
+	bottom: 1rem;
+	left: 1rem;
+	right: 1rem;
+	height: 120px;
+	background:
+		/* Laptop base aluminum */ linear-gradient(
+			145deg,
+			#1a1a1a 0%,
+			#0f0f0f 20%,
+			#0a0a0a 40%,
+			#0f0f0f 60%,
+			#1a1a1a 80%,
+			#2c2c2e 100%
+		),
+		/* Keyboard area */
+			linear-gradient(
+				180deg,
+				rgba(255, 255, 255, 0.02) 0%,
+				transparent 20%,
+				transparent 80%,
+				rgba(0, 0, 0, 0.02) 100%
+			);
+	border-radius: 0 0 16px 16px;
+	box-shadow:
+		/* Base shadow */ inset 0 2px 4px rgba(0, 0, 0, 0.3),
+		/* Keyboard reflection */ inset 0 -1px 2px rgba(255, 255, 255, 0.05);
+	/* Hinge connection effect */
+	border-top: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Screen Area - The actual display */
+.screen {
+	background:
+		/* Ultra-realistic screen surface */ linear-gradient(
+			145deg,
+			rgba(255, 255, 255, 0.04) 0%,
+			rgba(255, 255, 255, 0.02) 15%,
+			rgba(255, 255, 255, 0.01) 30%,
+			transparent 45%,
+			rgba(0, 0, 0, 0.01) 55%,
+			rgba(0, 0, 0, 0.02) 70%,
+			rgba(0, 0, 0, 0.03) 85%,
+			rgba(0, 0, 0, 0.04) 100%
+		),
+		/* Anti-glare coating effect */
+			radial-gradient(
+				ellipse at center,
+				rgba(255, 255, 255, 0.01) 0%,
+				transparent 40%,
+				transparent 60%,
+				rgba(0, 0, 0, 0.005) 100%
+			),
+		/* Base screen material */
+			linear-gradient(135deg, #1a1a1a 0%, #151515 50%, #1a1a1a 100%);
+	border-radius: 16px;
+	padding: 0;
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	right: 1rem;
+	bottom: 140px; /* Leave space for laptop base */
+	/* Ultra-realistic screen effects */
+	box-shadow:
+		/* Deep inner shadow for screen depth */ inset 0 3px 6px rgba(0, 0, 0, 0.4),
+		inset 0 1px 2px rgba(0, 0, 0, 0.3),
+		/* Screen frame inner highlight */ inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+		inset 0 0 0 2px rgba(0, 0, 0, 0.1),
+		/* Subtle outer glow */ 0 0 20px rgba(0, 122, 255, 0.02);
+	overflow: hidden;
+}
+
+/* Window Chrome - macOS Title Bar */
+.windowChrome {
+	background:
+		/* Ultra-realistic metal gradient */ linear-gradient(
+			180deg,
+			#3a3a3b 0%,
+			#323233 15%,
+			#2a2a2b 40%,
+			#232324 60%,
+			#1f1f20 85%,
+			#1c1c1d 100%
+		),
+		/* Subtle brushed texture */
+			radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 30%);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+	padding: 0.875rem 1.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: relative;
+	/* Enhanced inner highlights and shadows */
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		inset 0 0.5px 1px rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.windowChrome::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.02) 20%,
+		transparent 80%
+	);
+	pointer-events: none;
+}
+
+/* Traffic Light Buttons - macOS Window Controls */
+.trafficLights {
+	display: flex;
+	gap: 0.625rem;
+	align-items: center;
+}
+
+.trafficLight {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	border: 1px solid rgba(0, 0, 0, 0.4);
+	position: relative;
+	/* 3D button effect */
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
+		inset 0 0.5px 1px rgba(255, 255, 255, 0.2), 0 0.5px 1px rgba(0, 0, 0, 0.2),
+		0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.trafficLight::before {
+	content: "";
+	position: absolute;
+	inset: 1px;
+	border-radius: 50%;
+	background:
+		/* Glass sphere effect */ radial-gradient(
+		circle at 30% 30%,
+		rgba(255, 255, 255, 0.9) 0%,
+		rgba(255, 255, 255, 0.6) 30%,
+		rgba(255, 255, 255, 0.3) 60%,
+		rgba(255, 255, 255, 0.1) 100%
+	);
+	/* Inner shadow for depth */
+	box-shadow: inset 0 0.5px 1px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.trafficLight.close {
+	background: radial-gradient(circle at 35% 35%, #ff7a70 0%, #ff5f57 50%, #d44c47 100%);
+}
+
+.trafficLight.minimize {
+	background: radial-gradient(circle at 35% 35%, #ffdb47 0%, #ffbd2e 50%, #e6a72a 100%);
+}
+
+.trafficLight.maximize {
+	background: radial-gradient(circle at 35% 35%, #4ade5c 0%, #28ca42 50%, #22b73d 100%);
+}
+
+/* Window Title */
+.windowTitle {
+	color: #e0e0e0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+	letter-spacing: -0.01em;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	flex: 1;
+	text-align: center;
+	margin: 0 1rem;
+}
+
+/* Content Area - Where children render */
+.contentArea {
+	padding: 2rem;
+	background:
+		/* Subtle paper texture */ linear-gradient(
+			135deg,
+			#ffffff 0%,
+			#fefefe 25%,
+			#fdfdfd 50%,
+			#fefefe 75%,
+			#ffffff 100%
+		),
+		/* Very subtle shadow pattern */
+			radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.002) 0%, transparent 50%);
+	position: absolute;
+	top: 60px; /* Below window chrome */
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: calc(100% - 60px);
+	/* Subtle inner shadow for content depth */
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+/* MacBook Stand/Base Effect */
+.monitorContainer::after {
+	content: "";
+	position: absolute;
+	bottom: -50px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 280px;
+	height: 25px;
+	background:
+		/* Multi-layer shadow for realistic stand */ radial-gradient(
+		ellipse 60% 15% at 50% 50%,
+		rgba(0, 0, 0, 0.4) 0%,
+		rgba(0, 0, 0, 0.3) 20%,
+		rgba(0, 0, 0, 0.2) 40%,
+		rgba(0, 0, 0, 0.1) 60%,
+		rgba(0, 0, 0, 0.05) 80%,
+		transparent 100%
+	);
+	border-radius: 50%;
+	filter: blur(12px);
+	pointer-events: none;
+	z-index: -1;
+}
+
+/* Keyboard Reflection Effect */
+.monitorContainer::before {
+	content: "";
+	position: absolute;
+	top: -10px;
+	left: 20%;
+	right: 20%;
+	height: 4px;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.1) 50%,
+		transparent 100%
+	);
+	border-radius: 2px;
+	pointer-events: none;
+}
+
+/* Screen Glare Effect */
+.screen::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.03) 0%,
+		transparent 30%,
+		transparent 70%,
+		rgba(0, 0, 0, 0.01) 100%
+	);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.contentArea {
+	position: relative;
+	z-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.monitorContainer {
+		margin: 1rem auto;
+		padding: 1rem;
+		max-width: 95vw;
+	}
+
+	.contentArea {
+		padding: 1.5rem;
+		min-height: 300px;
+	}
+
+	.windowTitle {
+		font-size: 0.8rem;
+		margin: 0 0.5rem;
+	}
+
+	.trafficLight {
+		width: 10px;
+		height: 10px;
+	}
+}
