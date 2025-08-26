@@ -1,0 +1,104 @@
+/**********************/
+/* Ultimate CSS Reset */
+/**********************/
+
+/***********************************************/
+/* General Resets that you will see everywhere */
+/***********************************************/
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/*******************************************************************/
+/*** The new CSS Reset - version 1.2.0 (last updated 23.7.2021) ***/
+/* From: https://css-tricks.com/an-interview-with-elad-shechter-on-the-new-css-reset/#top-of-site */
+/*******************************************************************/
+
+/* Remove all the styles of the "User-Agent-Stylesheet", except for the 'display' property */
+*:where(:not(iframe, canvas, img, svg, video):not(svg *)) {
+	all: unset;
+	display: revert;
+}
+
+/* Preferred box-sizing value */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/*
+    Remove list styles (bullets/numbers)
+    in case you use it with normalize.css
+  */
+ol,
+ul {
+	list-style: none;
+}
+
+/* For images to not be able to exceed their container */
+/* (repeated below) */
+/* img {
+	max-width: 100%;
+} */
+
+/* Removes spacing between cells in tables */
+table {
+	border-collapse: collapse;
+}
+
+/* Revert the 'white-space' property for textarea elements on Safari */
+textarea {
+	white-space: revert;
+}
+
+/********************/
+/* Advanced Resets */
+/********************/
+
+/* Makes headings look way better by balancing the text nicely. 
+Prevents awkward single words hanging alone on the last line ( "widow words"). 
+Super useful for clean, professional-looking titles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
+}
+
+p,
+li,
+figcaption {
+	/* Prevents orphans, words that are alone on the last line of a paragraph. */
+	text-wrap: pretty;
+
+	/* Optional: This stops lines for getting too long. 
+    It is typically considered good practice to not let lines get too long to improve readability. */
+	max-width: 65ch;
+}
+
+/* Makes landmark elements (header, main, section, etc.) into containers for container queries.
+   Way better than viewport queries - now elements respond to their parent container width, not screen size.
+   Inspired by Kevin Powell - no need to manually define containers everywhere! */
+header,
+footer,
+main,
+section,
+article {
+	container-type: inline-size;
+}
+
+/* Image reset - Harry Roberts' optimized approach */
+img {
+	font-style: italic; /* Makes alt text italic when image fails to load */
+	background-repeat: no-repeat; /* Prevents background image tiling */
+	background-size: cover; /* Makes background images cover the area properly */
+	shape-margin: 1rem; /* Default spacing for floated images with shape-outside */
+	max-width: 100%; /* Prevents images from overflowing their container */
+	height: auto; /* Maintains aspect ratio when width changes */
+	vertical-align: middle; /* Removes weird spacing below images (better than display: block) */
+}
