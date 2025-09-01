@@ -1,0 +1,79 @@
+/* macOS Operating System - Master Container */
+
+.os {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	background:
+		/* macOS Big Sur style gradient */ linear-gradient(
+			135deg,
+			#667eea 0%,
+			#764ba2 25%,
+			#667eea 50%,
+			#764ba2 75%,
+			#667eea 100%
+		),
+		/* Subtle noise texture */
+			radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+		radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+		radial-gradient(circle at 40% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+	background-size: 400% 400%, 100% 100%, 100% 100%, 100% 100%;
+	animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+	0% {
+		background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%;
+	}
+	50% {
+		background-position: 100% 50%, 0% 0%, 0% 0%, 0% 0%;
+	}
+	100% {
+		background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%;
+	}
+}
+
+/* Layer 1: Desktop Background & Apps */
+.desktopLayer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1;
+	/* Desktop icons and background elements should be at z-index 1-10 */
+}
+
+/* Layer 2: Windows */
+.windowLayer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 100;
+	/* Windows start at z-index 100 and go up */
+	pointer-events: none; /* Allow clicks to pass through to desktop when no windows */
+}
+
+.windowLayer > * {
+	pointer-events: auto; /* Re-enable pointer events for actual windows */
+}
+
+/* System UI elements should use these z-index ranges:
+   - Desktop background: 1
+   - Desktop icons: 10
+   - Windows: 100+
+   - Menu bar: 1000
+   - Dock: 1001
+   - App launcher: 2000
+   - Context menus: 3000
+*/
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.os {
+		background-size: 200% 200%, 100% 100%, 100% 100%, 100% 100%;
+	}
+}

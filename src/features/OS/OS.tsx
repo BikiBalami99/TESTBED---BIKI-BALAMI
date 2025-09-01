@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useCallback, useRef, createContext, useContext } from "react";
-import Window from "@/features/OS/Window/Window";
-import styles from "./WindowManager.module.css";
+import Window from "./Window/Window";
+import styles from "./OS.module.css";
 
 export interface WindowData {
 	id: string;
@@ -17,7 +17,7 @@ export interface WindowData {
 	zIndex: number;
 }
 
-interface WindowManagerProps {
+interface OSProps {
 	children: React.ReactNode;
 }
 
@@ -40,14 +40,14 @@ const WindowContext = createContext<WindowContextType | null>(null);
 export const useWindowManager = () => {
 	const context = useContext(WindowContext);
 	if (!context) {
-		throw new Error("useWindowManager must be used within a WindowManager");
+		throw new Error("useWindowManager must be used within an OS component");
 	}
 	return context;
 };
 
-export default function WindowManager({ children }: WindowManagerProps) {
+export default function OS({ children }: OSProps) {
 	const [windows, setWindows] = useState<WindowData[]>([]);
-	const [nextZIndex, setNextZIndex] = useState(1);
+	const [nextZIndex, setNextZIndex] = useState(100); // Start windows at z-index 100
 	const [focusedWindowId, setFocusedWindowId] = useState<string | null>(null);
 
 	const nextWindowId = useRef(1);
@@ -131,29 +131,34 @@ export default function WindowManager({ children }: WindowManagerProps) {
 
 	return (
 		<WindowContext.Provider value={contextValue}>
-			<div className={styles.desktop}>
-				{/* Desktop Background */}
-				{children}
+			<div className={styles.os}>
+				{/* Layer 1: Desktop Background & Apps (z-index: 1-10) */}
+				<div className={styles.desktopLayer}>{children}</div>
 
-				{/* Render Windows */}
-				{visibleWindows.map((window) => (
-					<Window
-						key={window.id}
-						id={window.id}
-						title={window.title}
-						initialX={window.x}
-						initialY={window.y}
-						initialWidth={window.width}
-						initialHeight={window.height}
-						onClose={closeWindow}
-						onMinimize={minimizeWindow}
-						onFocus={focusWindow}
-						isFocused={window.id === focusedWindowId}
-						zIndex={window.zIndex}
-					>
-						{window.content}
-					</Window>
-				))}
+				{/* Layer 2: Windows (z-index: 100+) */}
+				<div className={styles.windowLayer}>
+					{visibleWindows.map((window) => (
+						<Window
+							key={window.id}
+							id={window.id}
+							title={window.title}
+							initialX={window.x}
+							initialY={window.y}
+							initialWidth={window.width}
+							initialHeight={window.height}
+							onClose={closeWindow}
+							onMinimize={minimizeWindow}
+							onFocus={focusWindow}
+							isFocused={window.id === focusedWindowId}
+							zIndex={window.zIndex}
+						>
+							{window.content}
+						</Window>
+					))}
+				</div>
+
+				{/* Layer 3: System UI (Menu Bar, Dock) - handled by children but with proper z-index */}
+				{/* These will be rendered by Desktop component but with correct stacking context */}
 			</div>
 		</WindowContext.Provider>
 	);

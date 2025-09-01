@@ -28,7 +28,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		name: "Media & Container Queries",
 		icon: Monitor,
 		component: React.lazy(
-			() => import("./media-and-container-queries/MediaAndContainerQueries")
+			() => import("../../../apps/media-and-container-queries/MediaAndContainerQueries")
 		),
 		category: "design",
 		description: "Master responsive design techniques",
@@ -37,7 +37,9 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "css-grid",
 		name: "CSS Grid & Flexbox",
 		icon: Grid3X3,
-		component: React.lazy(() => import("./css-grid-and-flexbox/CssGridAndFlexbox")),
+		component: React.lazy(
+			() => import("../../../apps/css-grid-and-flexbox/CssGridAndFlexbox")
+		),
 		category: "design",
 		description: "Modern layout techniques",
 	},
@@ -45,7 +47,9 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "javascript-es6",
 		name: "JavaScript ES6+",
 		icon: Code,
-		component: React.lazy(() => import("./javascript-es6-plus/JavaScriptES6Plus")),
+		component: React.lazy(
+			() => import("../../../apps/javascript-es6-plus/JavaScriptES6Plus")
+		),
 		category: "development",
 		description: "Modern JavaScript features",
 	},
@@ -53,7 +57,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "terminal",
 		name: "Terminal",
 		icon: Terminal,
-		component: React.lazy(() => import("./terminal/Terminal")),
+		component: React.lazy(() => import("../../../apps/terminal/Terminal")),
 		category: "productivity",
 		description: "Command line interface",
 	},
@@ -61,7 +65,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "notes",
 		name: "Notes",
 		icon: FileText,
-		component: React.lazy(() => import("./notes/Notes")),
+		component: React.lazy(() => import("../../../apps/notes/Notes")),
 		category: "productivity",
 		description: "Quick note taking",
 	},
@@ -69,7 +73,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "settings",
 		name: "Settings",
 		icon: Settings,
-		component: React.lazy(() => import("./settings/Settings")),
+		component: React.lazy(() => import("../../../apps/settings/Settings")),
 		category: "productivity",
 		description: "System preferences",
 	},

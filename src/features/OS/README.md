@@ -6,13 +6,26 @@ React-based desktop environment with window management.
 
 ```
 src/features/OS/
-├── WindowManager/           # Core window system
+├── OS.tsx                   # Master OS component with proper layering
 ├── Window/                  # Individual windows
 ├── desktop/                 # Desktop & dock
+├── WindowManager/           # Legacy (deprecated)
 └── apps/                    # App ecosystem
 ```
 
-## WindowManager
+## OS Component
+
+Master OS component providing proper z-index layering:
+
+**Z-Index Hierarchy:**
+
+- Desktop background: 1
+- Desktop icons: 10
+- Windows: 100+
+- Menu bar: 1000
+- Dock: 1001
+- App launcher: 2000
+- Context menus: 3000
 
 Core window system providing:
 

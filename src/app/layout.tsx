@@ -1,7 +1,7 @@
 import "./reset.css";
 import "./globals.css";
 import styles from "./layout.module.css";
-import WindowManager from "@/features/OS/WindowManager";
+import OS from "@/features/OS";
 
 export default function RootLayout({
 	children,
@@ -11,7 +11,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={styles.body}>
-				<WindowManager>{children}</WindowManager>
+				<OS>{children}</OS>
 			</body>
 		</html>
 	);

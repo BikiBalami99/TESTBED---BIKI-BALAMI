@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
-import { AppIcon, AVAILABLE_APPS, AppInfo } from "./AppIcons";
-import { useWindowManager } from "../OS/WindowManager";
+import { AppIcon, AVAILABLE_APPS, AppInfo } from "../AppIcons/AppIcons";
+import { useWindowManager } from "../../OS";
 import styles from "./AppLauncher.module.css";
 
 interface AppLauncherProps {
@@ -80,7 +80,7 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 						))
 					) : (
 						<div className={styles.noResults}>
-							<p>No apps found matching "{searchQuery}"</p>
+							<p>No apps found matching &quot;{searchQuery}&quot;</p>
 						</div>
 					)}
 				</div>

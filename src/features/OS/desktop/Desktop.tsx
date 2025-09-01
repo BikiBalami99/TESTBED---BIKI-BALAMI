@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AppIcon, DockIcon, AVAILABLE_APPS, AppInfo } from "@/features/apps/AppIcons";
-import AppLauncher from "@/features/apps/AppLauncher";
-import { useWindowManager } from "@/features/OS/WindowManager";
+import {
+	AppIcon,
+	DockIcon,
+	AVAILABLE_APPS,
+	AppInfo,
+} from "@/features/OS/desktop/AppIcons/AppIcons";
+import AppLauncher from "@/features/OS/desktop/AppLauncher/AppLauncher";
+import { useWindowManager } from "@/features/OS/OS";
 import styles from "./Desktop.module.css";
 
 interface DesktopApp {
