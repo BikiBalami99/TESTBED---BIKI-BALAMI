@@ -133,7 +133,7 @@ export default function WindowManager({ children }: WindowManagerProps) {
 		<WindowContext.Provider value={contextValue}>
 			<div className={styles.desktop}>
 				{/* Desktop Background */}
-				<div className={styles.desktopBackground}>{children}</div>
+				{children}
 
 				{/* Render Windows */}
 				{visibleWindows.map((window) => (
@@ -154,19 +154,6 @@ export default function WindowManager({ children }: WindowManagerProps) {
 						{window.content}
 					</Window>
 				))}
-
-				{/* Dock/Status Bar could go here */}
-				<div className={styles.dock}>
-					<div className={styles.dockItem}>
-						<span>🖥️</span>
-					</div>
-					<div className={styles.dockItem}>
-						<span>📁</span>
-					</div>
-					<div className={styles.dockItem}>
-						<span>🔍</span>
-					</div>
-				</div>
 			</div>
 		</WindowContext.Provider>
 	);

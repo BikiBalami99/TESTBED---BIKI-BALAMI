@@ -11,9 +11,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={styles.body}>
-				<main className={styles.main}>
-					<WindowManager>{children}</WindowManager>
-				</main>
+				<WindowManager>{children}</WindowManager>
 			</body>
 		</html>
 	);

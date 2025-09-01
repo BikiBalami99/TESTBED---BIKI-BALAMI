@@ -2,8 +2,11 @@
 
 .desktop {
 	position: relative;
-	width: 100vw;
-	height: 100vh;
+	width: 100svw;
+	height: 100svh;
+	max-width: 100svw;
+	max-height: 100svh;
+
 	overflow: hidden;
 	background:
     /* macOS Big Sur style gradient */ linear-gradient(
@@ -32,16 +35,6 @@
 	100% {
 		background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%;
 	}
-}
-
-.desktopBackground {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 80px; /* Leave space for dock */
-	padding: 2rem;
-	overflow: hidden;
 }
 
 /* macOS Dock */
