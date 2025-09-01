@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, createContext, useContext } from "react";
-import Window from "../Window/Window";
+import Window from "@/features/OS/Window/Window";
 import styles from "./WindowManager.module.css";
 
 export interface WindowData {
