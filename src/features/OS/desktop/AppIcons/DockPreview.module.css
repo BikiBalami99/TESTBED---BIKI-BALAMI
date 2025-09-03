@@ -1,19 +1,27 @@
 /* Dock Preview - Windows-style Taskbar Preview */
 
-.previewContainer {
+/* This lets the user travel from the app icon to the dock preview while still hover and it doesnt dissapear. */
+.previewInvisibleBackground {
 	position: absolute;
-	bottom: 80px;
+	bottom: -20px;
+	padding-bottom: 30px;
+	z-index: 3000;
+	left: 0;
+	right: 0;
+
+	width: fit-content;
+	transform: translate(-50%, 0%);
+}
+
+.previewContainer {
 	background: rgba(0, 0, 0, 0.85);
-	backdrop-filter: blur(20px);
+
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	border-radius: 12px;
 	padding: 1rem;
 	min-width: 280px;
 	max-width: 400px;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
-	z-index: 2000;
-	animation: previewSlideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	transform-origin: bottom center;
 }
 
 @keyframes previewSlideUp {
@@ -25,22 +33,6 @@
 		opacity: 1;
 		transform: translateY(0) scale(1);
 	}
-}
-
-.previewContainer.left {
-	left: 0;
-	transform-origin: bottom left;
-}
-
-.previewContainer.center {
-	left: 50%;
-	transform: translateX(-50%);
-	transform-origin: bottom center;
-}
-
-.previewContainer.right {
-	right: 0;
-	transform-origin: bottom right;
 }
 
 /* Preview Header */
@@ -99,7 +91,6 @@
 
 .windowCard:hover {
 	background: rgba(255, 255, 255, 0.1);
-	transform: translateY(-1px);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -199,7 +190,7 @@
 	font-size: 0.75rem;
 	font-weight: bold;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: all 0.1s ease;
 	flex-shrink: 0;
 }
 
@@ -207,7 +198,6 @@
 	background: rgba(255, 59, 48, 0.8);
 	border-color: rgba(255, 59, 48, 0.8);
 	color: white;
-	transform: scale(1.1);
 }
 
 .closeButton:active {
@@ -250,4 +240,3 @@
 		font-size: 0.75rem;
 	}
 }
-

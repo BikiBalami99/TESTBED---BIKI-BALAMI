@@ -23,52 +23,53 @@ export default function DockPreview({
 	if (windows.length === 0) return null;
 
 	return (
-		<div className={`${styles.previewContainer} ${styles[position]}`}>
-			<div className={styles.previewHeader}>
-				<div className={styles.appInfo}>
-					<app.icon size={16} className={styles.appIcon} />
-					<span className={styles.appName}>{app.name}</span>
+		<div className={styles.previewInvisibleBackground}>
+			<div className={`${styles.previewContainer} ${styles[position]}`}>
+				<div className={styles.previewHeader}>
+					<div className={styles.appInfo}>
+						<app.icon size={16} className={styles.appIcon} />
+						<span className={styles.appName}>{app.name}</span>
+					</div>
+					<span className={styles.windowCount}>
+						{windows.length} window{windows.length > 1 ? "s" : ""}
+					</span>
 				</div>
-				<span className={styles.windowCount}>
-					{windows.length} window{windows.length > 1 ? "s" : ""}
-				</span>
-			</div>
 
-			<div className={styles.windowsList}>
-				{windows.map((window) => (
-					<div
-						key={window.id}
-						className={styles.windowCard}
-						onClick={() => onWindowClick(window.id)}
-					>
-						<div className={styles.windowPreview}>
-							<div className={styles.windowTitleBar}>
-								<div className={styles.trafficLights}>
-									<div className={styles.trafficLight} />
-									<div className={styles.trafficLight} />
-									<div className={styles.trafficLight} />
+				<div className={styles.windowsList}>
+					{windows.map((window) => (
+						<div
+							key={window.id}
+							className={styles.windowCard}
+							onClick={() => onWindowClick(window.id)}
+						>
+							<div className={styles.windowPreview}>
+								<div className={styles.windowTitleBar}>
+									<div className={styles.trafficLights}>
+										<div className={styles.trafficLight} />
+										<div className={styles.trafficLight} />
+										<div className={styles.trafficLight} />
+									</div>
+								</div>
+								<div className={styles.windowContent}>
+									<div className={styles.contentPlaceholder} />
 								</div>
 							</div>
-							<div className={styles.windowContent}>
-								<div className={styles.contentPlaceholder} />
+							<div className={styles.windowInfo}>
+								<span className={styles.windowTitle}>{window.title}</span>
+								<button
+									className={styles.closeButton}
+									onClick={(e) => {
+										e.stopPropagation();
+										onCloseWindow(window.id);
+									}}
+								>
+									×
+								</button>
 							</div>
 						</div>
-						<div className={styles.windowInfo}>
-							<span className={styles.windowTitle}>{window.title}</span>
-							<button
-								className={styles.closeButton}
-								onClick={(e) => {
-									e.stopPropagation();
-									onCloseWindow(window.id);
-								}}
-							>
-								×
-							</button>
-						</div>
-					</div>
-				))}
+					))}
+				</div>
 			</div>
 		</div>
 	);
 }
-
