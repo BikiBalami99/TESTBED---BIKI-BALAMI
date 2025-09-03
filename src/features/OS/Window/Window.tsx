@@ -13,8 +13,10 @@ interface WindowProps {
 	initialHeight?: number;
 	onClose: (id: string) => void;
 	onMinimize: (id: string) => void;
+	onMaximize: (id: string) => void;
 	onFocus: (id: string) => void;
 	isFocused: boolean;
+	isMaximized: boolean;
 	zIndex: number;
 }
 
@@ -47,12 +49,32 @@ export default function Window({
 	initialHeight = 400,
 	onClose,
 	onMinimize,
+	onMaximize,
 	onFocus,
 	isFocused,
+	isMaximized,
 	zIndex,
 }: WindowProps) {
 	const [position, setPosition] = useState({ x: initialX, y: initialY });
 	const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
+	const [isTransitioning, setIsTransitioning] = useState(false);
+
+	// Sync with prop changes (for maximize/restore)
+	useEffect(() => {
+		// Only update if the values actually changed (not during drag/resize)
+		if (
+			initialX !== position.x ||
+			initialY !== position.y ||
+			initialWidth !== size.width ||
+			initialHeight !== size.height
+		) {
+			setIsTransitioning(true);
+			setPosition({ x: initialX, y: initialY });
+			setSize({ width: initialWidth, height: initialHeight });
+			// Reset transition flag after animation completes
+			setTimeout(() => setIsTransitioning(false), 300);
+		}
+	}, [initialX, initialY, initialWidth, initialHeight]);
 	const [dragState, setDragState] = useState<DragState>({
 		isDragging: false,
 		dragStartX: 0,
@@ -83,6 +105,12 @@ export default function Window({
 				return;
 			}
 
+			// Don't allow dragging when maximized
+			if (isMaximized) {
+				onFocus(id);
+				return;
+			}
+
 			onFocus(id);
 			setDragState({
 				isDragging: true,
@@ -92,7 +120,7 @@ export default function Window({
 				windowStartY: position.y,
 			});
 		},
-		[position.x, position.y, onFocus, id]
+		[position.x, position.y, onFocus, id, isMaximized]
 	);
 
 	// Handle mouse move for dragging and resizing
@@ -200,11 +228,14 @@ export default function Window({
 
 	const handleClose = useCallback(() => onClose(id), [onClose, id]);
 	const handleMinimize = useCallback(() => onMinimize(id), [onMinimize, id]);
+	const handleMaximize = useCallback(() => onMaximize(id), [onMaximize, id]);
 
 	return (
 		<div
 			ref={windowRef}
-			className={`${styles.window} ${isFocused ? styles.focused : ""}`}
+			className={`${styles.window} ${isFocused ? styles.focused : ""} ${
+				isMaximized ? styles.maximized : ""
+			} ${dragState.isDragging || resizeState.isResizing ? styles.noTransition : ""}`}
 			style={{
 				left: position.x,
 				top: position.y,
@@ -214,39 +245,43 @@ export default function Window({
 			}}
 			onMouseDown={handleMouseDown}
 		>
-			{/* Resize handles */}
-			<div
-				className={`${styles.resizeHandle} ${styles.nw}`}
-				onMouseDown={handleResizeMouseDown("nw")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.ne}`}
-				onMouseDown={handleResizeMouseDown("ne")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.sw}`}
-				onMouseDown={handleResizeMouseDown("sw")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.se}`}
-				onMouseDown={handleResizeMouseDown("se")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.n}`}
-				onMouseDown={handleResizeMouseDown("n")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.s}`}
-				onMouseDown={handleResizeMouseDown("s")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.w}`}
-				onMouseDown={handleResizeMouseDown("w")}
-			/>
-			<div
-				className={`${styles.resizeHandle} ${styles.e}`}
-				onMouseDown={handleResizeMouseDown("e")}
-			/>
+			{/* Resize handles - only show when not maximized */}
+			{!isMaximized && (
+				<>
+					<div
+						className={`${styles.resizeHandle} ${styles.nw}`}
+						onMouseDown={handleResizeMouseDown("nw")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.ne}`}
+						onMouseDown={handleResizeMouseDown("ne")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.sw}`}
+						onMouseDown={handleResizeMouseDown("sw")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.se}`}
+						onMouseDown={handleResizeMouseDown("se")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.n}`}
+						onMouseDown={handleResizeMouseDown("n")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.s}`}
+						onMouseDown={handleResizeMouseDown("s")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.w}`}
+						onMouseDown={handleResizeMouseDown("w")}
+					/>
+					<div
+						className={`${styles.resizeHandle} ${styles.e}`}
+						onMouseDown={handleResizeMouseDown("e")}
+					/>
+				</>
+			)}
 
 			{/* Window Chrome */}
 			<div className={`${styles.windowChrome} window-title-bar`}>
@@ -260,7 +295,10 @@ export default function Window({
 						className={`${styles.trafficLight} ${styles.minimize}`}
 						onClick={handleMinimize}
 					/>
-					<button className={`${styles.trafficLight} ${styles.maximize}`} />
+					<button
+						className={`${styles.trafficLight} ${styles.maximize}`}
+						onClick={handleMaximize}
+					/>
 				</div>
 
 				{/* Window Title */}

@@ -16,6 +16,11 @@ export interface WindowData {
 	isMaximized: boolean;
 	zIndex: number;
 	appId?: string; // Added appId to the interface
+	// Original position and size for restore functionality
+	originalX?: number;
+	originalY?: number;
+	originalWidth?: number;
+	originalHeight?: number;
 }
 
 interface OSProps {
@@ -39,6 +44,7 @@ interface WindowContextType {
 	getWindowsForApp: (appId: string) => WindowData[];
 	closeWindow: (id: string) => void;
 	focusWindow: (id: string) => void;
+	maximizeWindow: (id: string) => void;
 }
 
 const WindowContext = createContext<WindowContextType | null>(null);
@@ -117,6 +123,35 @@ export default function OS({ children }: OSProps) {
 		);
 	}, []);
 
+	// Maximize/Restore a window
+	const maximizeWindow = useCallback((id: string) => {
+		setWindows((prev) =>
+			prev.map((w) => {
+				if (w.id === id) {
+					const isCurrentlyMaximized = w.isMaximized;
+					const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
+					const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+
+					return {
+						...w,
+						isMaximized: !isCurrentlyMaximized,
+						// Store original position and size when maximizing
+						originalX: isCurrentlyMaximized ? w.originalX : w.x,
+						originalY: isCurrentlyMaximized ? w.originalY : w.y,
+						originalWidth: isCurrentlyMaximized ? w.originalWidth : w.width,
+						originalHeight: isCurrentlyMaximized ? w.originalHeight : w.height,
+						// Set maximized position and size
+						x: isCurrentlyMaximized ? w.originalX ?? 100 : 0,
+						y: isCurrentlyMaximized ? w.originalY ?? 100 : 0,
+						width: isCurrentlyMaximized ? w.originalWidth ?? 600 : viewportWidth,
+						height: isCurrentlyMaximized ? w.originalHeight ?? 400 : viewportHeight,
+					};
+				}
+				return w;
+			})
+		);
+	}, []);
+
 	// Focus a window
 	const focusWindow = useCallback((id: string) => {
 		setFocusedWindowId(id);
@@ -156,6 +191,7 @@ export default function OS({ children }: OSProps) {
 		getWindowsForApp,
 		closeWindow,
 		focusWindow,
+		maximizeWindow,
 	};
 
 	return (
@@ -177,8 +213,10 @@ export default function OS({ children }: OSProps) {
 							initialHeight={window.height}
 							onClose={closeWindow}
 							onMinimize={minimizeWindow}
+							onMaximize={maximizeWindow}
 							onFocus={focusWindow}
 							isFocused={window.id === focusedWindowId}
+							isMaximized={window.isMaximized}
 							zIndex={window.zIndex}
 						>
 							{window.content}
