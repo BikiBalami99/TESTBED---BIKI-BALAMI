@@ -13,7 +13,7 @@ interface AppLauncherProps {
 
 export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { createWindow } = useWindowManager();
+	const { openOrFocusApp } = useWindowManager();
 
 	const filteredApps = AVAILABLE_APPS.filter(
 		(app) =>
@@ -22,15 +22,8 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 	);
 
 	const handleAppClick = (app: AppInfo) => {
-		createWindow(
-			app.name,
-			React.createElement(app.component),
-			app.id,
-			Math.random() * 200 + 100,
-			Math.random() * 200 + 100,
-			800,
-			600
-		);
+		// Use the new single instance management
+		openOrFocusApp(app.id, app.name, React.createElement(app.component));
 		onClose();
 	};
 

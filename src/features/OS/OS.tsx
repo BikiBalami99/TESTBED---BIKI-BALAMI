@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useCallback, useRef, createContext, useContext } from "react";
+import React, {
+	useState,
+	useCallback,
+	useRef,
+	createContext,
+	useContext,
+	useEffect,
+} from "react";
 import Window from "./Window/Window";
 import styles from "./OS.module.css";
 
@@ -21,6 +28,9 @@ export interface WindowData {
 	originalY?: number;
 	originalWidth?: number;
 	originalHeight?: number;
+	// Window state persistence
+	lastFocused?: boolean;
+	createdAt: number;
 }
 
 interface OSProps {
@@ -42,9 +52,21 @@ interface WindowContextType {
 	focusedWindowId: string | null;
 	getOpenedApps: () => string[];
 	getWindowsForApp: (appId: string) => WindowData[];
+	getAllWindowsForApp: (appId: string) => WindowData[];
 	closeWindow: (id: string) => void;
 	focusWindow: (id: string) => void;
 	maximizeWindow: (id: string) => void;
+	// New methods for single instance management
+	getWindowForApp: (appId: string) => WindowData | null;
+	openOrFocusApp: (appId: string, title: string, content: React.ReactNode) => void;
+	restoreWindow: (id: string) => void;
+	updateWindowPosition: (
+		id: string,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
 }
 
 const WindowContext = createContext<WindowContextType | null>(null);
@@ -64,6 +86,90 @@ export default function OS({ children }: OSProps) {
 
 	const nextWindowId = useRef(1);
 
+	// Helper function to constrain window position and size to viewport
+	const constrainToViewport = useCallback(
+		(x: number, y: number, width: number, height: number) => {
+			const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
+			const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+
+			// Ensure minimum sizes
+			const constrainedWidth = Math.max(300, Math.min(width, viewportWidth));
+			const constrainedHeight = Math.max(200, Math.min(height, viewportHeight));
+
+			// Constrain position to viewport bounds
+			const minX = 0;
+			const minY = 0;
+			const maxX = viewportWidth - constrainedWidth;
+			const maxY = viewportHeight - constrainedHeight;
+
+			const constrainedX = Math.max(minX, Math.min(maxX, x));
+			const constrainedY = Math.max(minY, Math.min(maxY, y));
+
+			return {
+				x: constrainedX,
+				y: constrainedY,
+				width: constrainedWidth,
+				height: constrainedHeight,
+			};
+		},
+		[]
+	);
+
+	// Load window positions from localStorage on mount
+	useEffect(() => {
+		const savedWindows = localStorage.getItem("windowPositions");
+		if (savedWindows) {
+			try {
+				const parsed = JSON.parse(savedWindows);
+				// Only restore positions, not full window state
+				setWindows((prev) =>
+					prev.map((window) => {
+						if (window.appId) {
+							const saved = parsed[window.appId];
+							if (saved) {
+								const constrained = constrainToViewport(
+									saved.x || window.x,
+									saved.y || window.y,
+									saved.width || window.width,
+									saved.height || window.height
+								);
+								return {
+									...window,
+									x: constrained.x,
+									y: constrained.y,
+									width: constrained.width,
+									height: constrained.height,
+								};
+							}
+						}
+						return window;
+					})
+				);
+			} catch (error) {
+				console.warn("Failed to load window positions:", error);
+			}
+		}
+	}, [constrainToViewport]);
+
+	// Save window positions to localStorage whenever windows change
+	useEffect(() => {
+		const windowPositions: Record<
+			string,
+			{ x: number; y: number; width: number; height: number }
+		> = {};
+		windows.forEach((window) => {
+			if (window.appId) {
+				windowPositions[window.appId] = {
+					x: window.x,
+					y: window.y,
+					width: window.width,
+					height: window.height,
+				};
+			}
+		});
+		localStorage.setItem("windowPositions", JSON.stringify(windowPositions));
+	}, [windows]);
+
 	// Create a new window
 	const createWindow = useCallback(
 		(
@@ -76,25 +182,33 @@ export default function OS({ children }: OSProps) {
 			height: number = 400
 		) => {
 			const id = `window-${nextWindowId.current++}`;
+			const initialX = x ?? 50 + windows.length * 30;
+			const initialY = y ?? 50 + windows.length * 30;
+
+			// Constrain initial position and size to viewport
+			const constrained = constrainToViewport(initialX, initialY, width, height);
+
 			const newWindow: WindowData = {
 				id,
 				title,
 				content,
 				appId,
-				x: x ?? 50 + windows.length * 30,
-				y: y ?? 50 + windows.length * 30,
-				width,
-				height,
+				x: constrained.x,
+				y: constrained.y,
+				width: constrained.width,
+				height: constrained.height,
 				isMinimized: false,
 				isMaximized: false,
 				zIndex: nextZIndex,
+				lastFocused: true,
+				createdAt: Date.now(),
 			};
 
 			setWindows((prev) => [...prev, newWindow]);
 			setNextZIndex((prev) => prev + 1);
 			setFocusedWindowId(id);
 		},
-		[windows.length, nextZIndex]
+		[windows.length, nextZIndex, constrainToViewport]
 	);
 
 	// Close a window
@@ -157,7 +271,11 @@ export default function OS({ children }: OSProps) {
 		setFocusedWindowId(id);
 		setWindows((prev) => {
 			const maxZ = Math.max(...prev.map((w) => w.zIndex));
-			return prev.map((w) => (w.id === id ? { ...w, zIndex: maxZ + 1 } : w));
+			return prev.map((w) =>
+				w.id === id
+					? { ...w, zIndex: maxZ + 1, lastFocused: true }
+					: { ...w, lastFocused: false }
+			);
 		});
 		setNextZIndex((prev) => prev + 1);
 	}, []);
@@ -165,21 +283,128 @@ export default function OS({ children }: OSProps) {
 	// Get visible (non-minimized) windows
 	const visibleWindows = windows.filter((w) => !w.isMinimized);
 
-	// Get unique opened app IDs
+	// Get unique opened app IDs (including minimized windows)
 	const getOpenedApps = useCallback(() => {
 		const appIds = windows
-			.filter((w) => !w.isMinimized && w.appId)
+			.filter((w) => w.appId) // Include both visible and minimized windows
 			.map((w) => w.appId!)
 			.filter((appId, index, arr) => arr.indexOf(appId) === index);
 		return appIds;
 	}, [windows]);
 
-	// Get all windows for a specific app
+	// Get all windows for a specific app (visible only)
 	const getWindowsForApp = useCallback(
 		(appId: string) => {
 			return windows.filter((w) => w.appId === appId && !w.isMinimized);
 		},
 		[windows]
+	);
+
+	// Get all windows for a specific app (including minimized)
+	const getAllWindowsForApp = useCallback(
+		(appId: string) => {
+			return windows.filter((w) => w.appId === appId);
+		},
+		[windows]
+	);
+
+	// Get single window for a specific app (for single instance management)
+	const getWindowForApp = useCallback(
+		(appId: string) => {
+			return windows.find((w) => w.appId === appId) || null;
+		},
+		[windows]
+	);
+
+	// Restore a minimized window
+	const restoreWindow = useCallback(
+		(id: string) => {
+			setWindows((prev) =>
+				prev.map((w) => (w.id === id ? { ...w, isMinimized: false } : w))
+			);
+			focusWindow(id);
+		},
+		[focusWindow]
+	);
+
+	// Open or focus an app (single instance management)
+	const openOrFocusApp = useCallback(
+		(appId: string, title: string, content: React.ReactNode) => {
+			const existingWindow = getWindowForApp(appId);
+
+			if (existingWindow) {
+				// Window exists - focus it or restore if minimized
+				if (existingWindow.isMinimized) {
+					restoreWindow(existingWindow.id);
+				} else {
+					focusWindow(existingWindow.id);
+				}
+			} else {
+				// No window exists - create new one
+				// Try to load saved position for this app
+				const savedPositions = localStorage.getItem("windowPositions");
+				let x = 50 + windows.length * 30;
+				let y = 50 + windows.length * 30;
+				let width = 800;
+				let height = 600;
+
+				if (savedPositions) {
+					try {
+						const parsed = JSON.parse(savedPositions);
+						const saved = parsed[appId];
+						if (saved) {
+							x = saved.x;
+							y = saved.y;
+							width = saved.width;
+							height = saved.height;
+						}
+					} catch (error) {
+						console.warn("Failed to load saved position for app:", appId);
+					}
+				}
+
+				// Constrain saved position to current viewport
+				const constrained = constrainToViewport(x, y, width, height);
+				createWindow(
+					title,
+					content,
+					appId,
+					constrained.x,
+					constrained.y,
+					constrained.width,
+					constrained.height
+				);
+			}
+		},
+		[
+			getWindowForApp,
+			restoreWindow,
+			focusWindow,
+			createWindow,
+			windows.length,
+			constrainToViewport,
+		]
+	);
+
+	// Update window position and size
+	const updateWindowPosition = useCallback(
+		(id: string, x: number, y: number, width: number, height: number) => {
+			const constrained = constrainToViewport(x, y, width, height);
+			setWindows((prev) =>
+				prev.map((w) =>
+					w.id === id
+						? {
+								...w,
+								x: constrained.x,
+								y: constrained.y,
+								width: constrained.width,
+								height: constrained.height,
+						  }
+						: w
+				)
+			);
+		},
+		[constrainToViewport]
 	);
 
 	// Context value
@@ -189,9 +414,15 @@ export default function OS({ children }: OSProps) {
 		focusedWindowId,
 		getOpenedApps,
 		getWindowsForApp,
+		getAllWindowsForApp,
 		closeWindow,
 		focusWindow,
 		maximizeWindow,
+		// New methods
+		getWindowForApp,
+		openOrFocusApp,
+		restoreWindow,
+		updateWindowPosition,
 	};
 
 	return (
@@ -215,6 +446,7 @@ export default function OS({ children }: OSProps) {
 							onMinimize={minimizeWindow}
 							onMaximize={maximizeWindow}
 							onFocus={focusWindow}
+							onPositionUpdate={updateWindowPosition}
 							isFocused={window.id === focusedWindowId}
 							isMaximized={window.isMaximized}
 							zIndex={window.zIndex}

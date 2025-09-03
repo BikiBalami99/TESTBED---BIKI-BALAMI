@@ -38,8 +38,14 @@ export default function Desktop() {
 	const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 	const [hoveredDockApp, setHoveredDockApp] = useState<string | null>(null);
-	const { createWindow, getOpenedApps, getWindowsForApp, focusWindow, closeWindow } =
-		useWindowManager();
+	const {
+		openOrFocusApp,
+		getOpenedApps,
+		getWindowsForApp,
+		getWindowForApp,
+		focusWindow,
+		closeWindow,
+	} = useWindowManager();
 
 	// Get opened apps for dock state
 	const openedApps = getOpenedApps();
@@ -74,28 +80,14 @@ export default function Desktop() {
 				return newSet;
 			});
 		} else {
-			createWindow(
-				app.name,
-				React.createElement(app.component),
-				app.id,
-				Math.random() * 200 + 100,
-				Math.random() * 200 + 100,
-				800,
-				600
-			);
+			// Use the new single instance management
+			openOrFocusApp(app.id, app.name, React.createElement(app.component));
 		}
 	};
 
 	const handleDockAppClick = (app: AppInfo) => {
-		createWindow(
-			app.name,
-			React.createElement(app.component),
-			app.id,
-			Math.random() * 200 + 100,
-			Math.random() * 200 + 100,
-			800,
-			600
-		);
+		// Use the new single instance management
+		openOrFocusApp(app.id, app.name, React.createElement(app.component));
 	};
 
 	const handleDockAppHover = (appId: string) => {
@@ -197,7 +189,8 @@ export default function Desktop() {
 					const app = AVAILABLE_APPS.find((a) => a.id === dockApp.appId);
 					if (!app) return null;
 
-					const isActive = openedApps.includes(app.id);
+					const existingWindow = getWindowForApp(app.id);
+					const isActive = existingWindow !== null;
 					const appWindows = getWindowsForApp(app.id);
 					const showPreview = hoveredDockApp === app.id && appWindows.length > 0;
 

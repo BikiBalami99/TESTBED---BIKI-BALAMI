@@ -15,6 +15,13 @@ interface WindowProps {
 	onMinimize: (id: string) => void;
 	onMaximize: (id: string) => void;
 	onFocus: (id: string) => void;
+	onPositionUpdate?: (
+		id: string,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
 	isFocused: boolean;
 	isMaximized: boolean;
 	zIndex: number;
@@ -51,6 +58,7 @@ export default function Window({
 	onMinimize,
 	onMaximize,
 	onFocus,
+	onPositionUpdate,
 	isFocused,
 	isMaximized,
 	zIndex,
@@ -75,6 +83,63 @@ export default function Window({
 			setTimeout(() => setIsTransitioning(false), 300);
 		}
 	}, [initialX, initialY, initialWidth, initialHeight]);
+
+	// Debounced position update callback
+	const debouncedPositionUpdate = useRef<NodeJS.Timeout | null>(null);
+
+	const updatePosition = useCallback(
+		(x: number, y: number, width: number, height: number) => {
+			if (onPositionUpdate) {
+				// Clear previous timeout
+				if (debouncedPositionUpdate.current) {
+					clearTimeout(debouncedPositionUpdate.current);
+				}
+
+				// Set new timeout
+				debouncedPositionUpdate.current = setTimeout(() => {
+					onPositionUpdate(id, x, y, width, height);
+					debouncedPositionUpdate.current = null;
+				}, 100);
+			}
+		},
+		[onPositionUpdate, id]
+	);
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (debouncedPositionUpdate.current) {
+				clearTimeout(debouncedPositionUpdate.current);
+			}
+		};
+	}, []);
+
+	// Handle viewport resize to keep windows in bounds
+	useEffect(() => {
+		const handleResize = () => {
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
+
+			// Check if window is outside viewport bounds
+			const maxX = viewportWidth - size.width;
+			const maxY = viewportHeight - size.height;
+
+			if (position.x > maxX || position.y > maxY || position.x < 0 || position.y < 0) {
+				// Constrain to viewport
+				const newX = Math.max(0, Math.min(maxX, position.x));
+				const newY = Math.max(0, Math.min(maxY, position.y));
+
+				if (newX !== position.x || newY !== position.y) {
+					setPosition({ x: newX, y: newY });
+					updatePosition(newX, newY, size.width, size.height);
+				}
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [position.x, position.y, size.width, size.height, updatePosition]);
+
 	const [dragState, setDragState] = useState<DragState>({
 		isDragging: false,
 		dragStartX: 0,
@@ -129,10 +194,25 @@ export default function Window({
 			if (dragState.isDragging) {
 				const deltaX = e.clientX - dragState.dragStartX;
 				const deltaY = e.clientY - dragState.dragStartY;
-				setPosition({
-					x: dragState.windowStartX + deltaX,
-					y: dragState.windowStartY + deltaY,
-				});
+				let newX = dragState.windowStartX + deltaX;
+				let newY = dragState.windowStartY + deltaY;
+
+				// Constrain window position to viewport bounds
+				const viewportWidth = window.innerWidth;
+				const viewportHeight = window.innerHeight;
+				const minX = 0;
+				const minY = 0;
+				const maxX = viewportWidth - size.width;
+				const maxY = viewportHeight - size.height;
+
+				// Clamp position to viewport bounds
+				newX = Math.max(minX, Math.min(maxX, newX));
+				newY = Math.max(minY, Math.min(maxY, newY));
+
+				setPosition({ x: newX, y: newY });
+
+				// Update position in parent component
+				updatePosition(newX, newY, size.width, size.height);
 			}
 
 			if (resizeState.isResizing) {
@@ -143,6 +223,10 @@ export default function Window({
 				let newHeight = resizeState.windowStartHeight;
 				let newX = resizeState.windowStartX;
 				let newY = resizeState.windowStartY;
+
+				// Get viewport dimensions for boundary constraints
+				const viewportWidth = window.innerWidth;
+				const viewportHeight = window.innerHeight;
 
 				// Handle different resize directions
 				switch (resizeState.resizeHandle) {
@@ -182,11 +266,33 @@ export default function Window({
 						break;
 				}
 
+				// Constrain window size to viewport bounds
+				const maxWidth = viewportWidth - newX;
+				const maxHeight = viewportHeight - newY;
+				newWidth = Math.min(newWidth, maxWidth);
+				newHeight = Math.min(newHeight, maxHeight);
+
+				// Ensure minimum sizes are maintained
+				newWidth = Math.max(300, newWidth);
+				newHeight = Math.max(200, newHeight);
+
+				// Constrain position to viewport bounds
+				const minX = 0;
+				const minY = 0;
+				const maxX = viewportWidth - newWidth;
+				const maxY = viewportHeight - newHeight;
+
+				newX = Math.max(minX, Math.min(maxX, newX));
+				newY = Math.max(minY, Math.min(maxY, newY));
+
 				setSize({ width: newWidth, height: newHeight });
 				setPosition({ x: newX, y: newY });
+
+				// Update position in parent component
+				updatePosition(newX, newY, newWidth, newHeight);
 			}
 		},
-		[dragState, resizeState]
+		[dragState, resizeState, updatePosition, size.width, size.height]
 	);
 
 	// Handle mouse up
