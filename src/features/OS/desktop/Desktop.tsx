@@ -42,8 +42,11 @@ export default function Desktop() {
 		openOrFocusApp,
 		getOpenedApps,
 		getWindowsForApp,
+		getAllWindowsForApp,
 		getWindowForApp,
+		getWindowById,
 		focusWindow,
+		restoreWindow,
 		closeWindow,
 	} = useWindowManager();
 
@@ -99,7 +102,14 @@ export default function Desktop() {
 	};
 
 	const handleWindowClick = (windowId: string) => {
-		focusWindow(windowId);
+		// Get the window to check if it's minimized
+		const window = getWindowById(windowId);
+
+		if (window?.isMinimized) {
+			restoreWindow(windowId);
+		} else {
+			focusWindow(windowId);
+		}
 		setHoveredDockApp(null);
 	};
 
@@ -191,7 +201,7 @@ export default function Desktop() {
 
 					const existingWindow = getWindowForApp(app.id);
 					const isActive = existingWindow !== null;
-					const appWindows = getWindowsForApp(app.id);
+					const appWindows = getAllWindowsForApp(app.id); // Use getAllWindowsForApp to include minimized windows
 					const showPreview = hoveredDockApp === app.id && appWindows.length > 0;
 
 					return (

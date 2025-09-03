@@ -58,6 +58,7 @@ interface WindowContextType {
 	maximizeWindow: (id: string) => void;
 	// New methods for single instance management
 	getWindowForApp: (appId: string) => WindowData | null;
+	getWindowById: (id: string) => WindowData | null;
 	openOrFocusApp: (appId: string, title: string, content: React.ReactNode) => void;
 	restoreWindow: (id: string) => void;
 	updateWindowPosition: (
@@ -316,6 +317,14 @@ export default function OS({ children }: OSProps) {
 		[windows]
 	);
 
+	// Get window by ID
+	const getWindowById = useCallback(
+		(id: string) => {
+			return windows.find((w) => w.id === id) || null;
+		},
+		[windows]
+	);
+
 	// Restore a minimized window
 	const restoreWindow = useCallback(
 		(id: string) => {
@@ -420,6 +429,7 @@ export default function OS({ children }: OSProps) {
 		maximizeWindow,
 		// New methods
 		getWindowForApp,
+		getWindowById,
 		openOrFocusApp,
 		restoreWindow,
 		updateWindowPosition,
