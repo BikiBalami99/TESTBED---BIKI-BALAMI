@@ -193,6 +193,16 @@
 	z-index: 1000;
 }
 
+/* Preview Wrapper */
+.previewWrapper {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: 0.5rem;
+	z-index: 2000;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
 	.appIcon {

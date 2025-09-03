@@ -8,6 +8,7 @@ import {
 	AppInfo,
 } from "@/features/OS/desktop/AppIcons/AppIcons";
 import AppLauncher from "@/features/OS/desktop/AppLauncher/AppLauncher";
+import DockPreview from "@/features/OS/desktop/AppIcons/DockPreview";
 import { useWindowManager } from "@/features/OS/OS";
 import styles from "./Desktop.module.css";
 
@@ -36,7 +37,12 @@ export default function Desktop() {
 
 	const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
-	const { createWindow } = useWindowManager();
+	const [hoveredDockApp, setHoveredDockApp] = useState<string | null>(null);
+	const { createWindow, getOpenedApps, getWindowsForApp, focusWindow, closeWindow } =
+		useWindowManager();
+
+	// Get opened apps for dock state
+	const openedApps = getOpenedApps();
 
 	// Load user preferences from localStorage
 	useEffect(() => {
@@ -71,6 +77,7 @@ export default function Desktop() {
 			createWindow(
 				app.name,
 				React.createElement(app.component),
+				app.id,
 				Math.random() * 200 + 100,
 				Math.random() * 200 + 100,
 				800,
@@ -83,11 +90,29 @@ export default function Desktop() {
 		createWindow(
 			app.name,
 			React.createElement(app.component),
+			app.id,
 			Math.random() * 200 + 100,
 			Math.random() * 200 + 100,
 			800,
 			600
 		);
+	};
+
+	const handleDockAppHover = (appId: string) => {
+		setHoveredDockApp(appId);
+	};
+
+	const handleDockAppLeave = () => {
+		setHoveredDockApp(null);
+	};
+
+	const handleWindowClick = (windowId: string) => {
+		focusWindow(windowId);
+		setHoveredDockApp(null);
+	};
+
+	const handleCloseWindow = (windowId: string) => {
+		closeWindow(windowId);
 	};
 
 	const handleDesktopContextMenu = (e: React.MouseEvent, app: DesktopApp) => {
@@ -172,11 +197,30 @@ export default function Desktop() {
 					const app = AVAILABLE_APPS.find((a) => a.id === dockApp.appId);
 					if (!app) return null;
 
+					const isActive = openedApps.includes(app.id);
+					const appWindows = getWindowsForApp(app.id);
+					const showPreview = hoveredDockApp === app.id && appWindows.length > 0;
+
 					return (
 						<DockIcon
 							key={dockApp.appId}
 							app={app}
 							onClick={() => handleDockAppClick(app)}
+							onMouseEnter={() => handleDockAppHover(app.id)}
+							onMouseLeave={handleDockAppLeave}
+							isActive={isActive}
+							showPreview={showPreview}
+							previewContent={
+								showPreview ? (
+									<DockPreview
+										app={app}
+										windows={appWindows}
+										onWindowClick={handleWindowClick}
+										onCloseWindow={handleCloseWindow}
+										position="center"
+									/>
+								) : null
+							}
 						/>
 					);
 				})}

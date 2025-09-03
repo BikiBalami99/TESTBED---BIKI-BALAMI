@@ -25,6 +25,7 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 		createWindow(
 			app.name,
 			React.createElement(app.component),
+			app.id,
 			Math.random() * 200 + 100,
 			Math.random() * 200 + 100,
 			800,

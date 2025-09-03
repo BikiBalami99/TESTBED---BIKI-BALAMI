@@ -15,6 +15,7 @@ export interface WindowData {
 	isMinimized: boolean;
 	isMaximized: boolean;
 	zIndex: number;
+	appId?: string; // Added appId to the interface
 }
 
 interface OSProps {
@@ -26,6 +27,7 @@ interface WindowContextType {
 	createWindow: (
 		title: string,
 		content: React.ReactNode,
+		appId?: string,
 		x?: number,
 		y?: number,
 		width?: number,
@@ -33,6 +35,10 @@ interface WindowContextType {
 	) => void;
 	windows: WindowData[];
 	focusedWindowId: string | null;
+	getOpenedApps: () => string[];
+	getWindowsForApp: (appId: string) => WindowData[];
+	closeWindow: (id: string) => void;
+	focusWindow: (id: string) => void;
 }
 
 const WindowContext = createContext<WindowContextType | null>(null);
@@ -57,6 +63,7 @@ export default function OS({ children }: OSProps) {
 		(
 			title: string,
 			content: React.ReactNode,
+			appId?: string,
 			x?: number,
 			y?: number,
 			width: number = 600,
@@ -67,6 +74,7 @@ export default function OS({ children }: OSProps) {
 				id,
 				title,
 				content,
+				appId,
 				x: x ?? 50 + windows.length * 30,
 				y: y ?? 50 + windows.length * 30,
 				width,
@@ -122,11 +130,32 @@ export default function OS({ children }: OSProps) {
 	// Get visible (non-minimized) windows
 	const visibleWindows = windows.filter((w) => !w.isMinimized);
 
+	// Get unique opened app IDs
+	const getOpenedApps = useCallback(() => {
+		const appIds = windows
+			.filter((w) => !w.isMinimized && w.appId)
+			.map((w) => w.appId!)
+			.filter((appId, index, arr) => arr.indexOf(appId) === index);
+		return appIds;
+	}, [windows]);
+
+	// Get all windows for a specific app
+	const getWindowsForApp = useCallback(
+		(appId: string) => {
+			return windows.filter((w) => w.appId === appId && !w.isMinimized);
+		},
+		[windows]
+	);
+
 	// Context value
 	const contextValue: WindowContextType = {
 		createWindow,
 		windows,
 		focusedWindowId,
+		getOpenedApps,
+		getWindowsForApp,
+		closeWindow,
+		focusWindow,
 	};
 
 	return (

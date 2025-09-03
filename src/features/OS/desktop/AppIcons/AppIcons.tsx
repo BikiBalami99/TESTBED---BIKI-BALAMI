@@ -113,21 +113,38 @@ interface DockIconProps {
 	app: AppInfo;
 	onClick?: () => void;
 	isActive?: boolean;
+	onMouseEnter?: () => void;
+	onMouseLeave?: () => void;
+	showPreview?: boolean;
+	previewContent?: React.ReactNode;
 }
 
-export function DockIcon({ app, onClick, isActive }: DockIconProps) {
+export function DockIcon({
+	app,
+	onClick,
+	isActive,
+	onMouseEnter,
+	onMouseLeave,
+	showPreview,
+	previewContent,
+}: DockIconProps) {
 	const Icon = app.icon;
 
 	return (
 		<div
 			className={`${styles.dockIcon} ${isActive ? styles.active : ""}`}
 			onClick={onClick}
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}
 			title={app.name}
 		>
 			<div className={styles.dockIconWrapper}>
 				<Icon size={32} className={styles.dockIconSvg} />
 				{isActive && <div className={styles.activeIndicator} />}
 			</div>
+			{showPreview && previewContent && (
+				<div className={styles.previewWrapper}>{previewContent}</div>
+			)}
 		</div>
 	);
 }

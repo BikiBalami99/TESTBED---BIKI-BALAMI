@@ -1,0 +1,253 @@
+/* Dock Preview - Windows-style Taskbar Preview */
+
+.previewContainer {
+	position: absolute;
+	bottom: 80px;
+	background: rgba(0, 0, 0, 0.85);
+	backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 12px;
+	padding: 1rem;
+	min-width: 280px;
+	max-width: 400px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+	z-index: 2000;
+	animation: previewSlideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	transform-origin: bottom center;
+}
+
+@keyframes previewSlideUp {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.previewContainer.left {
+	left: 0;
+	transform-origin: bottom left;
+}
+
+.previewContainer.center {
+	left: 50%;
+	transform: translateX(-50%);
+	transform-origin: bottom center;
+}
+
+.previewContainer.right {
+	right: 0;
+	transform-origin: bottom right;
+}
+
+/* Preview Header */
+.previewHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 0.75rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.appInfo {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.appIcon {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.appName {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.windowCount {
+	color: rgba(255, 255, 255, 0.6);
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+
+/* Windows List */
+.windowsList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.windowCard {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.windowCard:hover {
+	background: rgba(255, 255, 255, 0.1);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.windowCard:active {
+	transform: translateY(0);
+}
+
+/* Window Preview */
+.windowPreview {
+	width: 120px;
+	height: 80px;
+	border-radius: 6px;
+	overflow: hidden;
+	background: #ffffff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
+}
+
+.windowTitleBar {
+	height: 20px;
+	background: linear-gradient(180deg, #3a3a3b 0%, #2a2a2b 100%);
+	display: flex;
+	align-items: center;
+	padding: 0 0.25rem;
+}
+
+.trafficLights {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.trafficLight {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #ff5f57;
+}
+
+.trafficLight:nth-child(2) {
+	background: #ffbd2e;
+}
+
+.trafficLight:nth-child(3) {
+	background: #28ca42;
+}
+
+.windowContent {
+	height: calc(100% - 20px);
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.contentPlaceholder {
+	width: 60%;
+	height: 60%;
+	background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+		linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+		linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+	background-size: 8px 8px;
+	background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+	border-radius: 2px;
+}
+
+/* Window Info */
+.windowInfo {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.windowTitle {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 0.8rem;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.closeButton {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 4px;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 0.75rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.closeButton:hover {
+	background: rgba(255, 59, 48, 0.8);
+	border-color: rgba(255, 59, 48, 0.8);
+	color: white;
+	transform: scale(1.1);
+}
+
+.closeButton:active {
+	transform: scale(0.95);
+}
+
+/* Scrollbar Styling */
+.windowsList::-webkit-scrollbar {
+	width: 6px;
+}
+
+.windowsList::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
+}
+
+.windowsList::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 3px;
+}
+
+.windowsList::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.previewContainer {
+		min-width: 240px;
+		max-width: 320px;
+		padding: 0.75rem;
+	}
+
+	.windowPreview {
+		width: 100px;
+		height: 70px;
+	}
+
+	.windowTitle {
+		font-size: 0.75rem;
+	}
+}
+
