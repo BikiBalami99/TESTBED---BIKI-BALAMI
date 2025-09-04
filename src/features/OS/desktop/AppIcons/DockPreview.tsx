@@ -36,11 +36,14 @@ export default function DockPreview({
 				</div>
 
 				<div className={styles.windowsList}>
-					{windows.map((window) => (
+					{windows.map((window, index) => (
 						<div
 							key={window.id}
 							className={styles.windowCard}
 							onClick={() => onWindowClick(window.id)}
+							style={{
+								zIndex: windows.length - index, // Stack windows properly
+							}}
 						>
 							<div className={styles.windowPreview}>
 								<div className={styles.windowTitleBar}>
@@ -55,7 +58,12 @@ export default function DockPreview({
 								</div>
 							</div>
 							<div className={styles.windowInfo}>
-								<span className={styles.windowTitle}>{window.title}</span>
+								<span className={styles.windowTitle}>
+									{windows.length > 1 && (
+										<span className={styles.windowNumber}>{index + 1}</span>
+									)}
+									{window.title}
+								</span>
 								<button
 									className={styles.closeButton}
 									onClick={(e) => {

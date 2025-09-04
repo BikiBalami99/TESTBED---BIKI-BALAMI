@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import { AppIcon, AVAILABLE_APPS, AppInfo } from "../AppIcons/AppIcons";
+import ContextMenu, { createAppContextMenuItems } from "../ContextMenu/ContextMenu";
 import { useWindowManager } from "../../OS";
 import styles from "./AppLauncher.module.css";
 
@@ -13,7 +14,20 @@ interface AppLauncherProps {
 
 export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { openOrFocusApp } = useWindowManager();
+	const { openOrFocusApp, createNewWindowForApp, getAllWindowsForApp } =
+		useWindowManager();
+
+	// Context menu state
+	const [contextMenu, setContextMenu] = useState<{
+		isOpen: boolean;
+		x: number;
+		y: number;
+		appId?: string;
+	}>({
+		isOpen: false,
+		x: 0,
+		y: 0,
+	});
 
 	const filteredApps = AVAILABLE_APPS.filter(
 		(app) =>
@@ -24,6 +38,30 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 	const handleAppClick = (app: AppInfo) => {
 		// Use the new single instance management
 		openOrFocusApp(app.id, app.name, React.createElement(app.component));
+		onClose();
+	};
+
+	// Context menu handlers
+	const handleContextMenu = (e: React.MouseEvent, appId: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setContextMenu({
+			isOpen: true,
+			x: e.clientX,
+			y: e.clientY,
+			appId,
+		});
+	};
+
+	const closeContextMenu = () => {
+		setContextMenu((prev) => ({ ...prev, isOpen: false }));
+	};
+
+	const handleNewWindow = (appId: string) => {
+		const app = AVAILABLE_APPS.find((a) => a.id === appId);
+		if (app) {
+			createNewWindowForApp(appId, app.name, React.createElement(app.component));
+		}
 		onClose();
 	};
 
@@ -63,6 +101,7 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 								key={app.id}
 								className={styles.appItem}
 								onClick={() => handleAppClick(app)}
+								onContextMenu={(e) => handleContextMenu(e, app.id)}
 							>
 								<AppIcon app={app} size="large" />
 								<div className={styles.appInfo}>
@@ -84,6 +123,24 @@ export default function AppLauncher({ isOpen, onClose }: AppLauncherProps) {
 					<p className={styles.footerText}>{AVAILABLE_APPS.length} apps available</p>
 				</div>
 			</div>
+
+			{/* Context Menu */}
+			<ContextMenu
+				isOpen={contextMenu.isOpen}
+				x={contextMenu.x}
+				y={contextMenu.y}
+				items={
+					contextMenu.appId
+						? createAppContextMenuItems(
+								contextMenu.appId,
+								() => handleNewWindow(contextMenu.appId!),
+								() => {}, // Close all not needed in launcher
+								getAllWindowsForApp(contextMenu.appId).length > 0
+						  )
+						: []
+				}
+				onClose={closeContextMenu}
+			/>
 		</div>
 	);
 }

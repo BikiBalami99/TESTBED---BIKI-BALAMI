@@ -9,6 +9,10 @@ import {
 } from "@/features/OS/desktop/AppIcons/AppIcons";
 import AppLauncher from "@/features/OS/desktop/AppLauncher/AppLauncher";
 import DockPreview from "@/features/OS/desktop/AppIcons/DockPreview";
+import ContextMenu, {
+	createAppContextMenuItems,
+	createDesktopContextMenuItems,
+} from "@/features/OS/desktop/ContextMenu/ContextMenu";
 import { useWindowManager } from "@/features/OS/OS";
 import styles from "./Desktop.module.css";
 
@@ -38,8 +42,23 @@ export default function Desktop() {
 	const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 	const [hoveredDockApp, setHoveredDockApp] = useState<string | null>(null);
+
+	// Context menu state
+	const [contextMenu, setContextMenu] = useState<{
+		isOpen: boolean;
+		x: number;
+		y: number;
+		appId?: string;
+		type: "desktop" | "dock" | "app";
+	}>({
+		isOpen: false,
+		x: 0,
+		y: 0,
+		type: "desktop",
+	});
 	const {
 		openOrFocusApp,
+		createNewWindowForApp,
 		getOpenedApps,
 		getWindowsForApp,
 		getAllWindowsForApp,
@@ -117,9 +136,60 @@ export default function Desktop() {
 		closeWindow(windowId);
 	};
 
-	const handleDesktopContextMenu = (e: React.MouseEvent, app: DesktopApp) => {
+	// Context menu handlers
+	const handleContextMenu = (
+		e: React.MouseEvent,
+		appId?: string,
+		type: "desktop" | "dock" | "app" = "desktop"
+	) => {
 		e.preventDefault();
-		// Could add context menu here for removing apps from desktop
+		console.log("Context menu triggered:", {
+			appId,
+			type,
+			clientX: e.clientX,
+			clientY: e.clientY,
+		});
+		setContextMenu({
+			isOpen: true,
+			x: e.clientX,
+			y: e.clientY,
+			appId,
+			type,
+		});
+	};
+
+	const closeContextMenu = () => {
+		setContextMenu((prev) => ({ ...prev, isOpen: false }));
+	};
+
+	const handleNewWindow = (appId: string) => {
+		const app = AVAILABLE_APPS.find((a) => a.id === appId);
+		if (app) {
+			createNewWindowForApp(appId, app.name, React.createElement(app.component));
+		}
+	};
+
+	const handleCloseAllWindows = (appId: string) => {
+		const windows = getAllWindowsForApp(appId);
+		windows.forEach((window) => closeWindow(window.id));
+	};
+
+	// Desktop context menu handlers
+	const handleNewFolder = () => {
+		console.log("New folder clicked");
+		// TODO: Implement new folder creation
+	};
+
+	const handleShowDesktop = () => {
+		// Minimize all windows
+		const allWindows = getAllWindowsForApp(""); // This won't work, need to get all windows
+		// TODO: Implement show desktop functionality
+		console.log("Show desktop clicked");
+	};
+
+	const handleDesktopContextMenu = (e: React.MouseEvent, app: DesktopApp) => {
+		e.stopPropagation();
+		handleContextMenu(e, app.appId, "app");
 	};
 
 	const handleDesktopDoubleClick = (e: React.MouseEvent) => {
@@ -157,7 +227,11 @@ export default function Desktop() {
 	};
 
 	return (
-		<div className={styles.desktop} onDoubleClick={handleDesktopDoubleClick}>
+		<div
+			className={styles.desktop}
+			onDoubleClick={handleDesktopDoubleClick}
+			onContextMenu={(e) => handleContextMenu(e, undefined, "desktop")}
+		>
 			{/* Desktop App Icons */}
 			{desktopApps.map((desktopApp) => {
 				const app = AVAILABLE_APPS.find((a) => a.id === desktopApp.appId);
@@ -205,26 +279,33 @@ export default function Desktop() {
 					const showPreview = hoveredDockApp === app.id && appWindows.length > 0;
 
 					return (
-						<DockIcon
+						<div
 							key={dockApp.appId}
-							app={app}
-							onClick={() => handleDockAppClick(app)}
-							onMouseEnter={() => handleDockAppHover(app.id)}
-							onMouseLeave={handleDockAppLeave}
-							isActive={isActive}
-							showPreview={showPreview}
-							previewContent={
-								showPreview ? (
-									<DockPreview
-										app={app}
-										windows={appWindows}
-										onWindowClick={handleWindowClick}
-										onCloseWindow={handleCloseWindow}
-										position="center"
-									/>
-								) : null
-							}
-						/>
+							onContextMenu={(e) => {
+								e.stopPropagation();
+								handleContextMenu(e, app.id, "dock");
+							}}
+						>
+							<DockIcon
+								app={app}
+								onClick={() => handleDockAppClick(app)}
+								onMouseEnter={() => handleDockAppHover(app.id)}
+								onMouseLeave={handleDockAppLeave}
+								isActive={isActive}
+								showPreview={showPreview}
+								previewContent={
+									showPreview ? (
+										<DockPreview
+											app={app}
+											windows={appWindows}
+											onWindowClick={handleWindowClick}
+											onCloseWindow={handleCloseWindow}
+											position="center"
+										/>
+									) : null
+								}
+							/>
+						</div>
 					);
 				})}
 			</div>
@@ -233,6 +314,37 @@ export default function Desktop() {
 			<AppLauncher
 				isOpen={isAppLauncherOpen}
 				onClose={() => setIsAppLauncherOpen(false)}
+			/>
+
+			{/* Context Menu */}
+			<ContextMenu
+				isOpen={contextMenu.isOpen}
+				x={contextMenu.x}
+				y={contextMenu.y}
+				items={(() => {
+					console.log("Context menu state:", contextMenu);
+					if (contextMenu.type === "app" && contextMenu.appId) {
+						console.log("Showing app context menu for:", contextMenu.appId);
+						return createAppContextMenuItems(
+							contextMenu.appId,
+							() => handleNewWindow(contextMenu.appId!),
+							() => handleCloseAllWindows(contextMenu.appId!),
+							getAllWindowsForApp(contextMenu.appId).length > 0
+						);
+					} else if (contextMenu.type === "dock" && contextMenu.appId) {
+						console.log("Showing dock context menu for:", contextMenu.appId);
+						return createAppContextMenuItems(
+							contextMenu.appId,
+							() => handleNewWindow(contextMenu.appId!),
+							() => handleCloseAllWindows(contextMenu.appId!),
+							getAllWindowsForApp(contextMenu.appId).length > 0
+						);
+					} else {
+						console.log("Showing desktop context menu");
+						return createDesktopContextMenuItems(handleNewFolder, handleShowDesktop);
+					}
+				})()}
+				onClose={closeContextMenu}
 			/>
 
 			{/* Menu Bar */}

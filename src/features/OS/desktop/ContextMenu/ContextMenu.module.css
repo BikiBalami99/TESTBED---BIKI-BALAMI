@@ -1,0 +1,134 @@
+/* macOS-Style Context Menu */
+
+.contextMenu {
+	position: absolute;
+	background: rgba(0, 0, 0, 0.85);
+	backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	padding: 0.5rem 0;
+	z-index: 3000;
+	min-width: 200px;
+	max-width: 300px;
+	width: auto;
+	height: auto;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+	animation: contextMenuSlideIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	display: flex;
+	flex-direction: column;
+}
+
+@keyframes contextMenuSlideIn {
+	from {
+		opacity: 0;
+		transform: translateY(-5px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.contextMenuItem {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 1rem;
+	color: rgba(255, 255, 255, 0.9);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+	font-size: 0.875rem;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+	user-select: none;
+	width: 100%;
+	min-height: 32px;
+	box-sizing: border-box;
+}
+
+.contextMenuItem:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.contextMenuItem:active {
+	background: rgba(255, 255, 255, 0.15);
+}
+
+.contextMenuItem.disabled {
+	color: rgba(255, 255, 255, 0.4);
+	cursor: not-allowed;
+}
+
+.contextMenuItem.disabled:hover {
+	background: transparent;
+}
+
+.contextMenuIcon {
+	width: 16px;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.contextMenuLabel {
+	flex: 1;
+}
+
+.contextMenuShortcut {
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 0.75rem;
+	margin-left: 1rem;
+}
+
+.contextMenuDivider {
+	height: 1px;
+	background: rgba(255, 255, 255, 0.2);
+	margin: 0.25rem 0;
+	width: 100%;
+	flex-shrink: 0;
+}
+
+/* App-specific context menu items */
+.contextMenuItem.newWindow {
+	color: rgba(0, 122, 255, 0.9);
+}
+
+.contextMenuItem.newWindow:hover {
+	background: rgba(0, 122, 255, 0.1);
+}
+
+.contextMenuItem.closeAll {
+	color: rgba(255, 59, 48, 0.9);
+}
+
+.contextMenuItem.closeAll:hover {
+	background: rgba(255, 59, 48, 0.1);
+}
+
+/* Ensure proper content sizing */
+.contextMenu:empty {
+	display: none;
+}
+
+.contextMenu:not(:empty) {
+	min-height: 40px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.contextMenu {
+		min-width: 180px;
+		padding: 0.4rem 0;
+	}
+
+	.contextMenuItem {
+		padding: 0.4rem 0.75rem;
+		font-size: 0.8rem;
+	}
+
+	.contextMenuIcon {
+		width: 14px;
+		height: 14px;
+	}
+}

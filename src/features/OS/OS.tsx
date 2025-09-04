@@ -60,6 +60,7 @@ interface WindowContextType {
 	getWindowForApp: (appId: string) => WindowData | null;
 	getWindowById: (id: string) => WindowData | null;
 	openOrFocusApp: (appId: string, title: string, content: React.ReactNode) => void;
+	createNewWindowForApp: (appId: string, title: string, content: React.ReactNode) => void;
 	restoreWindow: (id: string) => void;
 	updateWindowPosition: (
 		id: string,
@@ -395,6 +396,50 @@ export default function OS({ children }: OSProps) {
 		]
 	);
 
+	// Create new window for an app (multiple instance support)
+	const createNewWindowForApp = useCallback(
+		(appId: string, title: string, content: React.ReactNode) => {
+			// Get existing windows for this app to calculate offset
+			const existingWindows = getAllWindowsForApp(appId);
+			const offset = existingWindows.length * 30;
+
+			// Try to load saved position for this app
+			const savedPositions = localStorage.getItem("windowPositions");
+			let x = 50 + offset;
+			let y = 50 + offset;
+			let width = 800;
+			let height = 600;
+
+			if (savedPositions) {
+				try {
+					const parsed = JSON.parse(savedPositions);
+					const saved = parsed[appId];
+					if (saved) {
+						x = saved.x + offset;
+						y = saved.y + offset;
+						width = saved.width;
+						height = saved.height;
+					}
+				} catch (error) {
+					console.warn("Failed to load saved position for app:", appId);
+				}
+			}
+
+			// Constrain position to current viewport
+			const constrained = constrainToViewport(x, y, width, height);
+			createWindow(
+				title,
+				content,
+				appId,
+				constrained.x,
+				constrained.y,
+				constrained.width,
+				constrained.height
+			);
+		},
+		[getAllWindowsForApp, createWindow, constrainToViewport]
+	);
+
 	// Update window position and size
 	const updateWindowPosition = useCallback(
 		(id: string, x: number, y: number, width: number, height: number) => {
@@ -431,6 +476,7 @@ export default function OS({ children }: OSProps) {
 		getWindowForApp,
 		getWindowById,
 		openOrFocusApp,
+		createNewWindowForApp,
 		restoreWindow,
 		updateWindowPosition,
 	};
