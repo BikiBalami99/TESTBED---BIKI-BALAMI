@@ -21,6 +21,8 @@ export interface WindowData {
 	height: number;
 	isMinimized: boolean;
 	isMaximized: boolean;
+	isRestoring?: boolean;
+	dockPosition?: { x: number; y: number };
 	zIndex: number;
 	appId?: string; // Added appId to the interface
 	// Original position and size for restore functionality
@@ -56,6 +58,7 @@ interface WindowContextType {
 	closeWindow: (id: string) => void;
 	focusWindow: (id: string) => void;
 	maximizeWindow: (id: string) => void;
+	minimizeWindow: (id: string, dockPosition?: { x: number; y: number }) => void;
 	// New methods for single instance management
 	getWindowForApp: (appId: string) => WindowData | null;
 	getWindowById: (id: string) => WindowData | null;
@@ -233,11 +236,14 @@ export default function OS({ children }: OSProps) {
 	);
 
 	// Minimize a window
-	const minimizeWindow = useCallback((id: string) => {
-		setWindows((prev) =>
-			prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w))
-		);
-	}, []);
+	const minimizeWindow = useCallback(
+		(id: string, dockPosition?: { x: number; y: number }) => {
+			setWindows((prev) =>
+				prev.map((w) => (w.id === id ? { ...w, isMinimized: true, dockPosition } : w))
+			);
+		},
+		[]
+	);
 
 	// Maximize/Restore a window
 	const maximizeWindow = useCallback((id: string) => {
@@ -330,9 +336,17 @@ export default function OS({ children }: OSProps) {
 	const restoreWindow = useCallback(
 		(id: string) => {
 			setWindows((prev) =>
-				prev.map((w) => (w.id === id ? { ...w, isMinimized: false } : w))
+				prev.map((w) =>
+					w.id === id ? { ...w, isMinimized: false, isRestoring: true } : w
+				)
 			);
 			focusWindow(id);
+			// Reset the restoring flag after animation
+			setTimeout(() => {
+				setWindows((prev) =>
+					prev.map((w) => (w.id === id ? { ...w, isRestoring: false } : w))
+				);
+			}, 600);
 		},
 		[focusWindow]
 	);
@@ -472,6 +486,7 @@ export default function OS({ children }: OSProps) {
 		closeWindow,
 		focusWindow,
 		maximizeWindow,
+		minimizeWindow,
 		// New methods
 		getWindowForApp,
 		getWindowById,
@@ -505,6 +520,8 @@ export default function OS({ children }: OSProps) {
 							onPositionUpdate={updateWindowPosition}
 							isFocused={window.id === focusedWindowId}
 							isMaximized={window.isMaximized}
+							isRestoring={window.isRestoring}
+							dockPosition={window.dockPosition}
 							zIndex={window.zIndex}
 						>
 							{window.content}

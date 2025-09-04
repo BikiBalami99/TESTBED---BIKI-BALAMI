@@ -154,19 +154,8 @@ export const createAppContextMenuItems = (
 
 // Predefined context menu items for desktop
 export const createDesktopContextMenuItems = (
-	onNewFolder: () => void,
 	onShowDesktop: () => void
 ): ContextMenuItem[] => [
-	{
-		id: "new-folder",
-		label: "New Folder",
-		icon: Plus,
-		onClick: onNewFolder,
-	},
-	{
-		id: "divider-1",
-		label: "",
-	},
 	{
 		id: "show-desktop",
 		label: "Show Desktop",

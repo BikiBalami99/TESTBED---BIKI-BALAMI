@@ -12,7 +12,7 @@ interface WindowProps {
 	initialWidth?: number;
 	initialHeight?: number;
 	onClose: (id: string) => void;
-	onMinimize: (id: string) => void;
+	onMinimize: (id: string, dockPosition?: { x: number; y: number }) => void;
 	onMaximize: (id: string) => void;
 	onFocus: (id: string) => void;
 	onPositionUpdate?: (
@@ -24,6 +24,8 @@ interface WindowProps {
 	) => void;
 	isFocused: boolean;
 	isMaximized: boolean;
+	isRestoring?: boolean;
+	dockPosition?: { x: number; y: number };
 	zIndex: number;
 }
 
@@ -61,11 +63,102 @@ export default function Window({
 	onPositionUpdate,
 	isFocused,
 	isMaximized,
+	isRestoring = false,
+	dockPosition,
 	zIndex,
 }: WindowProps) {
 	const [position, setPosition] = useState({ x: initialX, y: initialY });
 	const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
 	const [isTransitioning, setIsTransitioning] = useState(false);
+	const [animationState, setAnimationState] = useState<
+		"none" | "closing" | "opening" | "minimizing" | "restoreFromMinimize"
+	>("opening");
+
+	// Trigger opening animation on mount
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setAnimationState("none");
+		}, 300);
+		return () => clearTimeout(timer);
+	}, []);
+
+	// Create dynamic restore animation from dock position
+	const createDynamicRestoreAnimation = useCallback(
+		(
+			windowRect: { x: number; y: number; width: number; height: number },
+			sourcePos: { x: number; y: number }
+		) => {
+			if (!windowRef.current) return;
+
+			// Calculate the window center
+			const windowCenterX = windowRect.x + windowRect.width / 2;
+			const windowCenterY = windowRect.y + windowRect.height / 2;
+
+			// Calculate translation from dock position to window position
+			const translateX = sourcePos.x - windowCenterX;
+			const translateY = sourcePos.y - windowCenterY;
+
+			// Create dynamic keyframes (reverse of minimize)
+			const styleElement = document.createElement("style");
+			const animationName = `restore-${id}-${Date.now()}`;
+
+			styleElement.textContent = `
+				@keyframes ${animationName} {
+					0% {
+						opacity: 0;
+						transform: translate(${translateX}px, ${translateY}px) scale(0.05);
+					}
+					100% {
+						opacity: 1;
+						transform: translate(0, 0) scale(1);
+					}
+				}
+			`;
+
+			document.head.appendChild(styleElement);
+
+			// Apply the animation directly
+			windowRef.current.style.animation = `${animationName} 0.6s ease-in-out forwards`;
+			windowRef.current.style.transformOrigin = "center center";
+
+			// Clean up after animation
+			setTimeout(() => {
+				try {
+					if (styleElement.parentNode) {
+						document.head.removeChild(styleElement);
+					}
+					if (windowRef.current) {
+						windowRef.current.style.animation = "";
+						windowRef.current.style.transformOrigin = "";
+					}
+				} catch (e) {
+					console.error("Cleanup error:", e);
+				}
+			}, 700);
+		},
+		[id]
+	);
+
+	// Trigger restore animation when isRestoring becomes true
+	useEffect(() => {
+		if (isRestoring && dockPosition) {
+			setAnimationState("restoreFromMinimize");
+
+			// Create dynamic restore animation
+			const windowRect = {
+				x: position.x,
+				y: position.y,
+				width: size.width,
+				height: size.height,
+			};
+			createDynamicRestoreAnimation(windowRect, dockPosition);
+
+			const timer = setTimeout(() => {
+				setAnimationState("none");
+			}, 600);
+			return () => clearTimeout(timer);
+		}
+	}, [isRestoring, dockPosition, position, size, createDynamicRestoreAnimation]);
 
 	// Sync with prop changes (for maximize/restore)
 	useEffect(() => {
@@ -159,6 +252,63 @@ export default function Window({
 	});
 
 	const windowRef = useRef<HTMLDivElement>(null);
+
+	// Create dynamic minimize animation targeting specific dock position
+	const createDynamicMinimizeAnimation = useCallback(
+		(
+			windowRect: { x: number; y: number; width: number; height: number },
+			targetPos: { x: number; y: number }
+		) => {
+			if (!windowRef.current) return;
+
+			// Calculate the window center
+			const windowCenterX = windowRect.x + windowRect.width / 2;
+			const windowCenterY = windowRect.y + windowRect.height / 2;
+
+			// Calculate translation needed to reach dock position
+			const translateX = targetPos.x - windowCenterX;
+			const translateY = targetPos.y - windowCenterY;
+
+			// Create dynamic keyframes with simplified genie effect
+			const styleElement = document.createElement("style");
+			const animationName = `minimize-${id}-${Date.now()}`;
+
+			styleElement.textContent = `
+				@keyframes ${animationName} {
+					0% {
+						opacity: 1;
+						transform: translate(0, 0) scale(1);
+					}
+					100% {
+						opacity: 0;
+						transform: translate(${translateX}px, ${translateY}px) scale(0.05);
+					}
+				}
+			`;
+
+			document.head.appendChild(styleElement);
+
+			// Apply the animation directly
+			windowRef.current.style.animation = `${animationName} 0.6s ease-in-out forwards`;
+			windowRef.current.style.transformOrigin = "center center";
+
+			// Clean up after animation
+			setTimeout(() => {
+				try {
+					if (styleElement.parentNode) {
+						document.head.removeChild(styleElement);
+					}
+					if (windowRef.current) {
+						windowRef.current.style.animation = "";
+						windowRef.current.style.transformOrigin = "";
+					}
+				} catch (e) {
+					console.error("Cleanup error:", e);
+				}
+			}, 700);
+		},
+		[id]
+	);
 
 	// Handle mouse down on title bar for dragging
 	const handleMouseDown = useCallback(
@@ -332,16 +482,58 @@ export default function Window({
 		[size, position, onFocus, id]
 	);
 
-	const handleClose = useCallback(() => onClose(id), [onClose, id]);
-	const handleMinimize = useCallback(() => onMinimize(id), [onMinimize, id]);
-	const handleMaximize = useCallback(() => onMaximize(id), [onMaximize, id]);
+	const handleClose = useCallback(() => {
+		setAnimationState("closing");
+		setTimeout(() => {
+			onClose(id);
+		}, 300); // Match animation duration
+	}, [onClose, id]);
+
+	const handleMinimize = useCallback(() => {
+		// Calculate dock position if not provided
+		let targetDockPosition = dockPosition;
+		if (!targetDockPosition) {
+			// Fallback to bottom center if no dock position available
+			targetDockPosition = {
+				x: window.innerWidth / 2,
+				y: window.innerHeight - 50,
+			};
+		}
+
+		setAnimationState("minimizing");
+
+		// Create dynamic animation targeting the dock position
+		if (targetDockPosition) {
+			const windowRect = {
+				x: position.x,
+				y: position.y,
+				width: size.width,
+				height: size.height,
+			};
+			createDynamicMinimizeAnimation(windowRect, targetDockPosition);
+		}
+
+		setTimeout(() => {
+			onMinimize(id, targetDockPosition);
+			setAnimationState("none");
+		}, 600); // Match animation duration
+	}, [onMinimize, id, dockPosition, position, size]);
+
+	const handleMaximize = useCallback(() => {
+		// Use smooth transition instead of animation
+		setIsTransitioning(true);
+		onMaximize(id);
+		setTimeout(() => setIsTransitioning(false), 300);
+	}, [onMaximize, id]);
 
 	return (
 		<div
 			ref={windowRef}
 			className={`${styles.window} ${isFocused ? styles.focused : ""} ${
 				isMaximized ? styles.maximized : ""
-			} ${dragState.isDragging || resizeState.isResizing ? styles.noTransition : ""}`}
+			} ${dragState.isDragging || resizeState.isResizing ? styles.noTransition : ""} ${
+				animationState !== "none" ? styles[animationState] : ""
+			}`}
 			style={{
 				left: position.x,
 				top: position.y,
