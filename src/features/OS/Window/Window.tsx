@@ -118,7 +118,7 @@ export default function Window({
 			document.head.appendChild(styleElement);
 
 			// Apply the animation directly
-			windowRef.current.style.animation = `${animationName} 0.6s ease-in-out forwards`;
+			windowRef.current.style.animation = `${animationName} 0.3s ease-in-out forwards`;
 			windowRef.current.style.transformOrigin = "center center";
 
 			// Clean up after animation
@@ -134,7 +134,7 @@ export default function Window({
 				} catch (e) {
 					console.error("Cleanup error:", e);
 				}
-			}, 700);
+			}, 350);
 		},
 		[id]
 	);
@@ -155,7 +155,7 @@ export default function Window({
 
 			const timer = setTimeout(() => {
 				setAnimationState("none");
-			}, 600);
+			}, 300);
 			return () => clearTimeout(timer);
 		}
 	}, [isRestoring, dockPosition, position, size, createDynamicRestoreAnimation]);
@@ -289,7 +289,7 @@ export default function Window({
 			document.head.appendChild(styleElement);
 
 			// Apply the animation directly
-			windowRef.current.style.animation = `${animationName} 0.6s ease-in-out forwards`;
+			windowRef.current.style.animation = `${animationName} 0.3s ease-in-out forwards`;
 			windowRef.current.style.transformOrigin = "center center";
 
 			// Clean up after animation
@@ -305,7 +305,7 @@ export default function Window({
 				} catch (e) {
 					console.error("Cleanup error:", e);
 				}
-			}, 700);
+			}, 350);
 		},
 		[id]
 	);
@@ -516,7 +516,7 @@ export default function Window({
 		setTimeout(() => {
 			onMinimize(id, targetDockPosition);
 			setAnimationState("none");
-		}, 600); // Match animation duration
+		}, 300); // Match animation duration
 	}, [onMinimize, id, dockPosition, position, size]);
 
 	const handleMaximize = useCallback(() => {
