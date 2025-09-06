@@ -148,7 +148,7 @@ export default function SystemTooltip({
 			document.removeEventListener("mousedown", handleClickOutside);
 			document.removeEventListener("keydown", handleEscape);
 		};
-	}, [isVisible]);
+	}, [isVisible, hideTooltip]);
 
 	return (
 		<div className={styles.tooltipContainer}>

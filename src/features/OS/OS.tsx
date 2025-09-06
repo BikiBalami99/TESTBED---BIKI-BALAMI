@@ -382,7 +382,7 @@ export default function OS({ children }: OSProps) {
 							width = saved.width;
 							height = saved.height;
 						}
-					} catch (error) {
+					} catch {
 						console.warn("Failed to load saved position for app:", appId);
 					}
 				}
@@ -434,7 +434,7 @@ export default function OS({ children }: OSProps) {
 						width = saved.width;
 						height = saved.height;
 					}
-				} catch (error) {
+				} catch {
 					console.warn("Failed to load saved position for app:", appId);
 				}
 			}

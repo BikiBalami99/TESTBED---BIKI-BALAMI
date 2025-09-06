@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Plus, X, Square, Minus, Copy, Trash2 } from "lucide-react";
+import { Plus, X, Square } from "lucide-react";
 import styles from "./ContextMenu.module.css";
 
 export interface ContextMenuItem {

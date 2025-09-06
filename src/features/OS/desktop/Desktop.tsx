@@ -151,23 +151,26 @@ export default function Desktop() {
 		localStorage.setItem("dockApps", JSON.stringify(dockApps));
 	}, [dockApps]);
 
-	const handleDesktopAppClick = (app: AppInfo) => {
-		// Only prevent click if we actually moved (completed a drag)
-		if (dragState.hasMoved) {
-			return;
-		}
+	const handleDesktopAppClick = useCallback(
+		(app: AppInfo) => {
+			// Only prevent click if we actually moved (completed a drag)
+			if (dragState.hasMoved) {
+				return;
+			}
 
-		if (selectedApps.has(app.id)) {
-			setSelectedApps((prev) => {
-				const newSet = new Set(prev);
-				newSet.delete(app.id);
-				return newSet;
-			});
-		} else {
-			// Use the new single instance management
-			openOrFocusApp(app.id, app.name, React.createElement(app.component));
-		}
-	};
+			if (selectedApps.has(app.id)) {
+				setSelectedApps((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(app.id);
+					return newSet;
+				});
+			} else {
+				// Use the new single instance management
+				openOrFocusApp(app.id, app.name, React.createElement(app.component));
+			}
+		},
+		[dragState.hasMoved, selectedApps, openOrFocusApp]
+	);
 
 	const handleDockAppClick = (app: AppInfo) => {
 		// Use the new single instance management
@@ -196,13 +199,6 @@ export default function Desktop() {
 
 	const handleCloseWindow = (windowId: string) => {
 		closeWindow(windowId);
-	};
-
-	// Handle minimize from dock preview
-	const handleMinimizeWindow = (windowId: string) => {
-		const window = getWindowById(windowId);
-		const dockPosition = window?.appId ? getDockIconPosition(window.appId) : undefined;
-		minimizeWindow(windowId, dockPosition);
 	};
 
 	// Context menu handlers
@@ -541,7 +537,7 @@ export default function Desktop() {
 				}, 200);
 			}
 		},
-		[dragState]
+		[dragState, desktopApps, handleDesktopAppClick]
 	);
 
 	// Add global mouse event listeners for drag

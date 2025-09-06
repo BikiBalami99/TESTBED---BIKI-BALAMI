@@ -69,7 +69,6 @@ export default function Window({
 }: WindowProps) {
 	const [position, setPosition] = useState({ x: initialX, y: initialY });
 	const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
-	const [isTransitioning, setIsTransitioning] = useState(false);
 	const [animationState, setAnimationState] = useState<
 		"none" | "closing" | "opening" | "minimizing" | "restoreFromMinimize"
 	>("opening");
@@ -169,13 +168,19 @@ export default function Window({
 			initialWidth !== size.width ||
 			initialHeight !== size.height
 		) {
-			setIsTransitioning(true);
 			setPosition({ x: initialX, y: initialY });
 			setSize({ width: initialWidth, height: initialHeight });
-			// Reset transition flag after animation completes
-			setTimeout(() => setIsTransitioning(false), 300);
 		}
-	}, [initialX, initialY, initialWidth, initialHeight]);
+	}, [
+		initialX,
+		initialY,
+		initialWidth,
+		initialHeight,
+		position.x,
+		position.y,
+		size.width,
+		size.height,
+	]);
 
 	// Debounced position update callback
 	const debouncedPositionUpdate = useRef<NodeJS.Timeout | null>(null);
@@ -517,13 +522,11 @@ export default function Window({
 			onMinimize(id, targetDockPosition);
 			setAnimationState("none");
 		}, 300); // Match animation duration
-	}, [onMinimize, id, dockPosition, position, size]);
+	}, [onMinimize, id, dockPosition, position, size, createDynamicMinimizeAnimation]);
 
 	const handleMaximize = useCallback(() => {
 		// Use smooth transition instead of animation
-		setIsTransitioning(true);
 		onMaximize(id);
-		setTimeout(() => setIsTransitioning(false), 300);
 	}, [onMaximize, id]);
 
 	return (
