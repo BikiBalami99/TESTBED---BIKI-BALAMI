@@ -38,6 +38,17 @@
 	}
 }
 
+@keyframes tooltipDropdownClose {
+	from {
+		opacity: 1;
+		transform: translateY(0) scaleY(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-10px) scaleY(0.8);
+	}
+}
+
 .tooltip.top {
 	transform-origin: center bottom;
 	animation: tooltipDropdownUp 0.25s ease-in-out forwards;
@@ -49,11 +60,28 @@
 
 /* Edge positioning is handled by JavaScript */
 .tooltip.rightEdge {
-	/* Positioned by JS */
+	/* Positioned by JS - no additional styles needed */
 }
 
 .tooltip.leftEdge {
-	/* Positioned by JS */
+	/* Positioned by JS - no additional styles needed */
+}
+
+/* Closing animations */
+.tooltip.closing {
+	animation: tooltipDropdownClose 0.25s ease-in-out forwards;
+}
+
+.tooltip.closing.top {
+	animation: tooltipDropdownUpClose 0.25s ease-in-out forwards;
+}
+
+.tooltip.closing.left {
+	animation: tooltipDropdownLeftClose 0.25s ease-in-out forwards;
+}
+
+.tooltip.closing.right {
+	animation: tooltipDropdownRightClose 0.25s ease-in-out forwards;
 }
 
 .tooltip.left {
@@ -89,6 +117,17 @@
 	}
 }
 
+@keyframes tooltipDropdownUpClose {
+	from {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0) scaleY(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(-50%) translateY(10px) scaleY(0.8);
+	}
+}
+
 @keyframes tooltipDropdownLeft {
 	from {
 		opacity: 0;
@@ -100,6 +139,17 @@
 	}
 }
 
+@keyframes tooltipDropdownLeftClose {
+	from {
+		opacity: 1;
+		transform: translateY(-50%) translateX(0) scaleX(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-50%) translateX(10px) scaleX(0.8);
+	}
+}
+
 @keyframes tooltipDropdownRight {
 	from {
 		opacity: 0;
@@ -108,6 +158,17 @@
 	to {
 		opacity: 1;
 		transform: translateY(-50%) translateX(0) scaleX(1);
+	}
+}
+
+@keyframes tooltipDropdownRightClose {
+	from {
+		opacity: 1;
+		transform: translateY(-50%) translateX(0) scaleX(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-50%) translateX(-10px) scaleX(0.8);
 	}
 }
 

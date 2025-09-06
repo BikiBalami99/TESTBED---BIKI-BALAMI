@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./SystemTooltip.module.css";
 
 interface TooltipProps {
@@ -15,17 +15,35 @@ export default function SystemTooltip({
 	position = "bottom",
 }: TooltipProps) {
 	const [isVisible, setIsVisible] = useState(false);
+	const [isClosing, setIsClosing] = useState(false);
 	const [actualPosition, setActualPosition] = useState(position);
 	const tooltipRef = useRef<HTMLDivElement>(null);
 	const triggerRef = useRef<HTMLDivElement>(null);
 
 	const toggleTooltip = () => {
-		setIsVisible(!isVisible);
+		if (isVisible) {
+			// Start closing animation
+			setIsClosing(true);
+			// Hide after animation completes
+			setTimeout(() => {
+				setIsVisible(false);
+				setIsClosing(false);
+			}, 250); // Match animation duration
+		} else {
+			setIsVisible(true);
+			setIsClosing(false);
+		}
 	};
 
-	const hideTooltip = () => {
-		setIsVisible(false);
-	};
+	const hideTooltip = useCallback(() => {
+		if (isVisible) {
+			setIsClosing(true);
+			setTimeout(() => {
+				setIsVisible(false);
+				setIsClosing(false);
+			}, 250);
+		}
+	}, [isVisible]);
 
 	// Calculate position after tooltip is rendered
 	useEffect(() => {
@@ -138,7 +156,12 @@ export default function SystemTooltip({
 				{children}
 			</div>
 			{isVisible && (
-				<div ref={tooltipRef} className={`${styles.tooltip} ${styles[actualPosition]}`}>
+				<div
+					ref={tooltipRef}
+					className={`${styles.tooltip} ${styles[actualPosition]} ${
+						isClosing ? styles.closing : ""
+					}`}
+				>
 					<div className={styles.tooltipContent}>{content}</div>
 				</div>
 			)}
