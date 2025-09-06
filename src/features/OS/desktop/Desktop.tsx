@@ -13,6 +13,7 @@ import ContextMenu, {
 	createAppContextMenuItems,
 	createDesktopContextMenuItems,
 } from "@/features/OS/desktop/ContextMenu/ContextMenu";
+import SystemStatus from "@/features/OS/desktop/SystemStatus/SystemStatus";
 import { useWindowManager } from "@/features/OS/OS";
 import styles from "./Desktop.module.css";
 
@@ -51,7 +52,6 @@ export default function Desktop() {
 	const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 	const [hoveredDockApp, setHoveredDockApp] = useState<string | null>(null);
-	const [currentTime, setCurrentTime] = useState(new Date());
 	const [dragState, setDragState] = useState<{
 		isDragging: boolean;
 		draggedAppId: string | null;
@@ -128,22 +128,6 @@ export default function Desktop() {
 		const app = AVAILABLE_APPS.find((a) => a.id === focusedWindow.appId);
 		return app ? app.name : "BikiOS";
 	}, [focusedWindowId, getWindowById]);
-
-	// Update time every minute
-	useEffect(() => {
-		const updateTime = () => {
-			setCurrentTime(new Date());
-		};
-
-		// Update immediately
-		updateTime();
-
-		// Set up interval to update every minute
-		const interval = setInterval(updateTime, 60000); // 60000ms = 1 minute
-
-		// Cleanup interval on unmount
-		return () => clearInterval(interval);
-	}, []);
 
 	// Load user preferences from localStorage
 	useEffect(() => {
@@ -730,9 +714,7 @@ export default function Desktop() {
 					<span className={styles.menuItem}>{getActiveAppName()}</span>
 				</div>
 				<div className={styles.menuBarRight}>
-					<span className={styles.time}>
-						{currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-					</span>
+					<SystemStatus />
 				</div>
 			</div>
 		</div>

@@ -1,0 +1,142 @@
+/* System Status Icons - macOS Style */
+
+.systemStatus {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 0.75rem;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+.statusItem {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	color: rgba(255, 255, 255, 0.8);
+	cursor: default;
+	transition: color 0.2s ease;
+	padding: 0.125rem 0.25rem;
+	border-radius: 4px;
+	position: relative;
+}
+
+.statusItem:hover {
+	color: rgba(255, 255, 255, 1);
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.icon {
+	color: rgba(255, 255, 255, 0.8);
+	transition: color 0.2s ease;
+	flex-shrink: 0;
+}
+
+.statusItem:hover .icon {
+	color: rgba(255, 255, 255, 1);
+}
+
+.text {
+	font-size: 0.7rem;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	min-width: fit-content;
+}
+
+/* Status-specific styling */
+.statusItem[title*="Battery"] {
+	position: relative;
+}
+
+.statusItem[title*="Battery: 100%"] .icon {
+	color: rgba(76, 217, 100, 0.9);
+}
+
+.statusItem[title*="Charging"] .icon {
+	color: rgba(255, 214, 10, 0.9);
+	animation: batteryPulse 2s ease-in-out infinite;
+}
+
+.statusItem[title*="Battery"][title*="% "] .icon {
+	color: rgba(255, 69, 58, 0.9);
+}
+
+@keyframes batteryPulse {
+	0%,
+	100% {
+		opacity: 0.8;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.statusItem[title*="Offline"] .icon {
+	color: rgba(255, 69, 58, 0.9);
+}
+
+.statusItem[title*="Connected"] .icon {
+	color: rgba(76, 217, 100, 0.9);
+}
+
+.statusItem[title*="Bluetooth On"] .icon {
+	color: rgba(0, 122, 255, 0.9);
+}
+
+.statusItem[title*="Bluetooth Off"] .icon {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.statusItem[title*="Volume: 0%"] .icon {
+	color: rgba(255, 69, 58, 0.9);
+}
+
+.statusItem[title*="Memory"] .text {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.statusItem[title*="Memory"][title*="90%"] .icon,
+.statusItem[title*="Memory"][title*="9[5-9]%"] .icon {
+	color: rgba(255, 214, 10, 0.9);
+}
+
+.statusItem[title*="CPU"] .icon {
+	color: rgba(0, 122, 255, 0.9);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.systemStatus {
+		gap: 0.5rem;
+	}
+
+	.statusItem {
+		gap: 0.125rem;
+		padding: 0.125rem;
+	}
+
+	.text {
+		font-size: 0.65rem;
+	}
+
+	/* Hide some items on mobile to save space */
+	.statusItem[title*="CPU"],
+	.statusItem[title*="Memory"] {
+		display: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.systemStatus {
+		gap: 0.25rem;
+	}
+
+	/* Hide text on very small screens */
+	.text {
+		display: none;
+	}
+
+	/* Hide bluetooth on very small screens */
+	.statusItem[title*="Bluetooth"] {
+		display: none;
+	}
+}
