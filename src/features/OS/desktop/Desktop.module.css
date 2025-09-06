@@ -93,8 +93,27 @@
 	}
 }
 
-/* App Launcher Icon */
+/* App Launcher Icon - Outer Container */
 .appLauncherIcon {
+	position: relative;
+	cursor: pointer;
+	border-radius: 8px;
+	transition: all 0.2s ease-in-out;
+	padding: 0.5rem;
+	margin: 0 0.125rem;
+}
+
+.appLauncherIcon:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+}
+
+.appLauncherIcon:active {
+	transform: scale(0.95);
+}
+
+/* App Launcher Icon - Inner Wrapper */
+.appLauncherIconWrapper {
 	width: 48px;
 	height: 48px;
 	border-radius: 12px;
@@ -111,25 +130,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
-	transition: all 0.2s ease-in-out;
 	position: relative;
 	overflow: hidden;
-}
-
-.appLauncherIcon:hover {
-	transform: scale(1.1);
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.3) 0%,
-		rgba(255, 255, 255, 0.2) 50%,
-		rgba(255, 255, 255, 0.1) 100%
-	);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.appLauncherIcon:active {
-	transform: scale(0.95);
 }
 
 .launcherGrid {

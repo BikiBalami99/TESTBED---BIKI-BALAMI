@@ -618,11 +618,13 @@ export default function Desktop() {
 					onClick={() => setIsAppLauncherOpen(true)}
 					title="App Launcher"
 				>
-					<div className={styles.launcherGrid}>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
+					<div className={styles.appLauncherIconWrapper}>
+						<div className={styles.launcherGrid}>
+							<div className={styles.launcherDot}></div>
+							<div className={styles.launcherDot}></div>
+							<div className={styles.launcherDot}></div>
+							<div className={styles.launcherDot}></div>
+						</div>
 					</div>
 				</div>
 
