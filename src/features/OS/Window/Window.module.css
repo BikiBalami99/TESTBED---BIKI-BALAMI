@@ -34,11 +34,11 @@
 
 /* Window Animations */
 .window.closing {
-	animation: windowClose 0.3s ease-out forwards;
+	animation: windowClose 0.1s ease-out forwards;
 }
 
 .window.opening {
-	animation: windowOpen 0.3s ease-out forwards;
+	animation: windowOpen 0.1s ease-out forwards;
 }
 
 /* Minimizing and restoring will use dynamic animations */

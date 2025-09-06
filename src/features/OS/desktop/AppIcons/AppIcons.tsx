@@ -1,16 +1,5 @@
 import React from "react";
-import {
-	Monitor,
-	Grid3X3,
-	Code,
-	AppWindow,
-	Settings,
-	FileText,
-	Palette,
-	Terminal,
-	Database,
-	Globe,
-} from "lucide-react";
+import { Monitor, Grid3X3, Code, Settings, FileText, Terminal } from "lucide-react";
 import styles from "./AppIcons.module.css";
 
 export interface AppInfo {
