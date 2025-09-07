@@ -568,7 +568,6 @@ export default function Window({
 				height: size.height,
 				zIndex,
 			}}
-			onMouseDown={handleMouseDown}
 		>
 			{/* Resize handles - only show when not in fullscreen */}
 			{!isFullscreen && (
@@ -609,24 +608,30 @@ export default function Window({
 			)}
 
 			{/* Window Chrome */}
-			<div className={`${styles.windowChrome} window-title-bar`}>
+			<div
+				className={`${styles.windowChrome} window-title-bar`}
+				onMouseDown={handleMouseDown}
+			>
 				{/* Traffic Light Buttons */}
 				<div className={styles.trafficLights}>
 					<button
 						className={`${styles.trafficLight} ${styles.close}`}
 						onClick={handleClose}
+						onMouseDown={(e) => e.stopPropagation()}
 					>
 						<X className={styles.trafficLightIcon} size={10} />
 					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.minimize}`}
 						onClick={handleMinimize}
+						onMouseDown={(e) => e.stopPropagation()}
 					>
 						<Minus className={styles.trafficLightIcon} size={10} />
 					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.maximize}`}
 						onClick={handleMaximize}
+						onMouseDown={(e) => e.stopPropagation()}
 					>
 						<Maximize2
 							className={`${styles.trafficLightIcon} ${styles.expandIcon}`}
