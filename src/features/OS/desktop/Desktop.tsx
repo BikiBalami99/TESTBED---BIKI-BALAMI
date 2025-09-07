@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { AVAILABLE_APPS, AppInfo } from "./AppIcons/AppIcons";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import { useWindowManager } from "../OS";
@@ -31,15 +31,15 @@ export default function Desktop() {
 	};
 
 	const [desktopApps, setDesktopApps] = useState<DesktopApp[]>([
-		{ appId: "media-queries", ...snapToGrid(64, 64) },
-		{ appId: "css-grid", ...snapToGrid(192, 64) },
-		{ appId: "javascript-es6", ...snapToGrid(320, 64) },
+		{ appId: "javascript-playground", ...snapToGrid(64, 64) },
+		{ appId: "notes", ...snapToGrid(192, 64) },
+		{ appId: "settings", ...snapToGrid(320, 64) },
 	]);
 
 	const [dockApps, setDockApps] = useState<DockApp[]>([
-		{ appId: "media-queries" },
-		{ appId: "css-grid" },
-		{ appId: "javascript-es6" },
+		{ appId: "javascript-playground" },
+		{ appId: "notes" },
+		{ appId: "settings" },
 	]);
 
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
@@ -80,7 +80,13 @@ export default function Desktop() {
 		(appId: string) => {
 			const app = AVAILABLE_APPS.find((a) => a.id === appId);
 			if (app) {
-				createNewWindowForApp(appId, app.name, React.createElement(app.component));
+				createNewWindowForApp(
+					appId,
+					app.name,
+					<Suspense fallback={<div>Loading...</div>}>
+						{React.createElement(app.component)}
+					</Suspense>
+				);
 			}
 		},
 		[createNewWindowForApp]
@@ -171,7 +177,13 @@ export default function Desktop() {
 				});
 			} else {
 				// Use the new single instance management
-				openOrFocusApp(app.id, app.name, React.createElement(app.component));
+				openOrFocusApp(
+					app.id,
+					app.name,
+					<Suspense fallback={<div>Loading...</div>}>
+						{React.createElement(app.component)}
+					</Suspense>
+				);
 			}
 		},
 		[selectedApps, openOrFocusApp]
@@ -180,7 +192,13 @@ export default function Desktop() {
 	const handleDockAppClick = useCallback(
 		(app: AppInfo) => {
 			// Use the new single instance management
-			openOrFocusApp(app.id, app.name, React.createElement(app.component));
+			openOrFocusApp(
+				app.id,
+				app.name,
+				<Suspense fallback={<div>Loading...</div>}>
+					{React.createElement(app.component)}
+				</Suspense>
+			);
 		},
 		[openOrFocusApp]
 	);

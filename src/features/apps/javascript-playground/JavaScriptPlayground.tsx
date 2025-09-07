@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Play, Square, RotateCcw } from "lucide-react";
-import styles from "./Terminal.module.css";
+import styles from "./JavaScriptPlayground.module.css";
 
 export default function JavaScriptPlayground() {
 	const [code, setCode] = useState(`// Welcome to JavaScript Playground!

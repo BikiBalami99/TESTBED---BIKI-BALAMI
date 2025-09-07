@@ -18,7 +18,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		id: "javascript-playground",
 		name: "JavaScript Playground",
 		icon: Code,
-		component: React.lazy(() => import("./terminal/Terminal")),
+		component: React.lazy(() => import("./javascript-playground/JavaScriptPlayground")),
 		category: "development",
 		description: "Write and run JavaScript code",
 	},

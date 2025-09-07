@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Search, X } from "lucide-react";
 import { AppIcon, AVAILABLE_APPS, AppInfo } from "../../OS/desktop/AppIcons/AppIcons";
 import ContextMenu, {
@@ -36,7 +36,13 @@ export default function AppLauncher() {
 
 	const handleAppClick = (app: AppInfo) => {
 		// Use the new single instance management
-		openOrFocusApp(app.id, app.name, React.createElement(app.component));
+		openOrFocusApp(
+			app.id,
+			app.name,
+			<Suspense fallback={<div>Loading...</div>}>
+				{React.createElement(app.component)}
+			</Suspense>
+		);
 	};
 
 	// Context menu handlers
@@ -58,7 +64,13 @@ export default function AppLauncher() {
 	const handleNewWindow = (appId: string) => {
 		const app = AVAILABLE_APPS.find((a) => a.id === appId);
 		if (app) {
-			createNewWindowForApp(appId, app.name, React.createElement(app.component));
+			createNewWindowForApp(
+				appId,
+				app.name,
+				<Suspense fallback={<div>Loading...</div>}>
+					{React.createElement(app.component)}
+				</Suspense>
+			);
 		}
 	};
 
