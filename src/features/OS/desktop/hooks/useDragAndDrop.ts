@@ -280,7 +280,9 @@ export function useDragAndDrop({
 			const finalPosition = findNearestUnoccupiedPosition(snapX, snapY);
 
 			// Update final position with snap
-			onAppPositionChange(dragState.draggedAppId, finalPosition.x, finalPosition.y);
+			if (dragState.draggedAppId) {
+				onAppPositionChange(dragState.draggedAppId, finalPosition.x, finalPosition.y);
+			}
 
 			// Hide snap indicator
 			setSnapIndicator({ visible: false, x: 0, y: 0 });

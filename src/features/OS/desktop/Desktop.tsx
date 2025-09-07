@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { AVAILABLE_APPS, AppInfo } from "./AppIcons/AppIcons";
-import AppLauncher from "./AppLauncher/AppLauncher";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import { useWindowManager } from "../OS";
 import { useContextMenu } from "./hooks/useContextMenu";
@@ -43,7 +42,6 @@ export default function Desktop() {
 		{ appId: "javascript-es6" },
 	]);
 
-	const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 
 	const {
@@ -217,12 +215,22 @@ export default function Desktop() {
 		[handleContextMenu]
 	);
 
-	const handleDesktopDoubleClick = useCallback((e: React.MouseEvent) => {
-		// Open app launcher on double click in empty space
-		if (e.target === e.currentTarget) {
-			setIsAppLauncherOpen(true);
-		}
-	}, []);
+	const handleDesktopDoubleClick = useCallback(
+		(e: React.MouseEvent) => {
+			// Open app launcher on double click in empty space
+			if (e.target === e.currentTarget) {
+				const appLauncher = AVAILABLE_APPS.find((app) => app.id === "app-launcher");
+				if (appLauncher) {
+					openOrFocusApp(
+						appLauncher.id,
+						appLauncher.name,
+						React.createElement(appLauncher.component)
+					);
+				}
+			}
+		},
+		[openOrFocusApp]
+	);
 
 	return (
 		<div
@@ -244,13 +252,6 @@ export default function Desktop() {
 				dockApps={dockApps}
 				onAppClick={handleDockAppClick}
 				onContextMenu={handleDockContextMenu}
-				onAppLauncherClick={() => setIsAppLauncherOpen(true)}
-			/>
-
-			{/* App Launcher */}
-			<AppLauncher
-				isOpen={isAppLauncherOpen}
-				onClose={() => setIsAppLauncherOpen(false)}
 			/>
 
 			{/* Context Menu */}

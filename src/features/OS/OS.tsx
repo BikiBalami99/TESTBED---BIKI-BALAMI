@@ -372,7 +372,13 @@ export default function OS({ children }: OSProps) {
 				let width = 800;
 				let height = 600;
 
-				if (savedPositions) {
+				// Special case: App Launcher gets specific dimensions and centered position
+				if (appId === "app-launcher") {
+					width = 900;
+					height = 650;
+					x = (typeof window !== "undefined" ? window.innerWidth : 1200) / 2 - width / 2;
+					y = (typeof window !== "undefined" ? window.innerHeight : 800) / 2 - height / 2;
+				} else if (savedPositions) {
 					try {
 						const parsed = JSON.parse(savedPositions);
 						const saved = parsed[appId];
@@ -413,6 +419,12 @@ export default function OS({ children }: OSProps) {
 	// Create new window for an app (multiple instance support)
 	const createNewWindowForApp = useCallback(
 		(appId: string, title: string, content: React.ReactNode) => {
+			// Special case: App Launcher is single instance only
+			if (appId === "app-launcher") {
+				openOrFocusApp(appId, title, content);
+				return;
+			}
+
 			// Get existing windows for this app to calculate offset
 			const existingWindows = getAllWindowsForApp(appId);
 			const offset = existingWindows.length * 30;
@@ -451,7 +463,7 @@ export default function OS({ children }: OSProps) {
 				constrained.height
 			);
 		},
-		[getAllWindowsForApp, createWindow, constrainToViewport]
+		[getAllWindowsForApp, createWindow, constrainToViewport, openOrFocusApp]
 	);
 
 	// Update window position and size

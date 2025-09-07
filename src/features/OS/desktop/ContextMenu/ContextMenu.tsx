@@ -128,29 +128,47 @@ export const createAppContextMenuItems = (
 	onNewWindow: () => void,
 	onCloseAll: () => void,
 	hasWindows: boolean = false
-): ContextMenuItem[] => [
-	{
-		id: "new-window",
-		label: "New Window",
-		icon: Plus,
-		shortcut: "⌘N",
-		onClick: onNewWindow,
-		className: styles.newWindow,
-	},
-	{
-		id: "divider-1",
-		label: "",
-	},
-	{
-		id: "close-all",
-		label: "Close All Windows",
-		icon: X,
-		shortcut: "⌘⇧W",
-		disabled: !hasWindows,
-		onClick: onCloseAll,
-		className: styles.closeAll,
-	},
-];
+): ContextMenuItem[] => {
+	// Special case: App Launcher gets limited context menu
+	if (appId === "app-launcher") {
+		return [
+			{
+				id: "close-all",
+				label: "Close Window",
+				icon: X,
+				shortcut: "⌘W",
+				disabled: !hasWindows,
+				onClick: onCloseAll,
+				className: styles.closeAll,
+			},
+		];
+	}
+
+	// Regular apps get full context menu
+	return [
+		{
+			id: "new-window",
+			label: "New Window",
+			icon: Plus,
+			shortcut: "⌘N",
+			onClick: onNewWindow,
+			className: styles.newWindow,
+		},
+		{
+			id: "divider-1",
+			label: "",
+		},
+		{
+			id: "close-all",
+			label: "Close All Windows",
+			icon: X,
+			shortcut: "⌘⇧W",
+			disabled: !hasWindows,
+			onClick: onCloseAll,
+			className: styles.closeAll,
+		},
+	];
+};
 
 // Predefined context menu items for desktop
 export const createDesktopContextMenuItems = (

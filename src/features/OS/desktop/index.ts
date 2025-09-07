@@ -12,7 +12,7 @@ export { useDragAndDrop } from "./hooks/useDragAndDrop";
 export { useContextMenu } from "./hooks/useContextMenu";
 
 // Re-export existing components
-export { default as AppLauncher } from "./AppLauncher/AppLauncher";
+// AppLauncher is now a regular app in the apps folder
 export { default as ContextMenu } from "./ContextMenu/ContextMenu";
 export { default as SystemStatus } from "./SystemStatus/SystemStatus";
 export { AppIcon, AVAILABLE_APPS, type AppInfo } from "./AppIcons/AppIcons";

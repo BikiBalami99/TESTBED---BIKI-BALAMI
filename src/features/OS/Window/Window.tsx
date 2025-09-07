@@ -73,189 +73,9 @@ export default function Window({
 		"none" | "closing" | "opening" | "minimizing" | "restoreFromMinimize"
 	>("opening");
 
-	// Trigger opening animation on mount
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setAnimationState("none");
-		}, 300);
-		return () => clearTimeout(timer);
-	}, []);
-
-	// Create dynamic restore animation from dock position
-	const createDynamicRestoreAnimation = useCallback(
-		(
-			windowRect: { x: number; y: number; width: number; height: number },
-			sourcePos: { x: number; y: number }
-		) => {
-			if (!windowRef.current) return;
-
-			// Calculate the window center
-			const windowCenterX = windowRect.x + windowRect.width / 2;
-			const windowCenterY = windowRect.y + windowRect.height / 2;
-
-			// Calculate translation from dock position to window position
-			const translateX = sourcePos.x - windowCenterX;
-			const translateY = sourcePos.y - windowCenterY;
-
-			// Create dynamic keyframes (reverse of minimize)
-			const styleElement = document.createElement("style");
-			const animationName = `restore-${id}-${Date.now()}`;
-
-			styleElement.textContent = `
-				@keyframes ${animationName} {
-					0% {
-						opacity: 0;
-						transform: translate(${translateX}px, ${translateY}px) scale(0.05);
-					}
-					100% {
-						opacity: 1;
-						transform: translate(0, 0) scale(1);
-					}
-				}
-			`;
-
-			document.head.appendChild(styleElement);
-
-			// Apply the animation directly
-			windowRef.current.style.animation = `${animationName} 0.3s ease-in-out forwards`;
-			windowRef.current.style.transformOrigin = "center center";
-
-			// Clean up after animation
-			setTimeout(() => {
-				try {
-					if (styleElement.parentNode) {
-						document.head.removeChild(styleElement);
-					}
-					if (windowRef.current) {
-						windowRef.current.style.animation = "";
-						windowRef.current.style.transformOrigin = "";
-					}
-				} catch (e) {
-					console.error("Cleanup error:", e);
-				}
-			}, 350);
-		},
-		[id]
-	);
-
-	// Trigger restore animation when isRestoring becomes true
-	useEffect(() => {
-		if (isRestoring && dockPosition) {
-			setAnimationState("restoreFromMinimize");
-
-			// Create dynamic restore animation
-			const windowRect = {
-				x: position.x,
-				y: position.y,
-				width: size.width,
-				height: size.height,
-			};
-			createDynamicRestoreAnimation(windowRect, dockPosition);
-
-			const timer = setTimeout(() => {
-				setAnimationState("none");
-			}, 300);
-			return () => clearTimeout(timer);
-		}
-	}, [isRestoring, dockPosition, position, size, createDynamicRestoreAnimation]);
-
-	// Sync with prop changes (for maximize/restore)
-	useEffect(() => {
-		// Only update if the values actually changed (not during drag/resize)
-		if (
-			initialX !== position.x ||
-			initialY !== position.y ||
-			initialWidth !== size.width ||
-			initialHeight !== size.height
-		) {
-			setPosition({ x: initialX, y: initialY });
-			setSize({ width: initialWidth, height: initialHeight });
-		}
-	}, [
-		initialX,
-		initialY,
-		initialWidth,
-		initialHeight,
-		position.x,
-		position.y,
-		size.width,
-		size.height,
-	]);
-
-	// Debounced position update callback
-	const debouncedPositionUpdate = useRef<NodeJS.Timeout | null>(null);
-
-	const updatePosition = useCallback(
-		(x: number, y: number, width: number, height: number) => {
-			if (onPositionUpdate) {
-				// Clear previous timeout
-				if (debouncedPositionUpdate.current) {
-					clearTimeout(debouncedPositionUpdate.current);
-				}
-
-				// Set new timeout
-				debouncedPositionUpdate.current = setTimeout(() => {
-					onPositionUpdate(id, x, y, width, height);
-					debouncedPositionUpdate.current = null;
-				}, 100);
-			}
-		},
-		[onPositionUpdate, id]
-	);
-
-	// Cleanup timeout on unmount
-	useEffect(() => {
-		return () => {
-			if (debouncedPositionUpdate.current) {
-				clearTimeout(debouncedPositionUpdate.current);
-			}
-		};
-	}, []);
-
-	// Handle viewport resize to keep windows in bounds
-	useEffect(() => {
-		const handleResize = () => {
-			const viewportWidth = window.innerWidth;
-			const viewportHeight = window.innerHeight;
-
-			// Check if window is outside viewport bounds
-			const maxX = viewportWidth - size.width;
-			const maxY = viewportHeight - size.height;
-
-			if (position.x > maxX || position.y > maxY || position.x < 0 || position.y < 0) {
-				// Constrain to viewport
-				const newX = Math.max(0, Math.min(maxX, position.x));
-				const newY = Math.max(0, Math.min(maxY, position.y));
-
-				if (newX !== position.x || newY !== position.y) {
-					setPosition({ x: newX, y: newY });
-					updatePosition(newX, newY, size.width, size.height);
-				}
-			}
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, [position.x, position.y, size.width, size.height, updatePosition]);
-
-	const [dragState, setDragState] = useState<DragState>({
-		isDragging: false,
-		dragStartX: 0,
-		dragStartY: 0,
-		windowStartX: 0,
-		windowStartY: 0,
-	});
-	const [resizeState, setResizeState] = useState<ResizeState>({
-		isResizing: false,
-		resizeHandle: "",
-		resizeStartX: 0,
-		resizeStartY: 0,
-		windowStartWidth: 0,
-		windowStartHeight: 0,
-		windowStartX: 0,
-		windowStartY: 0,
-	});
-
+	// Use refs for values that change during drag (to avoid state updates)
+	const positionRef = useRef(position);
+	const sizeRef = useRef(size);
 	const windowRef = useRef<HTMLDivElement>(null);
 
 	// Create dynamic minimize animation targeting specific dock position
@@ -293,38 +113,181 @@ export default function Window({
 
 			document.head.appendChild(styleElement);
 
-			// Apply the animation directly
+			// Apply the animation
 			windowRef.current.style.animation = `${animationName} 0.3s ease-in-out forwards`;
-			windowRef.current.style.transformOrigin = "center center";
 
-			// Clean up after animation
+			// Clean up
 			setTimeout(() => {
-				try {
-					if (styleElement.parentNode) {
-						document.head.removeChild(styleElement);
-					}
-					if (windowRef.current) {
-						windowRef.current.style.animation = "";
-						windowRef.current.style.transformOrigin = "";
-					}
-				} catch (e) {
-					console.error("Cleanup error:", e);
-				}
-			}, 350);
+				document.head.removeChild(styleElement);
+			}, 300);
 		},
 		[id]
 	);
 
+	// Create dynamic restore animation from dock position
+	const createDynamicRestoreAnimation = useCallback(
+		(
+			windowRect: { x: number; y: number; width: number; height: number },
+			sourcePos: { x: number; y: number }
+		) => {
+			if (!windowRef.current) return;
+
+			// Calculate the window center
+			const windowCenterX = windowRect.x + windowRect.width / 2;
+			const windowCenterY = windowRect.y + windowRect.height / 2;
+
+			// Calculate translation from dock position to window position
+			const translateX = sourcePos.x - windowCenterX;
+			const translateY = sourcePos.y - windowCenterY;
+
+			// Create dynamic keyframes (reverse of minimize)
+			const styleElement = document.createElement("style");
+			const animationName = `restore-${id}-${Date.now()}`;
+
+			styleElement.textContent = `
+				@keyframes ${animationName} {
+					0% {
+						opacity: 0;
+						transform: translate(${translateX}px, ${translateY}px) scale(0.05);
+					}
+					100% {
+						opacity: 1;
+						transform: translate(0, 0) scale(1);
+					}
+				}
+			`;
+
+			document.head.appendChild(styleElement);
+
+			// Apply the animation
+			windowRef.current.style.animation = `${animationName} 0.3s ease-out forwards`;
+
+			// Clean up
+			setTimeout(() => {
+				document.head.removeChild(styleElement);
+			}, 300);
+		},
+		[id]
+	);
+
+	// Update refs when state changes
+	useEffect(() => {
+		positionRef.current = position;
+		sizeRef.current = size;
+	}, [position, size]);
+
+	// Trigger opening animation on mount
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setAnimationState("none");
+		}, 300);
+		return () => clearTimeout(timer);
+	}, []);
+
+	// Handle restore from minimize animation
+	useEffect(() => {
+		if (isRestoring && dockPosition) {
+			setAnimationState("restoreFromMinimize");
+
+			const windowRect = {
+				x: position.x,
+				y: position.y,
+				width: size.width,
+				height: size.height,
+			};
+
+			createDynamicRestoreAnimation(windowRect, dockPosition);
+
+			// Reset animation state after animation completes
+			setTimeout(() => {
+				setAnimationState("none");
+			}, 300);
+		}
+	}, [isRestoring, dockPosition, position, size, createDynamicRestoreAnimation]);
+
+	// Debounced position update callback
+	const debouncedPositionUpdate = useRef<NodeJS.Timeout | null>(null);
+
+	const updatePosition = useCallback(
+		(x: number, y: number, width: number, height: number) => {
+			if (onPositionUpdate) {
+				// Clear previous timeout
+				if (debouncedPositionUpdate.current) {
+					clearTimeout(debouncedPositionUpdate.current);
+				}
+
+				// Set new timeout
+				debouncedPositionUpdate.current = setTimeout(() => {
+					onPositionUpdate(id, x, y, width, height);
+					debouncedPositionUpdate.current = null;
+				}, 100);
+			}
+		},
+		[onPositionUpdate, id]
+	);
+
+	// Handle viewport resize to keep windows in bounds
+	useEffect(() => {
+		const handleResize = () => {
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
+
+			// Check if window is outside viewport bounds
+			const maxX = viewportWidth - sizeRef.current.width;
+			const maxY = viewportHeight - sizeRef.current.height;
+
+			if (
+				positionRef.current.x > maxX ||
+				positionRef.current.y > maxY ||
+				positionRef.current.x < 0 ||
+				positionRef.current.y < 0
+			) {
+				// Constrain to viewport
+				const newX = Math.max(0, Math.min(maxX, positionRef.current.x));
+				const newY = Math.max(0, Math.min(maxY, positionRef.current.y));
+
+				if (newX !== positionRef.current.x || newY !== positionRef.current.y) {
+					setPosition({ x: newX, y: newY });
+					updatePosition(newX, newY, sizeRef.current.width, sizeRef.current.height);
+				}
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [updatePosition]);
+
+	const [dragState, setDragState] = useState<DragState>({
+		isDragging: false,
+		dragStartX: 0,
+		dragStartY: 0,
+		windowStartX: 0,
+		windowStartY: 0,
+	});
+
+	const [resizeState, setResizeState] = useState<ResizeState>({
+		isResizing: false,
+		resizeHandle: "",
+		resizeStartX: 0,
+		resizeStartY: 0,
+		windowStartWidth: 0,
+		windowStartHeight: 0,
+		windowStartX: 0,
+		windowStartY: 0,
+	});
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (debouncedPositionUpdate.current) {
+				clearTimeout(debouncedPositionUpdate.current);
+			}
+		};
+	}, []);
+
 	// Handle mouse down on title bar for dragging
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent) => {
-			if (
-				e.target !== e.currentTarget &&
-				!(e.target as HTMLElement).closest(".window-title-bar")
-			) {
-				return;
-			}
-
 			// Don't allow dragging when maximized
 			if (isMaximized) {
 				onFocus(id);
@@ -336,11 +299,11 @@ export default function Window({
 				isDragging: true,
 				dragStartX: e.clientX,
 				dragStartY: e.clientY,
-				windowStartX: position.x,
-				windowStartY: position.y,
+				windowStartX: positionRef.current.x,
+				windowStartY: positionRef.current.y,
 			});
 		},
-		[position.x, position.y, onFocus, id, isMaximized]
+		[onFocus, id, isMaximized]
 	);
 
 	// Handle mouse move for dragging and resizing
@@ -357,17 +320,24 @@ export default function Window({
 				const viewportHeight = window.innerHeight;
 				const minX = 0;
 				const minY = 0;
-				const maxX = viewportWidth - size.width;
-				const maxY = viewportHeight - size.height;
+				const maxX = viewportWidth - sizeRef.current.width;
+				const maxY = viewportHeight - sizeRef.current.height;
 
 				// Clamp position to viewport bounds
 				newX = Math.max(minX, Math.min(maxX, newX));
 				newY = Math.max(minY, Math.min(maxY, newY));
 
+				// Update position immediately using ref to avoid state delay
+				if (windowRef.current) {
+					windowRef.current.style.left = `${newX}px`;
+					windowRef.current.style.top = `${newY}px`;
+				}
+
+				// Update state for consistency
 				setPosition({ x: newX, y: newY });
 
 				// Update position in parent component
-				updatePosition(newX, newY, size.width, size.height);
+				updatePosition(newX, newY, sizeRef.current.width, sizeRef.current.height);
 			}
 
 			if (resizeState.isResizing) {
@@ -440,6 +410,15 @@ export default function Window({
 				newX = Math.max(minX, Math.min(maxX, newX));
 				newY = Math.max(minY, Math.min(maxY, newY));
 
+				// Update size and position immediately using ref to avoid state delay
+				if (windowRef.current) {
+					windowRef.current.style.width = `${newWidth}px`;
+					windowRef.current.style.height = `${newHeight}px`;
+					windowRef.current.style.left = `${newX}px`;
+					windowRef.current.style.top = `${newY}px`;
+				}
+
+				// Update state for consistency
 				setSize({ width: newWidth, height: newHeight });
 				setPosition({ x: newX, y: newY });
 
@@ -447,7 +426,7 @@ export default function Window({
 				updatePosition(newX, newY, newWidth, newHeight);
 			}
 		},
-		[dragState, resizeState, updatePosition, size.width, size.height]
+		[dragState, resizeState, updatePosition]
 	);
 
 	// Handle mouse up
@@ -478,13 +457,13 @@ export default function Window({
 				resizeHandle: handle,
 				resizeStartX: e.clientX,
 				resizeStartY: e.clientY,
-				windowStartWidth: size.width,
-				windowStartHeight: size.height,
-				windowStartX: position.x,
-				windowStartY: position.y,
+				windowStartWidth: sizeRef.current.width,
+				windowStartHeight: sizeRef.current.height,
+				windowStartX: positionRef.current.x,
+				windowStartY: positionRef.current.y,
 			});
 		},
-		[size, position, onFocus, id]
+		[onFocus, id]
 	);
 
 	const handleClose = useCallback(() => {
@@ -518,14 +497,13 @@ export default function Window({
 			createDynamicMinimizeAnimation(windowRect, targetDockPosition);
 		}
 
+		// Call the minimize callback after animation completes
 		setTimeout(() => {
 			onMinimize(id, targetDockPosition);
-			setAnimationState("none");
-		}, 300); // Match animation duration
+		}, 300); // Wait for animation to complete
 	}, [onMinimize, id, dockPosition, position, size, createDynamicMinimizeAnimation]);
 
 	const handleMaximize = useCallback(() => {
-		// Use smooth transition instead of animation
 		onMaximize(id);
 	}, [onMaximize, id]);
 
@@ -534,9 +512,13 @@ export default function Window({
 			ref={windowRef}
 			className={`${styles.window} ${isFocused ? styles.focused : ""} ${
 				isMaximized ? styles.maximized : ""
-			} ${dragState.isDragging || resizeState.isResizing ? styles.noTransition : ""} ${
-				animationState !== "none" ? styles[animationState] : ""
-			}`}
+			} ${
+				(dragState.isDragging || resizeState.isResizing) &&
+				animationState !== "minimizing" &&
+				animationState !== "restoreFromMinimize"
+					? styles.noTransition
+					: ""
+			} ${animationState !== "none" ? styles[animationState] : ""}`}
 			style={{
 				left: position.x,
 				top: position.y,

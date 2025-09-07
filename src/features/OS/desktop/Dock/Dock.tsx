@@ -15,15 +15,9 @@ interface DockProps {
 	dockApps: DockApp[];
 	onAppClick: (app: AppInfo) => void;
 	onContextMenu: (e: React.MouseEvent, appId: string) => void;
-	onAppLauncherClick: () => void;
 }
 
-export default function Dock({
-	dockApps,
-	onAppClick,
-	onContextMenu,
-	onAppLauncherClick,
-}: DockProps) {
+export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps) {
 	const [hoveredDockApp, setHoveredDockApp] = useState<string | null>(null);
 	const {
 		getWindowForApp,
@@ -65,21 +59,36 @@ export default function Dock({
 
 	return (
 		<div className={styles.dock}>
-			{/* App Launcher Icon */}
-			<div
-				className={styles.appLauncherIcon}
-				onClick={onAppLauncherClick}
-				title="App Launcher"
-			>
-				<div className={styles.appLauncherIconWrapper}>
-					<div className={styles.launcherGrid}>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
-						<div className={styles.launcherDot}></div>
+			{/* App Launcher as a DockItem - Special Case: No Preview, Single Instance */}
+			{(() => {
+				const appLauncher = AVAILABLE_APPS.find((app) => app.id === "app-launcher");
+				if (!appLauncher) return null;
+
+				const existingWindow = getWindowForApp(appLauncher.id);
+				const isActive = existingWindow !== null;
+				// App Launcher special case: Never show preview
+				const showPreview = false;
+
+				return (
+					<div
+						onContextMenu={(e) => {
+							e.stopPropagation();
+							// App Launcher special case: Only provide basic context menu without "New Window"
+							onContextMenu(e, appLauncher.id);
+						}}
+					>
+						<DockItem
+							app={appLauncher}
+							onClick={() => onAppClick(appLauncher)}
+							onMouseEnter={() => handleDockAppHover(appLauncher.id)}
+							onMouseLeave={handleDockAppLeave}
+							isActive={isActive}
+							showPreview={showPreview}
+							previewContent={null}
+						/>
 					</div>
-				</div>
-			</div>
+				);
+			})()}
 
 			{/* Dock Apps */}
 			{dockApps.map((dockApp) => {
