@@ -221,7 +221,7 @@
 
 /* Content Area */
 .contentArea {
-	padding: 1.5rem;
+	/* Window chrome is 36px */
 	height: calc(100% - 36px);
 	overflow: auto;
 	background: transparent;
