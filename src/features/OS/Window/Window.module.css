@@ -22,12 +22,7 @@
 		0 8px 30px rgba(0, 0, 0, 0.25), /* Subtle border */ 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-.window.maximized {
-	border-radius: 0;
-	box-shadow: none;
-	transition: box-shadow 0.3s ease-in-out, width 0.3s ease-in-out, height 0.3s ease-in-out,
-		border-radius 0.3s ease-in-out;
-}
+/* Removed .maximized class - now using smooth resize transitions */
 
 .window.noTransition {
 	transition: none !important;
@@ -99,7 +94,7 @@
 	/* Enhanced inner highlights and shadows */
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
 		inset 0 0.5px 1px rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-	cursor: grab; /* Add grab cursor for draggable area */
+	cursor: default; /* Normal cursor on hover */
 }
 
 .windowChrome:active {
@@ -134,7 +129,7 @@
 	height: 12px;
 	border-radius: 50%;
 	border: none;
-	cursor: pointer;
+	cursor: default;
 	position: relative;
 	/* 3D button effect */
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),

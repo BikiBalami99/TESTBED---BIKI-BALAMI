@@ -62,7 +62,7 @@ export default function Window({
 	onFocus,
 	onPositionUpdate,
 	isFocused,
-	isMaximized,
+	isMaximized: _isMaximized, // Keep prop for compatibility but use internal state
 	isRestoring = false,
 	dockPosition,
 	zIndex,
@@ -72,6 +72,14 @@ export default function Window({
 	const [animationState, setAnimationState] = useState<
 		"none" | "closing" | "opening" | "minimizing" | "restoreFromMinimize"
 	>("opening");
+
+	// Store original size/position for fullscreen restore
+	const [originalSize, setOriginalSize] = useState({
+		width: initialWidth,
+		height: initialHeight,
+	});
+	const [originalPosition, setOriginalPosition] = useState({ x: initialX, y: initialY });
+	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	// Use refs for values that change during drag (to avoid state updates)
 	const positionRef = useRef(position);
@@ -288,8 +296,8 @@ export default function Window({
 	// Handle mouse down on title bar for dragging
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent) => {
-			// Don't allow dragging when maximized
-			if (isMaximized) {
+			// Don't allow dragging when in fullscreen
+			if (isFullscreen) {
 				onFocus(id);
 				return;
 			}
@@ -303,7 +311,7 @@ export default function Window({
 				windowStartY: positionRef.current.y,
 			});
 		},
-		[onFocus, id, isMaximized]
+		[onFocus, id, isFullscreen]
 	);
 
 	// Handle mouse move for dragging and resizing
@@ -504,15 +512,48 @@ export default function Window({
 	}, [onMinimize, id, dockPosition, position, size, createDynamicMinimizeAnimation]);
 
 	const handleMaximize = useCallback(() => {
-		onMaximize(id);
-	}, [onMaximize, id]);
+		if (isFullscreen) {
+			// Restore to original size and position
+			setPosition(originalPosition);
+			setSize(originalSize);
+			setIsFullscreen(false);
+
+			// Update parent component
+			updatePosition(
+				originalPosition.x,
+				originalPosition.y,
+				originalSize.width,
+				originalSize.height
+			);
+		} else {
+			// Store current size/position for restore
+			setOriginalSize(size);
+			setOriginalPosition(position);
+
+			// Calculate fullscreen dimensions (entire viewport)
+			const fullscreenWidth = window.innerWidth;
+			const fullscreenHeight = window.innerHeight;
+			const fullscreenPosition = { x: 0, y: 0 };
+
+			// Smoothly resize to fullscreen
+			setPosition(fullscreenPosition);
+			setSize({ width: fullscreenWidth, height: fullscreenHeight });
+			setIsFullscreen(true);
+
+			// Update parent component
+			updatePosition(
+				fullscreenPosition.x,
+				fullscreenPosition.y,
+				fullscreenWidth,
+				fullscreenHeight
+			);
+		}
+	}, [isFullscreen, originalPosition, originalSize, size, position, updatePosition]);
 
 	return (
 		<div
 			ref={windowRef}
 			className={`${styles.window} ${isFocused ? styles.focused : ""} ${
-				isMaximized ? styles.maximized : ""
-			} ${
 				(dragState.isDragging || resizeState.isResizing) &&
 				animationState !== "minimizing" &&
 				animationState !== "restoreFromMinimize"
@@ -528,8 +569,8 @@ export default function Window({
 			}}
 			onMouseDown={handleMouseDown}
 		>
-			{/* Resize handles - only show when not maximized */}
-			{!isMaximized && (
+			{/* Resize handles - only show when not in fullscreen */}
+			{!isFullscreen && (
 				<>
 					<div
 						className={`${styles.resizeHandle} ${styles.nw}`}
