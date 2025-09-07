@@ -1,0 +1,54 @@
+/* Menu Bar - macOS Style */
+
+.menuBar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 24px;
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(20px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1rem;
+	z-index: 1000;
+	font-size: 0.75rem;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+.menuBarLeft {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.menuItem {
+	color: rgba(255, 255, 255, 0.8);
+	cursor: pointer;
+	transition: color 0.2s ease;
+}
+
+.menuItem:hover {
+	color: rgba(255, 255, 255, 1);
+}
+
+.menuBarRight {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.time {
+	color: rgba(255, 255, 255, 0.8);
+	font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.menuBar {
+		padding: 0 0.5rem;
+		font-size: 0.7rem;
+	}
+}

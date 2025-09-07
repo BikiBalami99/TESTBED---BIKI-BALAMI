@@ -61,10 +61,12 @@
 /* Edge positioning is handled by JavaScript */
 .tooltip.rightEdge {
 	/* Positioned by JS - no additional styles needed */
+	position: fixed;
 }
 
 .tooltip.leftEdge {
 	/* Positioned by JS - no additional styles needed */
+	position: fixed;
 }
 
 /* Closing animations */
