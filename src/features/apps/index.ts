@@ -1,14 +1,6 @@
 // Auto-discovery system for apps
 import React from "react";
-import {
-	Monitor,
-	Grid3X3,
-	LayoutGrid,
-	Code,
-	Settings,
-	FileText,
-	Terminal,
-} from "lucide-react";
+import { Grid3X3, Code, Settings, FileText, Terminal } from "lucide-react";
 
 export interface AppInfo {
 	id: string;
@@ -23,46 +15,20 @@ export interface AppInfo {
 // This creates a registry of all available apps
 export const AVAILABLE_APPS: AppInfo[] = [
 	{
+		id: "javascript-playground",
+		name: "JavaScript Playground",
+		icon: Code,
+		component: React.lazy(() => import("./terminal/Terminal")),
+		category: "development",
+		description: "Write and run JavaScript code",
+	},
+	{
 		id: "app-launcher",
 		name: "App Launcher",
 		icon: Grid3X3,
 		component: React.lazy(() => import("./app-launcher/AppLauncher")),
 		category: "system",
 		description: "Launch and manage applications",
-	},
-	{
-		id: "media-queries",
-		name: "Media & Container Queries",
-		icon: Monitor,
-		component: React.lazy(
-			() => import("./media-and-container-queries/MediaAndContainerQueries")
-		),
-		category: "design",
-		description: "Master responsive design techniques",
-	},
-	{
-		id: "css-grid",
-		name: "CSS Grid & Flexbox",
-		icon: LayoutGrid,
-		component: React.lazy(() => import("./css-grid-and-flexbox/CssGridAndFlexbox")),
-		category: "design",
-		description: "Modern layout techniques",
-	},
-	{
-		id: "javascript-es6",
-		name: "JavaScript ES6+",
-		icon: Code,
-		component: React.lazy(() => import("./javascript-es6-plus/JavaScriptES6Plus")),
-		category: "development",
-		description: "Modern JavaScript features",
-	},
-	{
-		id: "terminal",
-		name: "Terminal",
-		icon: Terminal,
-		component: React.lazy(() => import("./terminal/Terminal")),
-		category: "productivity",
-		description: "Command line interface",
 	},
 	{
 		id: "notes",
