@@ -8,6 +8,13 @@ import { useContextMenu } from "./hooks/useContextMenu";
 import DesktopApps from "./DesktopApps/DesktopApps";
 import Dock from "./Dock/Dock";
 import MenuBar from "./MenuBar/MenuBar";
+import {
+	DESKTOP_APPS,
+	DOCK_APPS,
+	logConfigValidation,
+	type DesktopAppConfig,
+	type DockAppConfig,
+} from "./data";
 import styles from "./Desktop.module.css";
 
 interface DesktopApp {
@@ -21,6 +28,11 @@ interface DockApp {
 }
 
 export default function Desktop() {
+	// Validate configuration on component mount
+	useEffect(() => {
+		logConfigValidation();
+	}, []);
+
 	// Snap positions to grid (64px grid)
 	const snapToGrid = (x: number, y: number) => {
 		const gridSize = 64;
@@ -30,17 +42,18 @@ export default function Desktop() {
 		};
 	};
 
-	const [desktopApps, setDesktopApps] = useState<DesktopApp[]>([
-		{ appId: "javascript-playground", ...snapToGrid(64, 64) },
-		{ appId: "notes", ...snapToGrid(192, 64) },
-		{ appId: "settings", ...snapToGrid(320, 64) },
-	]);
+	// Initialize desktop apps from centralized configuration
+	const [desktopApps, setDesktopApps] = useState<DesktopApp[]>(() =>
+		DESKTOP_APPS.map((app) => ({
+			appId: app.appId,
+			...snapToGrid(app.x, app.y),
+		}))
+	);
 
-	const [dockApps, setDockApps] = useState<DockApp[]>([
-		{ appId: "javascript-playground" },
-		{ appId: "notes" },
-		{ appId: "settings" },
-	]);
+	// Initialize dock apps from centralized configuration
+	const [dockApps, setDockApps] = useState<DockApp[]>(() =>
+		DOCK_APPS.map((app) => ({ appId: app.appId }))
+	);
 
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 
@@ -53,16 +66,43 @@ export default function Desktop() {
 		windows,
 	} = useWindowManager();
 
-	// Load user preferences from localStorage
+	// Load user preferences from localStorage and merge with centralized configuration
 	useEffect(() => {
 		const savedDesktopApps = localStorage.getItem("desktopApps");
 		const savedDockApps = localStorage.getItem("dockApps");
 
 		if (savedDesktopApps) {
-			setDesktopApps(JSON.parse(savedDesktopApps));
+			try {
+				const parsedDesktopApps = JSON.parse(savedDesktopApps);
+				// Merge saved positions with centralized configuration
+				const mergedDesktopApps = DESKTOP_APPS.map((configApp) => {
+					const savedApp = parsedDesktopApps.find(
+						(saved: DesktopApp) => saved.appId === configApp.appId
+					);
+					return savedApp
+						? savedApp
+						: { appId: configApp.appId, ...snapToGrid(configApp.x, configApp.y) };
+				});
+				setDesktopApps(mergedDesktopApps);
+			} catch (error) {
+				console.warn("Failed to parse saved desktop apps, using default configuration");
+			}
 		}
+
 		if (savedDockApps) {
-			setDockApps(JSON.parse(savedDockApps));
+			try {
+				const parsedDockApps = JSON.parse(savedDockApps);
+				// Merge saved dock apps with centralized configuration
+				const mergedDockApps = DOCK_APPS.map((configApp) => {
+					const savedApp = parsedDockApps.find(
+						(saved: DockApp) => saved.appId === configApp.appId
+					);
+					return savedApp ? savedApp : { appId: configApp.appId };
+				});
+				setDockApps(mergedDockApps);
+			} catch (error) {
+				console.warn("Failed to parse saved dock apps, using default configuration");
+			}
 		}
 	}, []);
 
