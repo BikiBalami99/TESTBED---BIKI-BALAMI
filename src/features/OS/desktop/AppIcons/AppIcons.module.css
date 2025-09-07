@@ -100,71 +100,7 @@
 	max-width: 100px;
 }
 
-/* Dock Icons - macOS Style */
-.dockIcon {
-	position: relative;
-	cursor: pointer;
-	border-radius: 8px;
-	transition: all 0.2s ease-in-out;
-	padding: 0.5rem;
-	margin: 0 0.125rem;
-}
-
-.dockIcon:hover {
-	background: rgba(255, 255, 255, 0.1);
-	border-radius: 12px;
-}
-
-.dockIconWrapper {
-	position: relative;
-	width: 48px;
-	height: 48px;
-	border-radius: 12px;
-	background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.25) 0%,
-			rgba(255, 255, 255, 0.15) 50%,
-			rgba(255, 255, 255, 0.05) 100%
-		),
-		linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.02) 100%);
-	backdrop-filter: blur(10px);
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.dockIconSvg {
-	color: rgba(255, 255, 255, 0.9);
-	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-	z-index: 1;
-}
-
-.activeIndicator {
-	position: absolute;
-	bottom: -10px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 4px;
-	height: 4px;
-	background: #000000c1;
-	border-radius: 50%;
-	box-shadow: 0 0 6px rgba(0, 122, 255, 0.6);
-	animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-	0%,
-	100% {
-		opacity: 1;
-		transform: translateX(-50%) scale(1);
-	}
-	50% {
-		opacity: 0.7;
-		transform: translateX(-50%) scale(1.2);
-	}
-}
+/* Dock Icons moved to DockItem component */
 
 /* Selection and Focus States */
 .appIcon.selected {
@@ -178,15 +114,7 @@
 	z-index: 1000;
 }
 
-/* Preview Wrapper */
-.previewWrapper {
-	position: absolute;
-	bottom: 100%;
-	left: 50%;
-	transform: translateX(-50%);
-	margin-bottom: 0.5rem;
-	z-index: 2000;
-}
+/* Preview Wrapper moved to DockItem component */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

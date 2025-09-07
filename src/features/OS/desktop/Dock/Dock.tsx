@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { DockIcon, AVAILABLE_APPS, AppInfo } from "../AppIcons/AppIcons";
+import { AVAILABLE_APPS, AppInfo } from "../AppIcons/AppIcons";
 import DockPreview from "../AppIcons/DockPreview";
+import DockItem from "./DockItem/DockItem";
 import { useWindowManager } from "../../OS";
 import styles from "./Dock.module.css";
 
@@ -98,7 +99,7 @@ export default function Dock({
 							onContextMenu(e, app.id);
 						}}
 					>
-						<DockIcon
+						<DockItem
 							app={app}
 							onClick={() => onAppClick(app)}
 							onMouseEnter={() => handleDockAppHover(app.id)}
