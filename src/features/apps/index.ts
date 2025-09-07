@@ -3,11 +3,11 @@ import React from "react";
 import {
 	Monitor,
 	Grid3X3,
+	LayoutGrid,
 	Code,
 	Settings,
 	FileText,
 	Terminal,
-	Sparkles,
 } from "lucide-react";
 
 export interface AppInfo {
@@ -25,7 +25,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 	{
 		id: "app-launcher",
 		name: "App Launcher",
-		icon: Sparkles,
+		icon: Grid3X3,
 		component: React.lazy(() => import("./app-launcher/AppLauncher")),
 		category: "system",
 		description: "Launch and manage applications",
@@ -43,7 +43,7 @@ export const AVAILABLE_APPS: AppInfo[] = [
 	{
 		id: "css-grid",
 		name: "CSS Grid & Flexbox",
-		icon: Grid3X3,
+		icon: LayoutGrid,
 		component: React.lazy(() => import("./css-grid-and-flexbox/CssGridAndFlexbox")),
 		category: "design",
 		description: "Modern layout techniques",
