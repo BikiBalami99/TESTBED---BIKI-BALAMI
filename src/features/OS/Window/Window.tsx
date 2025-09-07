@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { X, Minus, Maximize2 } from "lucide-react";
 import styles from "./Window.module.css";
 
 interface WindowProps {
@@ -614,15 +615,24 @@ export default function Window({
 					<button
 						className={`${styles.trafficLight} ${styles.close}`}
 						onClick={handleClose}
-					/>
+					>
+						<X className={styles.trafficLightIcon} size={10} />
+					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.minimize}`}
 						onClick={handleMinimize}
-					/>
+					>
+						<Minus className={styles.trafficLightIcon} size={10} />
+					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.maximize}`}
 						onClick={handleMaximize}
-					/>
+					>
+						<Maximize2
+							className={`${styles.trafficLightIcon} ${styles.expandIcon}`}
+							size={6}
+						/>
+					</button>
 				</div>
 
 				{/* Window Title */}

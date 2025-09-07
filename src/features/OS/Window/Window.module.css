@@ -2,24 +2,42 @@
 
 .window {
 	position: absolute;
-	background: #ffffff;
-	border-radius: 12px;
+	/* Transparent background to show app content */
+	background: transparent;
+	backdrop-filter: blur(20px) saturate(1.2);
+	-webkit-backdrop-filter: blur(20px) saturate(1.2);
+	border-radius: 16px;
+	/* Enhanced liquid glass shadows */
 	box-shadow:
-	  /* Main window shadow */ 0 10px 40px rgba(0, 0, 0, 0.3),
-		0 4px 20px rgba(0, 0, 0, 0.2), /* Subtle border */ 0 0 0 1px rgba(0, 0, 0, 0.1);
+		/* Main floating shadow */ 0 25px 50px rgba(0, 0, 0, 0.25),
+		/* Mid-depth shadow */ 0 12px 25px rgba(0, 0, 0, 0.15),
+		/* Close shadow */ 0 4px 12px rgba(0, 0, 0, 0.1),
+		/* Subtle border */ 0 0 0 1px rgba(255, 255, 255, 0.2),
+		/* Inner highlight */ inset 0 1px 0 rgba(255, 255, 255, 0.3);
 	overflow: hidden;
 	min-width: 300px;
 	min-height: 200px;
 	user-select: none;
-	/* REMOVED left and top transitions to eliminate dragging lag */
-	transition: box-shadow 0.2s ease, width 0.3s ease-in-out, height 0.3s ease-in-out,
-		border-radius 0.3s ease-in-out;
+	/* Smooth transitions for liquid glass effect */
+	transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+		background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+		backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease-in-out,
+		height 0.3s ease-in-out, border-radius 0.3s ease-in-out;
 }
 
 .window.focused {
+	/* Enhanced liquid glass when focused */
+	background: transparent;
+	backdrop-filter: blur(25px) saturate(1.4);
+	-webkit-backdrop-filter: blur(25px) saturate(1.4);
+	/* Enhanced floating shadows when focused */
 	box-shadow:
-	  /* Enhanced shadow when focused */ 0 20px 60px rgba(0, 0, 0, 0.4),
-		0 8px 30px rgba(0, 0, 0, 0.25), /* Subtle border */ 0 0 0 1px rgba(0, 0, 0, 0.15);
+		/* Main floating shadow */ 0 35px 70px rgba(0, 0, 0, 0.3),
+		/* Mid-depth shadow */ 0 18px 35px rgba(0, 0, 0, 0.2),
+		/* Close shadow */ 0 6px 15px rgba(0, 0, 0, 0.15),
+		/* Enhanced border */ 0 0 0 1px rgba(255, 255, 255, 0.3),
+		/* Stronger inner highlight */ inset 0 1px 0 rgba(255, 255, 255, 0.4),
+		/* Subtle outer glow */ 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 /* Removed .maximized class - now using smooth resize transitions */
@@ -72,28 +90,20 @@
 
 /* Window Chrome - macOS Title Bar */
 .windowChrome {
-	background:
-	  /* Ultra-realistic metal gradient */ linear-gradient(
-			180deg,
-			#3a3a3b 0%,
-			#323233 15%,
-			#2a2a2b 40%,
-			#232324 60%,
-			#1f1f20 85%,
-			#1c1c1d 100%
-		),
-		/* Subtle brushed texture */
-			radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 30%);
-	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
-	padding: 0.75rem 1rem;
+	/* Liquid glass chrome background */
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(15px) saturate(1.1);
+	-webkit-backdrop-filter: blur(15px) saturate(1.1);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 0.5rem 0.75rem;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	position: relative;
-	height: 52px;
-	/* Enhanced inner highlights and shadows */
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
-		inset 0 0.5px 1px rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+	height: 36px;
+	/* Subtle liquid glass highlights */
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+		0 1px 0 rgba(255, 255, 255, 0.1);
 	cursor: default; /* Normal cursor on hover */
 }
 
@@ -125,64 +135,84 @@
 }
 
 .trafficLight {
-	width: 12px;
-	height: 12px;
+	width: 14px;
+	height: 14px;
 	border-radius: 50%;
 	border: none;
 	cursor: default;
 	position: relative;
-	/* 3D button effect */
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
-		inset 0 0.5px 1px rgba(255, 255, 255, 0.2), 0 0.5px 1px rgba(0, 0, 0, 0.2),
-		0 1px 2px rgba(0, 0, 0, 0.1);
-	transition: all 0.1s ease;
+	/* 2D minimal style - no 3D effects */
+	box-shadow: none;
+	transition: box-shadow 0.3s ease;
 }
 
-.trafficLight:hover {
-	transform: scale(1.1);
+/* Traffic Light Icons */
+.trafficLightIcon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	pointer-events: none;
 }
+
+.trafficLight:hover .trafficLightIcon {
+	opacity: 1;
+}
+
+.expandIcon {
+	transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Individual hover animations are defined per button below */
 
 .trafficLight:active {
+	/* Slight press effect */
 	transform: scale(0.95);
+	transition: transform 0.1s ease;
 }
 
+/* Remove the white glow pseudo-element */
 .trafficLight::before {
-	content: "";
-	position: absolute;
-	inset: 1px;
-	border-radius: 50%;
-	background:
-	  /* Glass sphere effect */ radial-gradient(
-		circle at 30% 30%,
-		rgba(255, 255, 255, 0.9) 0%,
-		rgba(255, 255, 255, 0.6) 30%,
-		rgba(255, 255, 255, 0.3) 60%,
-		rgba(255, 255, 255, 0.1) 100%
-	);
-	/* Inner shadow for depth */
-	box-shadow: inset 0 0.5px 1px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+	display: none;
 }
 
 .trafficLight.close {
 	background: radial-gradient(circle at 35% 35%, #ff7a70 0%, #ff5f57 50%, #d44c47 100%);
+	border: 1px solid #b83d3a;
+}
+
+.trafficLight.close:hover {
+	animation: pulseGlowRed 0.8s ease-in-out infinite;
 }
 
 .trafficLight.minimize {
 	background: radial-gradient(circle at 35% 35%, #ffdb47 0%, #ffbd2e 50%, #e6a72a 100%);
+	border: 1px solid #cc8f1f;
+}
+
+.trafficLight.minimize:hover {
+	animation: pulseGlowYellow 0.8s ease-in-out infinite;
 }
 
 .trafficLight.maximize {
 	background: radial-gradient(circle at 35% 35%, #4ade5c 0%, #28ca42 50%, #22b73d 100%);
+	border: 1px solid #1a8b2a;
 }
 
-/* Window Title */
+.trafficLight.maximize:hover {
+	animation: pulseGlowGreen 0.8s ease-in-out infinite;
+}
+
+/* Window Title - Liquid Glass Style */
 .windowTitle {
-	color: #e0e0e0;
+	color: rgba(255, 255, 255, 0.9);
 	font-size: 0.875rem;
-	font-weight: 500;
+	font-weight: 600;
 	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
 	letter-spacing: -0.01em;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 255, 255, 0.1);
 	flex: 1;
 	text-align: center;
 	margin: 0 1rem;
@@ -192,17 +222,9 @@
 /* Content Area */
 .contentArea {
 	padding: 1.5rem;
-	height: calc(100% - 52px);
+	height: calc(100% - 36px);
 	overflow: auto;
-	background: #ffffff;
-	/* Subtle texture */
-	background-image: radial-gradient(
-			circle at 25% 25%,
-			rgba(0, 0, 0, 0.002) 0%,
-			transparent 50%
-		),
-		linear-gradient(45deg, transparent 49%, rgba(0, 0, 0, 0.001) 50%, transparent 51%);
-	background-size: 20px 20px, 10px 10px;
+	background: transparent;
 }
 
 /* Resize Handles */
@@ -307,5 +329,36 @@
 	.trafficLight {
 		width: 10px;
 		height: 10px;
+	}
+}
+
+/* Pulsing glow animations for traffic lights */
+@keyframes pulseGlowRed {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 122, 112, 0.4);
+	}
+	50% {
+		box-shadow: 0 0 0 4px rgba(255, 122, 112, 0.15);
+	}
+}
+
+@keyframes pulseGlowYellow {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 219, 71, 0.4);
+	}
+	50% {
+		box-shadow: 0 0 0 4px rgba(255, 219, 71, 0.15);
+	}
+}
+
+@keyframes pulseGlowGreen {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(74, 222, 92, 0.4);
+	}
+	50% {
+		box-shadow: 0 0 0 4px rgba(74, 222, 92, 0.15);
 	}
 }
