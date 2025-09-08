@@ -266,52 +266,50 @@ export default function Memory() {
 		<div className={styles.memory} data-screen={screen} data-h={heightTier}>
 			{/* Header */}
 			<div className={styles.header}>
-				<div className={styles.titleSection}>
-					<Database size={20} />
-					<h1 className={styles.title}>Memory</h1>
-					<span className={styles.subtitle}>Browser Storage Manager</span>
-				</div>
-				<div className={styles.stats}>
-					<span className={styles.statItem}>{storageItems.length} items</span>
-					<span className={styles.statItem}>{formatBytes(totalSize)}</span>
-				</div>
-			</div>
-
-			{/* Controls */}
-			<div className={styles.controls}>
-				<div className={styles.searchSection}>
-					<div className={styles.searchBox}>
-						<Search size={16} />
-						<input
-							type="text"
-							placeholder="Search keys or values..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className={styles.searchInput}
-						/>
+				<div className={styles.headerInfoRow}>
+					<div className={styles.titleSection}>
+						<Database size={20} />
+						<h1 className={styles.title}>Memory</h1>
+						<span className={styles.subtitle}>Browser Storage Manager</span>
+					</div>
+					<div className={styles.stats}>
+						<span className={styles.statItem}>{storageItems.length} items</span>
+						<span className={styles.statItem}>{formatBytes(totalSize)}</span>
 					</div>
 				</div>
-
-				<div className={styles.actionButtons}>
-					<button
-						className={styles.refreshButton}
-						onClick={loadStorageData}
-						title="Refresh Data"
-					>
-						<RefreshCw size={16} />
-						Refresh
-					</button>
-
-					{selectedItems.size > 0 && (
+				<div className={styles.controlsRow}>
+					<div className={styles.searchSection}>
+						<div className={styles.searchBox}>
+							<Search size={16} />
+							<input
+								type="text"
+								placeholder="Search keys or values..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className={styles.searchInput}
+							/>
+						</div>
+					</div>
+					<div className={styles.actionButtons}>
 						<button
-							className={styles.deleteButton}
-							onClick={deleteSelectedItems}
-							title={`Delete ${selectedItems.size} selected items`}
+							className={styles.refreshButton}
+							onClick={loadStorageData}
+							title="Refresh Data"
 						>
-							<Trash2 size={16} />
-							Delete ({selectedItems.size})
+							<RefreshCw size={16} />
+							<span>Refresh</span>
 						</button>
-					)}
+						{selectedItems.size > 0 && (
+							<button
+								className={styles.deleteButton}
+								onClick={deleteSelectedItems}
+								title={`Delete ${selectedItems.size} selected items`}
+							>
+								<Trash2 size={16} />
+								<span>Delete ({selectedItems.size})</span>
+							</button>
+						)}
+					</div>
 				</div>
 			</div>
 
