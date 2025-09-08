@@ -583,6 +583,7 @@ function WindowContent({
 					? styles.noTransition
 					: ""
 			} ${animationState !== "none" ? styles[animationState] : ""}`}
+			onMouseDown={() => onFocus(id)}
 			style={{
 				left: position.x,
 				top: position.y,
@@ -643,21 +644,30 @@ function WindowContent({
 					<button
 						className={`${styles.trafficLight} ${styles.close}`}
 						onClick={handleClose}
-						onMouseDown={(e) => e.stopPropagation()}
+						onMouseDown={(e) => {
+							e.stopPropagation();
+							onFocus(id);
+						}}
 					>
 						<X className={styles.trafficLightIcon} size={10} />
 					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.minimize}`}
 						onClick={handleMinimize}
-						onMouseDown={(e) => e.stopPropagation()}
+						onMouseDown={(e) => {
+							e.stopPropagation();
+							onFocus(id);
+						}}
 					>
 						<Minus className={styles.trafficLightIcon} size={10} />
 					</button>
 					<button
 						className={`${styles.trafficLight} ${styles.maximize}`}
 						onClick={handleMaximize}
-						onMouseDown={(e) => e.stopPropagation()}
+						onMouseDown={(e) => {
+							e.stopPropagation();
+							onFocus(id);
+						}}
 					>
 						<Maximize2
 							className={`${styles.trafficLightIcon} ${styles.expandIcon}`}
