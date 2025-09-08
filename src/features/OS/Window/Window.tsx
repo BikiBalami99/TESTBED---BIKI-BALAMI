@@ -319,6 +319,12 @@ function WindowContent({
 				return;
 			}
 
+			// Prevent starting a drag on double-clicks (we'll use double-click to toggle maximize)
+			if (e.detail >= 2) {
+				onFocus(id);
+				return;
+			}
+
 			onFocus(id);
 			setDragState({
 				isDragging: true,
@@ -627,6 +633,10 @@ function WindowContent({
 			<div
 				className={`${styles.windowChrome} window-title-bar`}
 				onMouseDown={handleMouseDown}
+				onDoubleClick={(e) => {
+					e.stopPropagation();
+					handleMaximize();
+				}}
 			>
 				{/* Traffic Light Buttons */}
 				<div className={styles.trafficLights}>
