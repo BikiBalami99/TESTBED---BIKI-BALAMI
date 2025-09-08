@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { X, Minus, Maximize2 } from "lucide-react";
 import styles from "./Window.module.css";
+import { WindowProvider, useWindowContext, WindowContext } from "./WindowContext";
 
 interface WindowProps {
 	id: string;
@@ -49,7 +50,7 @@ interface ResizeState {
 	windowStartY: number;
 }
 
-export default function Window({
+function WindowContent({
 	id,
 	title,
 	children,
@@ -70,6 +71,10 @@ export default function Window({
 }: WindowProps) {
 	const [position, setPosition] = useState({ x: initialX, y: initialY });
 	const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
+
+	// Get WindowContext to notify about dimension changes
+	const windowContext = React.useContext(WindowContext);
+	const updateDimensions = windowContext?.updateDimensions;
 	const [animationState, setAnimationState] = useState<
 		"none" | "closing" | "opening" | "minimizing" | "restoreFromMinimize"
 	>("opening");
@@ -184,6 +189,13 @@ export default function Window({
 		positionRef.current = position;
 		sizeRef.current = size;
 	}, [position, size]);
+
+	// Notify WindowContext about dimension changes
+	useEffect(() => {
+		if (updateDimensions) {
+			updateDimensions(size.width, size.height);
+		}
+	}, [size.width, size.height, updateDimensions]);
 
 	// Trigger opening animation on mount
 	useEffect(() => {
@@ -650,5 +662,13 @@ export default function Window({
 			{/* Content Area */}
 			<div className={styles.contentArea}>{children}</div>
 		</div>
+	);
+}
+
+export default function Window(props: WindowProps) {
+	return (
+		<WindowProvider initialWidth={props.initialWidth} initialHeight={props.initialHeight}>
+			<WindowContent {...props} />
+		</WindowProvider>
 	);
 }

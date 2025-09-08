@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./Notes.module.css";
+import { useWindowDimensions } from "../../OS/Window/WindowContext";
 
 interface Note {
 	id: string;
@@ -11,6 +12,10 @@ interface Note {
 }
 
 export default function Notes() {
+	const { width, height } = useWindowDimensions();
+
+	// App-specific responsive logic
+	const isSmall = width < 600;
 	const [notes, setNotes] = useState<Note[]>([
 		{
 			id: "1",
@@ -51,8 +56,19 @@ export default function Notes() {
 	const currentNote = notes.find((note) => note.id === selectedNote);
 
 	return (
-		<div className={styles.notes}>
-			<div className={styles.sidebar}>
+		<div
+			className={styles.notes}
+			style={{
+				flexDirection: isSmall ? "column" : "row",
+			}}
+		>
+			<div
+				className={styles.sidebar}
+				style={{
+					width: isSmall ? "100%" : "300px",
+					height: isSmall ? "40%" : "auto",
+				}}
+			>
 				<div className={styles.sidebarHeader}>
 					<h3 className={styles.sidebarTitle}>Notes</h3>
 					<button
@@ -104,7 +120,13 @@ export default function Notes() {
 				</div>
 			</div>
 
-			<div className={styles.editor}>
+			<div
+				className={styles.editor}
+				style={{
+					width: isSmall ? "100%" : "auto",
+					height: isSmall ? "60%" : "auto",
+				}}
+			>
 				{currentNote ? (
 					<>
 						<input

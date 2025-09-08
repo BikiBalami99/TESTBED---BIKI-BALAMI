@@ -1,0 +1,172 @@
+# OS Simulation - Developer Guide
+
+A macOS-style desktop environment built with React/Next.js for hosting mini-projects and tutorials as individual applications.
+
+## Project Structure
+
+```
+src/features/
+├── OS/                    # Core OS simulation
+│   ├── OS.tsx            # Main OS container with window management
+│   ├── Window/           # Draggable/resizable windows
+│   └── desktop/          # Desktop environment (dock, menu bar, etc.)
+└── apps/                 # Individual applications
+    ├── index.ts          # App registry (AVAILABLE_APPS)
+    ├── javascript-playground/
+    ├── notes/
+    └── [your-app]/       # Add new apps here
+```
+
+## Adding New Apps
+
+1. **Create app directory**: `src/features/apps/your-app/`
+2. **Add to registry**: Update `AVAILABLE_APPS` in `src/features/apps/index.ts`
+3. **Configure placement**: Add to `DESKTOP_APPS` or `DOCK_APPS` in `src/features/OS/desktop/data/`
+
+```typescript
+// In apps/index.ts
+{
+  id: "your-app",
+  name: "Your App",
+  icon: YourIcon,
+  component: React.lazy(() => import("./your-app/YourApp")),
+  category: "development",
+  description: "Your app description"
+}
+```
+
+## Window System
+
+Apps run inside draggable/resizable windows (`Window.tsx`). Each window:
+
+- Has unique ID and manages position/size
+- Provides window controls (minimize, maximize, close)
+- Handles focus management and z-index stacking
+- Supports animations (minimize to dock, etc.)
+
+## Responsive Design in Windows
+
+**Problem**: Media queries don't work inside windows since they use viewport dimensions.
+
+**Solution**: Use `WindowContext` to get current window dimensions, then expose a
+`data-screen` (or similar) attribute in your markup and style via CSS. This keeps
+responsive rules in CSS (SOC) instead of inline styles.
+
+```typescript
+import { useMemo } from "react";
+import { useWindowDimensions } from "@/features/OS/Window/WindowContext";
+import styles from "./YourApp.module.css";
+
+function YourApp() {
+	const { width, height } = useWindowDimensions();
+
+	// Derive semantic labels from live width/height (recomputed on resize)
+	const screen = useMemo(() => (width < 500 ? "sm" : width < 800 ? "md" : "lg"), [width]);
+	const hTier = useMemo(
+		() => (height < 400 ? "short" : height < 700 ? "medium" : "tall"),
+		[height]
+	);
+
+	return (
+		<div className={styles.container} data-screen={screen} data-h={hTier}>
+			{/* Your responsive content */}
+		</div>
+	);
+}
+```
+
+```css
+/* YourApp.module.css */
+.container {
+	display: flex;
+}
+
+.container[data-screen="sm"] {
+	flex-direction: column;
+	padding: 0.5rem;
+}
+
+.container[data-screen="md"] {
+	flex-direction: row;
+	padding: 0.75rem;
+}
+
+.container[data-screen="lg"] {
+	flex-direction: row;
+	padding: 1rem;
+}
+
+/* Optional height tiers */
+.container[data-h="short"] {
+	height: 100%;
+	overflow: auto;
+}
+.container[data-h="tall"] {
+	gap: 1rem;
+}
+
+/* Smooth visual change on resize */
+.container {
+	transition: padding 120ms ease, gap 120ms ease, flex-direction 120ms ease;
+}
+```
+
+### Usage
+
+- `width`: Current window content width (excluding title bar)
+- `height`: Current window content height (excluding title bar)
+- Define per-app breakpoints, map to `data-screen`, and style with attribute selectors
+- Optional: expose more attributes if needed, e.g. `data-h` tiers
+
+```tsx
+// No extra setup: values update automatically during drag/resize/maximize
+const { width, height } = useWindowDimensions();
+const screen = width < 500 ? "sm" : width < 800 ? "md" : "lg";
+const heightTier = height < 400 ? "short" : height < 700 ? "medium" : "tall";
+return <div className={styles.container} data-screen={screen} data-h={heightTier} />;
+```
+
+Notes
+
+- Values are live: context emits updates on drag, resize, maximize/restore.
+- Keep logic minimal in JS; push layout to CSS via attribute selectors.
+- Pick thresholds per app; there is no global breakpoint contract.
+
+### Provider & API
+
+- The context is provided by `Window.tsx` per-window. You do not need to wrap anything in `layout.tsx`.
+- Import the hook from: `src/features/OS/Window/WindowContext.tsx`.
+- API shape:
+
+```ts
+type WindowDimensions = {
+	width: number;
+	height: number;
+};
+
+function useWindowDimensions(): WindowDimensions;
+```
+
+## Key Features
+
+- **Window Management**: Drag, resize, minimize, maximize, focus
+- **Desktop Environment**: Dock, menu bar, desktop icons, context menus
+- **App Launcher**: Grid view of all available apps
+- **Persistence**: Window positions and user preferences saved to localStorage
+- **Animations**: macOS-style minimize/restore animations
+
+## Development
+
+1. **Start dev server**: `npm run dev` (full visuals including blur effects)
+2. **Start turbo dev server**: `npm run dev:turbo` (reduced effects for faster reloads)
+3. **Add new app**: Create component and update the app registry
+4. **Test responsiveness**: Use `useWindowDimensions()` instead of media queries
+5. **Validate config**: Check console for desktop/dock config validation logs
+
+## Architecture Notes
+
+- **OS.tsx**: Main container, manages all windows and global state
+- **WindowContext**: Provides window dimensions to child apps
+- **App Registry**: Centralized list of all available applications
+- **Desktop Data**: Configuration for desktop/dock app placement
+- **Lazy Loading**: Apps are code-split and loaded on demand
