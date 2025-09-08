@@ -24,38 +24,41 @@ interface OutputEntry {
 }
 
 export default function JavaScriptPlayground() {
-	const [code, setCode] = useState(`// 🚀 Ultimate JavaScript Playground
-// Write your JavaScript code here and click Run
+	const [code, setCode] = useState(`// ⚡ MATRIX HACKER TERMINAL ⚡
+// EXECUTE YOUR CODE IN THE MATRIX
 
-console.log("Hello, World! 👋");
+console.log("SYSTEM ONLINE... ACCESS GRANTED");
 
-// Try some modern JavaScript features:
-const numbers = [1, 2, 3, 4, 5];
-const doubled = numbers.map(n => n * 2);
-console.log("Doubled numbers:", doubled);
+// HACK THE MATRIX WITH MODERN JS:
+const dataStream = [1, 0, 1, 0, 1];
+const encrypted = dataStream.map(bit => bit ^ 1);
+console.log("ENCRYPTED DATA:", encrypted);
 
-// Async/await example
-async function fetchData() {
+// ASYNC BREACH PROTOCOL
+async function infiltrateSystem() {
   return new Promise(resolve => {
-    setTimeout(() => resolve("Data fetched! 🎉"), 1000);
+    setTimeout(() => resolve("FIREWALL BREACHED ⚡"), 1000);
   });
 }
 
-// ES6+ features
-const fibonacci = (n) => {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
+// RECURSIVE ALGORITHM
+const hackSequence = (depth) => {
+  if (depth <= 1) return depth;
+  return hackSequence(depth - 1) + hackSequence(depth - 2);
 };
 
-console.log("Fibonacci(10):", fibonacci(10));
+console.log("HACK_SEQUENCE(10):", hackSequence(10));
 
-// Try running: await fetchData()`);
+// EXECUTE: await infiltrateSystem()`);
 
 	const [output, setOutput] = useState<OutputEntry[]>([]);
 	const [isRunning, setIsRunning] = useState(false);
 	const [executionTime, setExecutionTime] = useState<number>(0);
 	const [isOutputCollapsed, setIsOutputCollapsed] = useState(false);
+	const [leftPanelWidth, setLeftPanelWidth] = useState<number>(50); // percentage
+	const [isDragging, setIsDragging] = useState(false);
 	const outputRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	// Scroll to bottom when output changes
 	useEffect(() => {
@@ -145,11 +148,11 @@ console.log("Fibonacci(10):", fibonacci(10));
 			setExecutionTime(endTime - startTime);
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
-			addOutputEntry("error", `❌ ${errorMessage}`);
+			addOutputEntry("error", `⚠ SYSTEM ERROR: ${errorMessage}`);
 
 			// Add stack trace if available
 			if (error instanceof Error && error.stack) {
-				addOutputEntry("error", `📍 Stack trace:\n${error.stack}`);
+				addOutputEntry("error", `⚡ TRACE LOG:\n${error.stack}`);
 			}
 		} finally {
 			// Restore original console methods
@@ -166,40 +169,45 @@ console.log("Fibonacci(10):", fibonacci(10));
 		setExecutionTime(0);
 	};
 
+	const clearCode = () => {
+		setCode("");
+		addOutputEntry("info", "⚡ CODE CLEARED");
+	};
+
 	const resetCode = () => {
-		setCode(`// 🚀 Ultimate JavaScript Playground
-// Write your JavaScript code here and click Run
+		setCode(`// ⚡ MATRIX HACKER TERMINAL ⚡
+// EXECUTE YOUR CODE IN THE MATRIX
 
-console.log("Hello, World! 👋");
+console.log("SYSTEM ONLINE... ACCESS GRANTED");
 
-// Try some modern JavaScript features:
-const numbers = [1, 2, 3, 4, 5];
-const doubled = numbers.map(n => n * 2);
-console.log("Doubled numbers:", doubled);
+// HACK THE MATRIX WITH MODERN JS:
+const dataStream = [1, 0, 1, 0, 1];
+const encrypted = dataStream.map(bit => bit ^ 1);
+console.log("ENCRYPTED DATA:", encrypted);
 
-// Async/await example
-async function fetchData() {
+// ASYNC BREACH PROTOCOL
+async function infiltrateSystem() {
   return new Promise(resolve => {
-    setTimeout(() => resolve("Data fetched! 🎉"), 1000);
+    setTimeout(() => resolve("FIREWALL BREACHED ⚡"), 1000);
   });
 }
 
-// ES6+ features
-const fibonacci = (n) => {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
+// RECURSIVE ALGORITHM
+const hackSequence = (depth) => {
+  if (depth <= 1) return depth;
+  return hackSequence(depth - 1) + hackSequence(depth - 2);
 };
 
-console.log("Fibonacci(10):", fibonacci(10));
+console.log("HACK_SEQUENCE(10):", hackSequence(10));
 
-// Try running: await fetchData()`);
+// EXECUTE: await infiltrateSystem()`);
 		setOutput([]);
 		setExecutionTime(0);
 	};
 
 	const copyCode = () => {
 		navigator.clipboard.writeText(code);
-		addOutputEntry("info", "📋 Code copied to clipboard!");
+		addOutputEntry("info", "⚡ CODE COPIED TO BUFFER");
 	};
 
 	const downloadCode = () => {
@@ -207,12 +215,12 @@ console.log("Fibonacci(10):", fibonacci(10));
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = "playground-code.js";
+		a.download = "matrix-hack.js";
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-		addOutputEntry("info", "💾 Code downloaded as playground-code.js");
+		addOutputEntry("info", "⚡ HACK DOWNLOADED: matrix-hack.js");
 	};
 
 	const uploadCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -222,7 +230,7 @@ console.log("Fibonacci(10):", fibonacci(10));
 			reader.onload = (e) => {
 				const content = e.target?.result as string;
 				setCode(content);
-				addOutputEntry("info", `📁 Loaded code from ${file.name}`);
+				addOutputEntry("info", `⚡ UPLOADED HACK: ${file.name}`);
 			};
 			reader.readAsText(file);
 		}
@@ -252,19 +260,60 @@ console.log("Fibonacci(10):", fibonacci(10));
 		setIsOutputCollapsed((prev) => !prev);
 	}, []);
 
+	// Handle resizer drag
+	const handleMouseDown = useCallback((e: React.MouseEvent) => {
+		e.preventDefault();
+		setIsDragging(true);
+	}, []);
+
+	const handleMouseMove = useCallback(
+		(e: MouseEvent) => {
+			if (!isDragging || !containerRef.current) return;
+
+			const containerRect = containerRef.current.getBoundingClientRect();
+			const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+			// Constrain between 20% and 80%
+			const clampedWidth = Math.min(Math.max(newLeftWidth, 20), 80);
+			setLeftPanelWidth(clampedWidth);
+		},
+		[isDragging]
+	);
+
+	const handleMouseUp = useCallback(() => {
+		setIsDragging(false);
+	}, []);
+
+	// Add global mouse event listeners
+	useEffect(() => {
+		if (isDragging) {
+			document.addEventListener("mousemove", handleMouseMove);
+			document.addEventListener("mouseup", handleMouseUp);
+			document.body.style.cursor = "col-resize";
+			document.body.style.userSelect = "none";
+
+			return () => {
+				document.removeEventListener("mousemove", handleMouseMove);
+				document.removeEventListener("mouseup", handleMouseUp);
+				document.body.style.cursor = "";
+				document.body.style.userSelect = "";
+			};
+		}
+	}, [isDragging, handleMouseMove, handleMouseUp]);
+
 	// Simple textarea ref
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	return (
 		<div className={styles.playground}>
-			{/* Header with modern controls */}
+			{/* Header with hacker controls */}
 			<div className={styles.header}>
 				<div className={styles.titleSection}>
-					<h1 className={styles.title}>🚀 Ultimate JavaScript Playground</h1>
+					<h1 className={styles.title}>MATRIX HACKER TERMINAL</h1>
 					{executionTime > 0 && (
 						<div className={styles.executionTime}>
-							<Clock size={14} />
-							{formatTime(executionTime)}
+							<Clock size={12} />
+							EXEC: {formatTime(executionTime)}
 						</div>
 					)}
 				</div>
@@ -275,27 +324,27 @@ console.log("Fibonacci(10):", fibonacci(10));
 						onClick={runCode}
 						disabled={isRunning}
 					>
-						<Play size={18} />
-						{isRunning ? "Running..." : "Run Code"}
+						<Play size={16} />
+						{isRunning ? "EXECUTING..." : "EXECUTE"}
 					</button>
 
 					<div className={styles.buttonGroup}>
 						<button
 							className={styles.secondaryButton}
 							onClick={copyCode}
-							title="Copy Code"
+							title="Copy Hack"
 						>
-							<Copy size={16} />
+							<Copy size={14} />
 						</button>
 						<button
 							className={styles.secondaryButton}
 							onClick={downloadCode}
-							title="Download Code"
+							title="Download Hack"
 						>
-							<Download size={16} />
+							<Download size={14} />
 						</button>
-						<label className={styles.secondaryButton} title="Upload Code">
-							<Upload size={16} />
+						<label className={styles.secondaryButton} title="Upload Hack">
+							<Upload size={14} />
 							<input
 								type="file"
 								accept=".js,.ts,.jsx,.tsx"
@@ -306,23 +355,34 @@ console.log("Fibonacci(10):", fibonacci(10));
 						<button
 							className={styles.secondaryButton}
 							onClick={resetCode}
-							title="Reset to Default"
+							title="Reset Terminal"
 						>
-							<RotateCcw size={16} />
+							<RotateCcw size={14} />
 						</button>
 					</div>
 				</div>
 			</div>
 
-			{/* Main content area - simple side-by-side layout */}
-			<div className={styles.content}>
+			{/* Main content area - resizable panels */}
+			<div className={styles.content} ref={containerRef}>
 				{/* Left panel - Code editor */}
-				<div className={styles.leftPanel}>
+				<div className={styles.leftPanel} style={{ width: `${leftPanelWidth}%` }}>
 					<div className={styles.editorHeader}>
-						<h3 className={styles.sectionTitle}>Code Editor</h3>
-						<div className={styles.editorInfo}>
-							<span className={styles.lineCount}>{code.split("\n").length} lines</span>
-							<span className={styles.charCount}>{code.length} characters</span>
+						<h3 className={styles.sectionTitle}>HACK EDITOR</h3>
+						<div className={styles.editorControls}>
+							<div className={styles.editorInfo}>
+								<span className={styles.lineCount}>{code.split("\n").length} LN</span>
+								<span className={styles.charCount}>{code.length} CH</span>
+							</div>
+							<button
+								className={styles.clearCodeButton}
+								onClick={clearCode}
+								disabled={code.length === 0}
+								title="Clear Code"
+							>
+								<Trash2 size={12} />
+								CLEAR
+							</button>
 						</div>
 					</div>
 					<div className={styles.editor}>
@@ -336,28 +396,40 @@ console.log("Fibonacci(10):", fibonacci(10));
 							autoCorrect="off"
 							autoCapitalize="off"
 							data-gramm="false"
-							placeholder="// Write your JavaScript code here..."
+							placeholder="// ENTER YOUR HACK CODE HERE..."
 						/>
 					</div>
 				</div>
 
+				{/* Resizer handle */}
+				{!isOutputCollapsed && (
+					<div
+						className={styles.resizer}
+						onMouseDown={handleMouseDown}
+						style={{ cursor: isDragging ? "col-resize" : "col-resize" }}
+					/>
+				)}
+
 				{/* Right panel - Output */}
 				{!isOutputCollapsed && (
-					<div className={styles.rightPanel}>
+					<div
+						className={styles.rightPanel}
+						style={{ width: `${100 - leftPanelWidth}%` }}
+					>
 						<div className={styles.outputHeader}>
-							<h3 className={styles.sectionTitle}>Output</h3>
+							<h3 className={styles.sectionTitle}>SYSTEM OUTPUT</h3>
 							<div className={styles.outputControls}>
 								<button
 									className={styles.clearButton}
 									onClick={clearOutput}
 									disabled={output.length === 0}
 								>
-									<Trash2 size={16} />
-									Clear Output
+									<Trash2 size={14} />
+									PURGE
 								</button>
 								<button className={styles.collapseButton} onClick={toggleOutputCollapse}>
-									<Square size={16} />
-									Hide
+									<Square size={14} />
+									HIDE
 								</button>
 							</div>
 						</div>
@@ -365,11 +437,9 @@ console.log("Fibonacci(10):", fibonacci(10));
 						<div className={styles.output} ref={outputRef}>
 							{output.length === 0 ? (
 								<div className={styles.noOutput}>
-									<div className={styles.noOutputIcon}>💻</div>
-									<p>
-										No output yet. Click &quot;Run Code&quot; to execute your JavaScript!
-									</p>
-									<small>Try the example code or write your own.</small>
+									<div className={styles.noOutputIcon}>⚡</div>
+									<p>SYSTEM READY. CLICK &quot;EXECUTE&quot; TO RUN YOUR HACK!</p>
+									<small>MATRIX AWAITS YOUR CODE...</small>
 								</div>
 							) : (
 								<div className={styles.outputContent}>
@@ -400,8 +470,8 @@ console.log("Fibonacci(10):", fibonacci(10));
 				{isOutputCollapsed && (
 					<div className={styles.collapsedPanel}>
 						<button className={styles.showOutputButton} onClick={toggleOutputCollapse}>
-							<Square size={16} />
-							Show Output
+							<Square size={14} />
+							SHOW OUTPUT
 						</button>
 					</div>
 				)}
