@@ -529,10 +529,10 @@ export default function OS({ children }: OSProps) {
 		<DevProvider>
 			<WindowContext.Provider value={contextValue}>
 				<div className={styles.os}>
-					{/* Layer 1: Desktop Background & Apps (z-index: 1-10) */}
+					{/* Layer 1: Desktop Background & Apps (z-index: 1) */}
 					<div className={styles.desktopLayer}>{children}</div>
 
-					{/* Layer 2: Windows (z-index: 100+) */}
+					{/* Layer 2: Windows Container (z-index: 100) - Constrained between menu bar and dock */}
 					<div className={styles.windowLayer}>
 						{visibleWindows.map((window) => (
 							<Window
@@ -559,8 +559,10 @@ export default function OS({ children }: OSProps) {
 						))}
 					</div>
 
-					{/* Layer 3: System UI (Menu Bar, Dock) - handled by children but with proper z-index */}
-					{/* These will be rendered by Desktop component but with correct stacking context */}
+					{/* Layer 3: System UI Layer (z-index: 10000) - Menu Bar and Dock always on top */}
+					<div id="system-ui-layer" className={styles.systemUILayer}>
+						{/* This will be populated by Desktop component's MenuBar and Dock via portal */}
+					</div>
 				</div>
 			</WindowContext.Provider>
 		</DevProvider>

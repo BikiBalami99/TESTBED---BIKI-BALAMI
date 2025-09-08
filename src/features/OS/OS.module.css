@@ -45,13 +45,13 @@
 	/* Desktop icons and background elements should be at z-index 1-10 */
 }
 
-/* Layer 2: Windows */
+/* Layer 2: Windows - Constrained between menu bar and dock */
 .windowLayer {
 	position: absolute;
-	top: 0;
+	top: 24px; /* Menu bar height */
 	left: 0;
 	right: 0;
-	bottom: 0;
+	bottom: 80px; /* Dock height */
 	z-index: 100;
 	/* Windows start at z-index 100 and go up */
 	pointer-events: none; /* Allow clicks to pass through to desktop when no windows */
@@ -61,14 +61,25 @@
 	pointer-events: auto; /* Re-enable pointer events for actual windows */
 }
 
-/* System UI elements should use these z-index ranges:
-   - Desktop background: 1
-   - Desktop icons: 10
-   - Windows: 100+
-   - Menu bar: 1000
-   - Dock: 1001
-   - App launcher: 2000
-   - Context menus: 3000
+/* Layer 3: System UI - Always on top */
+.systemUILayer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10000;
+	pointer-events: none; /* Allow clicks to pass through to windows */
+}
+
+.systemUILayer > * {
+	pointer-events: auto; /* Re-enable pointer events for menu bar and dock */
+}
+
+/* Layered Architecture - macOS Style:
+   Layer 1: Desktop (z-index: 1)
+   Layer 2: Windows (z-index: 100, constrained between menu bar and dock)
+   Layer 3: System UI (z-index: 10000) - Menu Bar and Dock always on top
 */
 
 /* Responsive adjustments */

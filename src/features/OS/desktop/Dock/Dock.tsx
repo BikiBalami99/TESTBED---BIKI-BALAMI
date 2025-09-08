@@ -60,11 +60,8 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 		[closeWindow]
 	);
 
-	const dockZIndex = Math.max(getCurrentMaxZIndex() + 1000, 10000);
-	console.log("[Dock] render z-index", dockZIndex, "(maxWindow+1000 or 10000)");
-
 	return (
-		<div className={styles.dock} style={{ zIndex: dockZIndex }}>
+		<div className={styles.dock}>
 			{/* App Launcher as a DockItem - Special Case: No Preview, Single Instance */}
 			{(() => {
 				const appLauncher = AVAILABLE_APPS.find((app) => app.id === "app-launcher");

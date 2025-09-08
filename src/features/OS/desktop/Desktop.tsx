@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { AVAILABLE_APPS, AppInfo } from "./AppIcons/AppIcons";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import { useWindowManager } from "../OS";
@@ -54,6 +55,12 @@ export default function Desktop() {
 	const [dockApps, setDockApps] = useState<DockApp[]>(() =>
 		DOCK_APPS.map((app) => ({ appId: app.appId }))
 	);
+
+	// Defer portal rendering until mounted to avoid hydration mismatch
+	const [isMounted, setIsMounted] = useState(false);
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
 
@@ -291,38 +298,49 @@ export default function Desktop() {
 	);
 
 	return (
-		<div
-			className={styles.desktop}
-			onDoubleClick={handleDesktopDoubleClick}
-			onContextMenu={handleDesktopBackgroundContextMenu}
-		>
-			{/* Desktop App Icons */}
-			<DesktopApps
-				desktopApps={desktopApps}
-				selectedApps={selectedApps}
-				onAppPositionChange={handleAppPositionChange}
-				onAppClick={handleDesktopAppClick}
-				onContextMenu={handleDesktopContextMenu}
-			/>
+		<>
+			{/* Desktop Layer - Background and desktop icons */}
+			<div
+				className={styles.desktop}
+				onDoubleClick={handleDesktopDoubleClick}
+				onContextMenu={handleDesktopBackgroundContextMenu}
+			>
+				{/* Desktop App Icons */}
+				<DesktopApps
+					desktopApps={desktopApps}
+					selectedApps={selectedApps}
+					onAppPositionChange={handleAppPositionChange}
+					onAppClick={handleDesktopAppClick}
+					onContextMenu={handleDesktopContextMenu}
+				/>
 
-			{/* Dock */}
-			<Dock
-				dockApps={dockApps}
-				onAppClick={handleDockAppClick}
-				onContextMenu={handleDockContextMenu}
-			/>
+				{/* Context Menu */}
+				<ContextMenu
+					isOpen={contextMenu.isOpen}
+					x={contextMenu.x}
+					y={contextMenu.y}
+					items={getContextMenuItems()}
+					onClose={closeContextMenu}
+				/>
+			</div>
 
-			{/* Context Menu */}
-			<ContextMenu
-				isOpen={contextMenu.isOpen}
-				x={contextMenu.x}
-				y={contextMenu.y}
-				items={getContextMenuItems()}
-				onClose={closeContextMenu}
-			/>
+			{/* System UI Layer - Always on top via portal */}
+			{isMounted
+				? createPortal(
+						<>
+							{/* Menu Bar */}
+							<MenuBar />
 
-			{/* Menu Bar */}
-			<MenuBar />
-		</div>
+							{/* Dock */}
+							<Dock
+								dockApps={dockApps}
+								onAppClick={handleDockAppClick}
+								onContextMenu={handleDockContextMenu}
+							/>
+						</>,
+						document.getElementById("system-ui-layer") as HTMLElement
+				  )
+				: null}
+		</>
 	);
 }

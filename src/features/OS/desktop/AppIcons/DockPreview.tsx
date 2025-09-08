@@ -25,13 +25,13 @@ export default function DockPreview({
 	if (windows.length === 0) return null;
 
 	const previewZ = useMemo(() => {
-		// Use a high z-index that matches the dock's approach
-		const z = Math.max((Number.isFinite(maxZIndex) ? maxZIndex : 100) + 1000, 10001);
+		// Simple z-index since we're now in the system UI layer which is already above all windows
+		const z = 1;
 		console.log("[DockPreview] computed z-index", {
 			maxZIndex,
 			previewZ: z,
 			windows,
-			strategy: "maxWindow+1000 or 10001",
+			strategy: "simple z-index in system UI layer",
 		});
 		return z;
 	}, [maxZIndex, windows]);
