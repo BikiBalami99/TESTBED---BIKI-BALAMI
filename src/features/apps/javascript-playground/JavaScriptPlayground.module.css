@@ -410,6 +410,10 @@
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-shadow: 0 0 5px #00ff41;
+	display: inline-flex;
+	align-items: center;
+	white-space: nowrap;
+	flex: 0 0 auto;
 }
 
 .sectionTitle::before {
@@ -501,6 +505,7 @@
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-shadow: 0 0 5px #00ff41;
+	white-space: nowrap;
 }
 
 .showOutputButton {
@@ -551,11 +556,13 @@
 	height: 48px;
 	min-height: 48px;
 	box-sizing: border-box;
+	flex-wrap: nowrap;
 }
 
 .outputControls {
 	display: flex;
 	gap: 6px;
+	flex-wrap: wrap;
 }
 
 .clearOutputButton {
@@ -574,6 +581,7 @@
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-shadow: 0 0 5px #ff3333;
+	white-space: nowrap;
 }
 
 .clearOutputButton:hover:not(:disabled) {
@@ -604,6 +612,7 @@
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	text-shadow: 0 0 5px #ff3333;
+	white-space: nowrap;
 }
 
 .resetTabButton:hover {
@@ -891,4 +900,315 @@
 
 .codeEditor:focus {
 	box-shadow: inset 0 0 0 1px #00ff41, 0 0 15px #00ff41;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Content Layout - Smooth transitions */
+.content {
+	transition: flex-direction 200ms ease, gap 200ms ease;
+}
+
+.content[data-screen="sm"],
+.content[data-screen="xs"] {
+	flex-direction: column;
+	gap: 0;
+}
+
+.content[data-screen="lg"] {
+	flex-direction: row;
+}
+
+/* Mobile Panel Layout - Full height utilization */
+.leftPanel[data-screen="sm"],
+.leftPanel[data-screen="xs"] {
+	width: 100% !important;
+	height: 70%; /* Editor gets even more space on mobile */
+	min-height: 200px;
+}
+
+.rightPanel[data-screen="sm"],
+.rightPanel[data-screen="xs"] {
+	width: 100% !important;
+	height: 30%; /* Output gets minimal space initially */
+	min-height: 100px;
+}
+
+/* Show vertical resizer on mobile */
+.content[data-screen="sm"] .resizer {
+	display: block;
+	width: 100%;
+	height: 4px;
+	background: linear-gradient(to bottom, transparent 0%, #00ff41 50%, transparent 100%);
+	cursor: row-resize;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.content[data-screen="sm"] .resizer:hover {
+	height: 6px;
+	background: linear-gradient(
+		to bottom,
+		transparent 0%,
+		#00ff41 30%,
+		#00ff41 70%,
+		transparent 100%
+	);
+}
+
+/* Mobile Header - Ultra minimal */
+.playground[data-screen="sm"] .header {
+	padding: 4px 8px;
+	gap: 4px;
+	min-height: 32px;
+}
+
+.playground[data-screen="sm"] .controls {
+	gap: 3px;
+	flex-wrap: wrap;
+}
+
+.playground[data-screen="sm"] .buttonGroup {
+	gap: 2px;
+}
+
+/* Mobile Buttons - Compact but functional */
+.playground[data-screen="sm"] .primaryButton,
+.playground[data-screen="sm"] .secondaryButton {
+	padding: 4px 8px;
+	font-size: 10px;
+	min-height: 24px;
+	min-width: 24px;
+}
+
+/* Mobile Tabs - Minimal */
+.playground[data-screen="sm"] .tab {
+	padding: 4px 8px;
+	font-size: 10px;
+	min-height: 28px;
+}
+
+.playground[data-screen="sm"] .tabList {
+	gap: 1px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.playground[data-screen="sm"] .tabList::-webkit-scrollbar {
+	display: none;
+}
+
+/* Mobile Section Headers - Ultra minimal */
+.playground[data-screen="sm"] .editorHeader,
+.playground[data-screen="sm"] .outputHeader {
+	padding: 4px 8px;
+	min-height: 24px;
+	height: 24px;
+}
+
+.playground[data-screen="sm"] .sectionTitle {
+	font-size: 10px;
+}
+
+.playground[data-screen="sm"] .editorInfo {
+	font-size: 8px;
+	gap: 4px;
+}
+
+/* Mobile Editor - Optimized for touch */
+.playground[data-screen="sm"] .codeEditor {
+	font-size: 13px;
+	line-height: 1.4;
+	padding: 12px;
+}
+
+/* Mobile Output - Compact but usable */
+.playground[data-screen="sm"] .outputArea {
+	font-size: 11px;
+	padding: 8px;
+}
+
+.playground[data-screen="sm"] .outputEntry {
+	padding: 6px 8px;
+	margin: 2px 0;
+}
+
+.playground[data-screen="sm"] .outputControls {
+	gap: 4px;
+}
+
+.playground[data-screen="sm"] .clearOutputButton,
+.playground[data-screen="sm"] .resetTabButton,
+.playground[data-screen="sm"] .collapseButton,
+.playground[data-screen="sm"] .showOutputButton {
+	font-size: 8px;
+	padding: 2px 6px;
+	min-height: 20px;
+}
+
+/* Mobile-specific optimizations */
+
+.playground[data-screen="sm"] .content {
+	/* Ensure panels fill available space */
+	height: calc(100vh - 120px); /* Account for headers */
+}
+
+/* Short height mobile adjustments */
+.playground[data-screen="sm"][data-h="short"] .leftPanel {
+	height: 55%;
+}
+
+.playground[data-screen="sm"][data-h="short"] .rightPanel {
+	height: 45%;
+}
+
+.playground[data-screen="sm"][data-h="short"] .header {
+	padding: 6px 10px;
+	min-height: 40px;
+}
+
+.playground[data-screen="sm"][data-h="short"] .editorHeader,
+.playground[data-screen="sm"][data-h="short"] .outputHeader {
+	padding: 6px 10px;
+	min-height: 32px;
+	height: 32px;
+}
+
+.playground[data-screen="sm"][data-h="short"] .tab {
+	padding: 6px 10px;
+	min-height: 32px;
+}
+
+/* ===== ULTRA-COMPACT MODE (< 340px) ===== */
+
+/* Ultra-compact header */
+.playground[data-screen="xs"] .header {
+	padding: 2px 4px;
+	gap: 2px;
+	min-height: 28px;
+}
+
+/* Hide main title or make it tiny */
+.playground[data-screen="xs"] .title {
+	font-size: 8px !important;
+	letter-spacing: 0px;
+	margin: 0;
+}
+
+/* Ultra-compact tabs */
+.playground[data-screen="xs"] .tab {
+	padding: 4px 6px;
+	font-size: 8px;
+	min-height: 24px;
+}
+
+/* Icon-only buttons */
+.playground[data-screen="xs"] .primaryButton,
+.playground[data-screen="xs"] .secondaryButton {
+	padding: 4px;
+	font-size: 0; /* Hide text */
+	min-height: 20px;
+	min-width: 20px;
+	gap: 0;
+}
+
+.playground[data-screen="xs"] .primaryButton svg,
+.playground[data-screen="xs"] .secondaryButton svg {
+	width: 12px;
+	height: 12px;
+}
+
+/* Ultra-compact section headers */
+.playground[data-screen="xs"] .editorHeader,
+.playground[data-screen="xs"] .outputHeader {
+	padding: 2px 4px;
+	min-height: 20px;
+	height: 20px;
+}
+
+.playground[data-screen="xs"] .sectionTitle {
+	font-size: 8px;
+}
+
+.playground[data-screen="xs"] .editorInfo {
+	font-size: 7px;
+	gap: 2px;
+}
+
+/* Ultra-compact output controls - icon only */
+.playground[data-screen="xs"] .clearOutputButton,
+.playground[data-screen="xs"] .resetTabButton,
+.playground[data-screen="xs"] .collapseButton,
+.playground[data-screen="xs"] .showOutputButton {
+	font-size: 0; /* Hide text */
+	padding: 2px 4px;
+	min-height: 16px;
+	gap: 0;
+}
+
+.playground[data-screen="xs"] .clearOutputButton svg,
+.playground[data-screen="xs"] .resetTabButton svg,
+.playground[data-screen="xs"] .collapseButton svg,
+.playground[data-screen="xs"] .showOutputButton svg {
+	width: 10px;
+	height: 10px;
+}
+
+/* Ultra-compact editor */
+.playground[data-screen="xs"] .codeEditor {
+	font-size: 11px;
+	line-height: 1.3;
+	padding: 6px;
+}
+
+/* Ultra-compact output */
+.playground[data-screen="xs"] .outputArea {
+	font-size: 9px;
+	padding: 4px;
+}
+
+.playground[data-screen="xs"] .outputEntry {
+	padding: 4px 6px;
+	margin: 1px 0;
+}
+
+/* Ultra-compact controls */
+.playground[data-screen="xs"] .controls {
+	gap: 1px;
+}
+
+.playground[data-screen="xs"] .buttonGroup {
+	gap: 1px;
+}
+
+/* Ultra-compact resizer - match mobile/tablet full width */
+.content[data-screen="xs"] .resizer {
+	display: block;
+	width: 100%;
+	height: 4px;
+	background: linear-gradient(to bottom, transparent 0%, #00ff41 50%, transparent 100%);
+	cursor: row-resize;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.content[data-screen="xs"] .resizer:hover {
+	height: 6px;
+	background: linear-gradient(
+		to bottom,
+		transparent 0%,
+		#00ff41 30%,
+		#00ff41 70%,
+		transparent 100%
+	);
+}
+
+/* Hide less important UI elements on ultra-small screens */
+.playground[data-screen="xs"] .editorInfo {
+	display: none; /* Hide line/char count to save space */
+}
+
+.playground[data-screen="xs"] .titleSection {
+	padding: 1px 2px;
 }

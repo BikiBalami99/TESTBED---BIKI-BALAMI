@@ -16,6 +16,7 @@ import {
 	ChevronRight,
 } from "lucide-react";
 import styles from "./JavaScriptPlayground.module.css";
+import { useWindowDimensions } from "../../OS/Window/WindowContext";
 
 interface OutputEntry {
 	id: string;
@@ -39,6 +40,12 @@ const add = (a, b) => a + b;
 console.log(add(2, 3));`;
 
 export default function JavaScriptPlayground() {
+	const { width, height } = useWindowDimensions();
+
+	// Map dimensions to semantic screen sizes (snap at 944px, ultra-compact at 340px)
+	const screen = width < 340 ? "xs" : width < 944 ? "sm" : "lg";
+	const heightTier = height < 400 ? "short" : "tall";
+
 	const [tabs, setTabs] = useState<Tab[]>([
 		{
 			id: "tab-1",
@@ -54,23 +61,20 @@ export default function JavaScriptPlayground() {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	// Dynamic responsive thresholds
+	// Dynamic responsive thresholds (snap at 944px)
 	const getResponsiveThresholds = useCallback(() => {
 		if (!containerRef.current)
 			return { minWidth: 20, maxWidth: 95, collapseThreshold: 85 };
 
 		const containerWidth = containerRef.current.offsetWidth;
 
-		if (containerWidth < 600) {
-			// Mobile-like behavior
+		if (containerWidth < 944) {
+			// Small screens behavior
 			return { minWidth: 15, maxWidth: 98, collapseThreshold: 90 };
-		} else if (containerWidth < 900) {
-			// Tablet-like behavior
-			return { minWidth: 18, maxWidth: 96, collapseThreshold: 88 };
-		} else {
-			// Desktop behavior
-			return { minWidth: 20, maxWidth: 95, collapseThreshold: 85 };
 		}
+
+		// Large screens behavior
+		return { minWidth: 20, maxWidth: 95, collapseThreshold: 85 };
 	}, []);
 	const outputRef = useRef<HTMLDivElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -365,25 +369,36 @@ export default function JavaScriptPlayground() {
 			if (!isDragging || !containerRef.current) return;
 
 			const containerRect = containerRef.current.getBoundingClientRect();
-			const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-			const thresholds = getResponsiveThresholds();
 
-			// Constrain to responsive thresholds
-			const constrainedWidth = Math.max(
-				thresholds.minWidth,
-				Math.min(thresholds.maxWidth, newLeftWidth)
-			);
-
-			// Auto-collapse detection: if dragging near max width, collapse
-			if (constrainedWidth >= thresholds.collapseThreshold) {
-				setLeftPanelWidth(thresholds.maxWidth);
-				setIsCollapsed(true);
+			if (screen === "sm" || screen === "xs") {
+				// Vertical resizing for mobile (top/bottom layout)
+				const newTopHeight =
+					((e.clientY - containerRect.top) / containerRect.height) * 100;
+				const constrainedHeight = Math.max(20, Math.min(80, newTopHeight)); // 20-80% range
+				setLeftPanelWidth(constrainedHeight); // Reuse leftPanelWidth state for height on mobile
 			} else {
-				setLeftPanelWidth(constrainedWidth);
-				setIsCollapsed(false);
+				// Horizontal resizing for desktop (left/right layout)
+				const newLeftWidth =
+					((e.clientX - containerRect.left) / containerRect.width) * 100;
+				const thresholds = getResponsiveThresholds();
+
+				// Constrain to responsive thresholds
+				const constrainedWidth = Math.max(
+					thresholds.minWidth,
+					Math.min(thresholds.maxWidth, newLeftWidth)
+				);
+
+				// Auto-collapse detection: if dragging near max width, collapse
+				if (constrainedWidth >= thresholds.collapseThreshold) {
+					setLeftPanelWidth(thresholds.maxWidth);
+					setIsCollapsed(true);
+				} else {
+					setLeftPanelWidth(constrainedWidth);
+					setIsCollapsed(false);
+				}
 			}
 		},
-		[isDragging, getResponsiveThresholds]
+		[isDragging, getResponsiveThresholds, screen]
 	);
 
 	const handleMouseUp = useCallback(() => {
@@ -395,7 +410,8 @@ export default function JavaScriptPlayground() {
 		if (isDragging) {
 			document.addEventListener("mousemove", handleMouseMove);
 			document.addEventListener("mouseup", handleMouseUp);
-			document.body.style.cursor = "col-resize";
+			document.body.style.cursor =
+				screen === "sm" || screen === "xs" ? "row-resize" : "col-resize";
 			document.body.style.userSelect = "none";
 
 			return () => {
@@ -405,13 +421,25 @@ export default function JavaScriptPlayground() {
 				document.body.style.userSelect = "";
 			};
 		}
-	}, [isDragging, handleMouseMove, handleMouseUp]);
+	}, [isDragging, handleMouseMove, handleMouseUp, screen]);
+
+	// Initialize panel size based on screen mode
+	useEffect(() => {
+		if (screen === "sm" || screen === "xs") {
+			// Mobile: use height percentage (70% for editor)
+			setLeftPanelWidth(70);
+		} else {
+			// Desktop: use width percentage (default 50%)
+			setLeftPanelWidth(50);
+		}
+		setIsCollapsed(false); // Reset collapse state when switching modes
+	}, [screen]);
 
 	// Simple textarea ref
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	return (
-		<div className={styles.playground}>
+		<div className={styles.playground} data-screen={screen} data-h={heightTier}>
 			{/* Tab Bar */}
 			<div className={styles.tabBar}>
 				<div className={styles.tabs}>
@@ -495,14 +523,22 @@ export default function JavaScriptPlayground() {
 			</div>
 
 			{/* Main content area - resizable panels */}
-			<div className={styles.content} ref={containerRef}>
+			<div className={styles.content} data-screen={screen} ref={containerRef}>
 				{/* Left panel - Code editor */}
 				<div
 					className={`${styles.leftPanel} ${isCollapsed ? styles.expanded : ""}`}
-					style={{
-						width: `${leftPanelWidth}%`,
-						transition: isDragging ? "none" : "width 0.2s ease-out",
-					}}
+					data-screen={screen}
+					style={
+						screen === "sm" || screen === "xs"
+							? {
+									height: `${leftPanelWidth}%`,
+									transition: isDragging ? "none" : "height 0.2s ease-out",
+							  }
+							: {
+									width: `${leftPanelWidth}%`,
+									transition: isDragging ? "none" : "width 0.2s ease-out",
+							  }
+					}
 				>
 					<div className={styles.editorHeader}>
 						<h3 className={styles.sectionTitle}>Editor</h3>
@@ -541,9 +577,17 @@ export default function JavaScriptPlayground() {
 				{/* Resizer handle - always show, but make it edge-accessible when collapsed */}
 				<div
 					className={`${styles.resizer} ${isCollapsed ? styles.edgeResizer : ""}`}
+					data-screen={screen}
 					onMouseDown={handleMouseDown}
 					style={{
-						cursor: isDragging ? "col-resize" : "col-resize",
+						cursor:
+							screen === "sm" || screen === "xs"
+								? isDragging
+									? "row-resize"
+									: "row-resize"
+								: isDragging
+								? "col-resize"
+								: "col-resize",
 						opacity: isCollapsed ? 0.3 : 1,
 						transition: isDragging ? "none" : "opacity 0.2s ease-out",
 					}}
@@ -567,10 +611,18 @@ export default function JavaScriptPlayground() {
 				) : (
 					<div
 						className={styles.rightPanel}
-						style={{
-							width: `${100 - leftPanelWidth}%`,
-							transition: isDragging ? "none" : "width 0.2s ease-out",
-						}}
+						data-screen={screen}
+						style={
+							screen === "sm" || screen === "xs"
+								? {
+										height: `${100 - leftPanelWidth}%`,
+										transition: isDragging ? "none" : "height 0.2s ease-out",
+								  }
+								: {
+										width: `${100 - leftPanelWidth}%`,
+										transition: isDragging ? "none" : "width 0.2s ease-out",
+								  }
+						}
 					>
 						<div className={styles.outputHeader}>
 							<h3 className={styles.sectionTitle}>Output</h3>
