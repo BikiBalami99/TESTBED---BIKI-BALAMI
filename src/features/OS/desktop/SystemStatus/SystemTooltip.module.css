@@ -24,34 +24,34 @@
 	overflow-y: auto;
 	pointer-events: auto;
 	transform-origin: center top;
-	animation: tooltipDropdown 0.25s ease-in-out forwards;
+	animation: tooltipDropdown 0.2s ease-out forwards;
 }
 
 @keyframes tooltipDropdown {
 	from {
 		opacity: 0;
-		transform: translateY(-10px) scaleY(0.8);
+		transform: translateY(-8px);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0) scaleY(1);
+		transform: translateY(0);
 	}
 }
 
 @keyframes tooltipDropdownClose {
 	from {
 		opacity: 1;
-		transform: translateY(0) scaleY(1);
+		transform: translateY(0);
 	}
 	to {
 		opacity: 0;
-		transform: translateY(-10px) scaleY(0.8);
+		transform: translateY(-8px);
 	}
 }
 
 .tooltip.top {
 	transform-origin: center bottom;
-	animation: tooltipDropdownUp 0.25s ease-in-out forwards;
+	animation: tooltipDropdownUp 0.2s ease-out forwards;
 }
 
 .tooltip.bottom {
@@ -111,66 +111,66 @@
 @keyframes tooltipDropdownUp {
 	from {
 		opacity: 0;
-		transform: translateX(-50%) translateY(10px) scaleY(0.8);
+		transform: translateX(-50%) translateY(8px);
 	}
 	to {
 		opacity: 1;
-		transform: translateX(-50%) translateY(0) scaleY(1);
+		transform: translateX(-50%) translateY(0);
 	}
 }
 
 @keyframes tooltipDropdownUpClose {
 	from {
 		opacity: 1;
-		transform: translateX(-50%) translateY(0) scaleY(1);
+		transform: translateX(-50%) translateY(0);
 	}
 	to {
 		opacity: 0;
-		transform: translateX(-50%) translateY(10px) scaleY(0.8);
+		transform: translateX(-50%) translateY(8px);
 	}
 }
 
 @keyframes tooltipDropdownLeft {
 	from {
 		opacity: 0;
-		transform: translateY(-50%) translateX(10px) scaleX(0.8);
+		transform: translateY(-50%) translateX(8px);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(-50%) translateX(0) scaleX(1);
+		transform: translateY(-50%) translateX(0);
 	}
 }
 
 @keyframes tooltipDropdownLeftClose {
 	from {
 		opacity: 1;
-		transform: translateY(-50%) translateX(0) scaleX(1);
+		transform: translateY(-50%) translateX(0);
 	}
 	to {
 		opacity: 0;
-		transform: translateY(-50%) translateX(10px) scaleX(0.8);
+		transform: translateY(-50%) translateX(8px);
 	}
 }
 
 @keyframes tooltipDropdownRight {
 	from {
 		opacity: 0;
-		transform: translateY(-50%) translateX(-10px) scaleX(0.8);
+		transform: translateY(-50%) translateX(-8px);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(-50%) translateX(0) scaleX(1);
+		transform: translateY(-50%) translateX(0);
 	}
 }
 
 @keyframes tooltipDropdownRightClose {
 	from {
 		opacity: 1;
-		transform: translateY(-50%) translateX(0) scaleX(1);
+		transform: translateY(-50%) translateX(0);
 	}
 	to {
 		opacity: 0;
-		transform: translateY(-50%) translateX(-10px) scaleX(0.8);
+		transform: translateY(-50%) translateX(-8px);
 	}
 }
 
