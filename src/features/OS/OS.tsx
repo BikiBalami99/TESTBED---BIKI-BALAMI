@@ -73,6 +73,7 @@ interface WindowContextType {
 		width: number,
 		height: number
 	) => void;
+	getCurrentMaxZIndex: () => number;
 }
 
 const WindowContext = createContext<WindowContextType | null>(null);
@@ -488,6 +489,20 @@ export default function OS({ children }: OSProps) {
 		[constrainToViewport]
 	);
 
+	// Get current maximum z-index
+	const getCurrentMaxZIndex = useCallback(() => {
+		if (windows.length === 0) {
+			console.log("[OS] getCurrentMaxZIndex → no windows, base 100");
+			return 100; // Base z-index when no windows
+		}
+		const maxZ = Math.max(...windows.map((w) => w.zIndex));
+		console.log("[OS] getCurrentMaxZIndex →", {
+			maxZ,
+			windowZs: windows.map((w) => ({ id: w.id, z: w.zIndex })),
+		});
+		return maxZ;
+	}, [windows]);
+
 	// Context value
 	const contextValue: WindowContextType = {
 		createWindow,
@@ -507,6 +522,7 @@ export default function OS({ children }: OSProps) {
 		createNewWindowForApp,
 		restoreWindow,
 		updateWindowPosition,
+		getCurrentMaxZIndex,
 	};
 
 	return (

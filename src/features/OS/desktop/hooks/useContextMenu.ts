@@ -43,12 +43,6 @@ export function useContextMenu({
 			type: "desktop" | "dock" | "app" = "desktop"
 		) => {
 			e.preventDefault();
-			console.log("Context menu triggered:", {
-				appId,
-				type,
-				clientX: e.clientX,
-				clientY: e.clientY,
-			});
 			setContextMenu({
 				isOpen: true,
 				x: e.clientX,
@@ -65,9 +59,7 @@ export function useContextMenu({
 	}, []);
 
 	const getContextMenuItems = useCallback((): ContextMenuItem[] => {
-		console.log("Context menu state:", contextMenu);
 		if (contextMenu.type === "app" && contextMenu.appId) {
-			console.log("Showing app context menu for:", contextMenu.appId);
 			return createAppContextMenuItems(
 				contextMenu.appId,
 				() => onNewWindow(contextMenu.appId!),
@@ -75,7 +67,6 @@ export function useContextMenu({
 				getAllWindowsForApp(contextMenu.appId).length > 0
 			);
 		} else if (contextMenu.type === "dock" && contextMenu.appId) {
-			console.log("Showing dock context menu for:", contextMenu.appId);
 			return createAppContextMenuItems(
 				contextMenu.appId,
 				() => onNewWindow(contextMenu.appId!),
@@ -83,7 +74,6 @@ export function useContextMenu({
 				getAllWindowsForApp(contextMenu.appId).length > 0
 			);
 		} else {
-			console.log("Showing desktop context menu");
 			return createDesktopContextMenuItems(onShowDesktop);
 		}
 	}, [contextMenu, onNewWindow, onCloseAllWindows, onShowDesktop, getAllWindowsForApp]);

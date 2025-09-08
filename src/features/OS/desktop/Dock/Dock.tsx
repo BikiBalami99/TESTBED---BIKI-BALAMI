@@ -25,9 +25,12 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 		focusWindow,
 		restoreWindow,
 		closeWindow,
+		getCurrentMaxZIndex,
 	} = useWindowManager();
 
 	const handleDockAppHover = useCallback((appId: string) => {
+		const maxZ = getCurrentMaxZIndex();
+		console.log("[Dock] hover app →", { appId, maxZ });
 		setHoveredDockApp(appId);
 	}, []);
 
@@ -57,8 +60,11 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 		[closeWindow]
 	);
 
+	const dockZIndex = Math.max(getCurrentMaxZIndex() + 1000, 10000);
+	console.log("[Dock] render z-index", dockZIndex, "(maxWindow+1000 or 10000)");
+
 	return (
-		<div className={styles.dock}>
+		<div className={styles.dock} style={{ zIndex: dockZIndex }}>
 			{/* App Launcher as a DockItem - Special Case: No Preview, Single Instance */}
 			{(() => {
 				const appLauncher = AVAILABLE_APPS.find((app) => app.id === "app-launcher");
@@ -123,6 +129,11 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 										onWindowClick={handleWindowClick}
 										onCloseWindow={handleCloseWindow}
 										position="center"
+										maxZIndex={(() => {
+											const z = getCurrentMaxZIndex();
+											console.log("[Dock] pass maxZIndex to preview", z);
+											return z;
+										})()}
 									/>
 								) : null
 							}

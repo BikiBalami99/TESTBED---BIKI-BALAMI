@@ -68,12 +68,10 @@ export const validateAllConfigs = (): { valid: boolean; errors: string[] } => {
 export const logConfigValidation = (): void => {
 	const validation = validateAllConfigs();
 
-	if (validation.valid) {
-		console.log("✅ Desktop and Dock configurations are valid");
-		console.log(`📱 Desktop apps: ${DESKTOP_APPS.length} apps configured`);
-		console.log(`⚓ Dock apps: ${DOCK_APPS.length} apps configured`);
-	} else {
-		console.error("❌ Configuration validation failed:");
-		validation.errors.forEach((error) => console.error(`  - ${error}`));
+	// Silence success logs; only surface concise warnings on errors in dev
+	if (!validation.valid) {
+		if (process.env.NODE_ENV !== "production") {
+			console.warn("Configuration validation failed:", validation.errors);
+		}
 	}
 };

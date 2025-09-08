@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { WindowData } from "../../OS";
 import { AppInfo } from "./AppIcons";
 import styles from "./DockPreview.module.css";
@@ -11,6 +11,7 @@ interface DockPreviewProps {
 	onWindowClick: (windowId: string) => void;
 	onCloseWindow: (windowId: string) => void;
 	position: "left" | "center" | "right";
+	maxZIndex: number;
 }
 
 export default function DockPreview({
@@ -19,11 +20,24 @@ export default function DockPreview({
 	onWindowClick,
 	onCloseWindow,
 	position,
+	maxZIndex,
 }: DockPreviewProps) {
 	if (windows.length === 0) return null;
 
+	const previewZ = useMemo(() => {
+		// Use a high z-index that matches the dock's approach
+		const z = Math.max((Number.isFinite(maxZIndex) ? maxZIndex : 100) + 1000, 10001);
+		console.log("[DockPreview] computed z-index", {
+			maxZIndex,
+			previewZ: z,
+			windows,
+			strategy: "maxWindow+1000 or 10001",
+		});
+		return z;
+	}, [maxZIndex, windows]);
+
 	return (
-		<div className={styles.previewInvisibleBackground}>
+		<div className={styles.previewInvisibleBackground} style={{ zIndex: previewZ }}>
 			<div className={`${styles.previewContainer} ${styles[position]}`}>
 				<div className={styles.previewHeader}>
 					<div className={styles.appInfo}>
