@@ -33,38 +33,16 @@ interface Tab {
 	isRunning: boolean;
 }
 
-const defaultCode = `// ⚡ MATRIX HACKER TERMINAL ⚡
-// EXECUTE YOUR CODE IN THE MATRIX
-
-console.log("SYSTEM ONLINE... ACCESS GRANTED");
-
-// HACK THE MATRIX WITH MODERN JS:
-const dataStream = [1, 0, 1, 0, 1];
-const encrypted = dataStream.map(bit => bit ^ 1);
-console.log("ENCRYPTED DATA:", encrypted);
-
-// ASYNC BREACH PROTOCOL
-async function infiltrateSystem() {
-  return new Promise(resolve => {
-    setTimeout(() => resolve("FIREWALL BREACHED ⚡"), 1000);
-  });
-}
-
-// RECURSIVE ALGORITHM
-const hackSequence = (depth) => {
-  if (depth <= 1) return depth;
-  return hackSequence(depth - 1) + hackSequence(depth - 2);
-};
-
-console.log("HACK_SEQUENCE(10):", hackSequence(10));
-
-// EXECUTE: await infiltrateSystem()`;
+const defaultCode = `const msg = "Hello, JavaScript Playground";
+console.log(msg);
+const add = (a, b) => a + b;
+console.log(add(2, 3));`;
 
 export default function JavaScriptPlayground() {
 	const [tabs, setTabs] = useState<Tab[]>([
 		{
 			id: "tab-1",
-			name: "HACK_01",
+			name: "Tab 1",
 			code: defaultCode,
 			output: [],
 			executionTime: 0,
@@ -237,14 +215,14 @@ export default function JavaScriptPlayground() {
 				tab.id === activeTabId ? { ...tab, output: [], executionTime: 0 } : tab
 			)
 		);
-		addOutputEntry("info", "⚡ OUTPUT CLEARED");
+		addOutputEntry("info", "Output cleared");
 	};
 
 	const clearCode = () => {
 		setTabs((prevTabs) =>
 			prevTabs.map((tab) => (tab.id === activeTabId ? { ...tab, code: "" } : tab))
 		);
-		addOutputEntry("info", "⚡ CODE CLEARED");
+		addOutputEntry("info", "Code cleared");
 	};
 
 	const resetTab = () => {
@@ -255,12 +233,12 @@ export default function JavaScriptPlayground() {
 					: tab
 			)
 		);
-		addOutputEntry("info", "⚡ TAB RESET TO DEFAULT");
+		addOutputEntry("info", "Tab reset to default");
 	};
 
 	const copyCode = () => {
 		navigator.clipboard.writeText(code);
-		addOutputEntry("info", "⚡ CODE COPIED TO BUFFER");
+		addOutputEntry("info", "Code copied to clipboard");
 	};
 
 	const downloadCode = () => {
@@ -268,12 +246,12 @@ export default function JavaScriptPlayground() {
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = "matrix-hack.js";
+		a.download = "playground.js";
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-		addOutputEntry("info", "⚡ HACK DOWNLOADED: matrix-hack.js");
+		addOutputEntry("info", "Downloaded: playground.js");
 	};
 
 	const uploadCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -287,7 +265,7 @@ export default function JavaScriptPlayground() {
 						tab.id === activeTabId ? { ...tab, code: content } : tab
 					)
 				);
-				addOutputEntry("info", `⚡ UPLOADED HACK: ${file.name}`);
+				addOutputEntry("info", `Uploaded: ${file.name}`);
 			};
 			reader.readAsText(file);
 		}
@@ -298,7 +276,7 @@ export default function JavaScriptPlayground() {
 		const newTabId = `tab-${Date.now()}`;
 		const newTab: Tab = {
 			id: newTabId,
-			name: `HACK_${String(tabs.length + 1).padStart(2, "0")}`,
+			name: `Tab ${tabs.length + 1}`,
 			code: "",
 			output: [],
 			executionTime: 0,
@@ -306,7 +284,7 @@ export default function JavaScriptPlayground() {
 		};
 		setTabs((prevTabs) => [...prevTabs, newTab]);
 		setActiveTabId(newTabId);
-		addOutputEntry("info", "⚡ NEW TAB CREATED");
+		addOutputEntry("info", "New tab created");
 	};
 
 	const closeTab = (tabId: string) => {
@@ -320,7 +298,7 @@ export default function JavaScriptPlayground() {
 			}
 			return newTabs;
 		});
-		addOutputEntry("info", "⚡ TAB CLOSED");
+		addOutputEntry("info", "Tab closed");
 	};
 
 	const switchTab = (tabId: string) => {
@@ -466,14 +444,14 @@ export default function JavaScriptPlayground() {
 				</button>
 			</div>
 
-			{/* Header with hacker controls */}
+			{/* Header */}
 			<div className={styles.header}>
 				<div className={styles.titleSection}>
-					<h1 className={styles.title}>MATRIX HACKER TERMINAL</h1>
+					<h1 className={styles.title}>JavaScript Playground</h1>
 					{executionTime > 0 && (
 						<div className={styles.executionTime}>
 							<Clock size={12} />
-							EXEC: {formatTime(executionTime)}
+							Time: {formatTime(executionTime)}
 						</div>
 					)}
 				</div>
@@ -485,25 +463,25 @@ export default function JavaScriptPlayground() {
 						disabled={isRunning}
 					>
 						<Play size={16} />
-						{isRunning ? "EXECUTING..." : "EXECUTE"}
+						{isRunning ? "Running..." : "Run"}
 					</button>
 
 					<div className={styles.buttonGroup}>
 						<button
 							className={styles.secondaryButton}
 							onClick={copyCode}
-							title="Copy Hack"
+							title="Copy Code"
 						>
 							<Copy size={14} />
 						</button>
 						<button
 							className={styles.secondaryButton}
 							onClick={downloadCode}
-							title="Download Hack"
+							title="Download Code"
 						>
 							<Download size={14} />
 						</button>
-						<label className={styles.secondaryButton} title="Upload Hack">
+						<label className={styles.secondaryButton} title="Upload Code">
 							<Upload size={14} />
 							<input
 								type="file"
@@ -527,7 +505,7 @@ export default function JavaScriptPlayground() {
 					}}
 				>
 					<div className={styles.editorHeader}>
-						<h3 className={styles.sectionTitle}>HACK EDITOR</h3>
+						<h3 className={styles.sectionTitle}>Editor</h3>
 						<div className={styles.editorControls}>
 							<div className={styles.editorInfo}>
 								<span className={styles.lineCount}>{code.split("\n").length} LN</span>
@@ -555,7 +533,7 @@ export default function JavaScriptPlayground() {
 							autoCorrect="off"
 							autoCapitalize="off"
 							data-gramm="false"
-							placeholder="// ENTER YOUR HACK CODE HERE..."
+							placeholder="// Start typing JavaScript..."
 						/>
 					</div>
 				</div>
@@ -595,7 +573,7 @@ export default function JavaScriptPlayground() {
 						}}
 					>
 						<div className={styles.outputHeader}>
-							<h3 className={styles.sectionTitle}>SYSTEM OUTPUT</h3>
+							<h3 className={styles.sectionTitle}>Output</h3>
 							<div className={styles.outputControls}>
 								<button
 									className={styles.clearOutputButton}
@@ -624,9 +602,9 @@ export default function JavaScriptPlayground() {
 						<div className={styles.output} ref={outputRef}>
 							{output.length === 0 ? (
 								<div className={styles.noOutput}>
-									<div className={styles.noOutputIcon}>⚡</div>
-									<p>SYSTEM READY. CLICK &quot;EXECUTE&quot; TO RUN YOUR HACK!</p>
-									<small>MATRIX AWAITS YOUR CODE...</small>
+									<div className={styles.noOutputIcon}></div>
+									<p>No output yet. Click "Run" to execute.</p>
+									<small>Logs and errors will appear here.</small>
 								</div>
 							) : (
 								<div className={styles.outputContent}>

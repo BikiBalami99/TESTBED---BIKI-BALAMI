@@ -1,6 +1,6 @@
 // Auto-discovery system for apps
 import React from "react";
-import { Grid3X3, Code, Settings, FileText, Terminal } from "lucide-react";
+import { Grid3X3, Code, Settings, FileText } from "lucide-react";
 
 export interface AppInfo {
 	id: string;
