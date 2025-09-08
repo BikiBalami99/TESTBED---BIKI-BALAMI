@@ -49,8 +49,9 @@ Apps run inside draggable/resizable windows (`Window.tsx`). Each window:
 **Problem**: Media queries don't work inside windows since they use viewport dimensions.
 
 **Solution**: Use `WindowContext` to get current window dimensions, then expose a
-`data-screen` (or similar) attribute in your markup and style via CSS. This keeps
-responsive rules in CSS (SOC) instead of inline styles.
+`data-screen` (or similar) attribute in your markup and style via CSS using nested
+selectors that resemble `@media` query blocks. This keeps responsive rules in CSS
+(SOC) instead of inline styles.
 
 ```typescript
 import { useMemo } from "react";
@@ -76,38 +77,37 @@ function YourApp() {
 ```
 
 ```css
-/* YourApp.module.css */
+/* YourApp.module.css - @media query style with CSS nesting */
 .container {
 	display: flex;
+	transition: padding 120ms ease, gap 120ms ease, flex-direction 120ms ease;
 }
 
-.container[data-screen="sm"] {
-	flex-direction: column;
-	padding: 0.5rem;
+/* ===== @media-like (min-width: 800px) - LARGE ===== */
+.container[data-screen="lg"] {
+	flex-direction: row;
+	padding: 1rem;
+
+	&[data-h="tall"] {
+		gap: 1rem;
+	}
 }
 
+/* ===== @media-like (min-width: 500px and max-width: 799px) - MEDIUM ===== */
 .container[data-screen="md"] {
 	flex-direction: row;
 	padding: 0.75rem;
 }
 
-.container[data-screen="lg"] {
-	flex-direction: row;
-	padding: 1rem;
-}
+/* ===== @media-like (max-width: 499px) - SMALL ===== */
+.container[data-screen="sm"] {
+	flex-direction: column;
+	padding: 0.5rem;
 
-/* Optional height tiers */
-.container[data-h="short"] {
-	height: 100%;
-	overflow: auto;
-}
-.container[data-h="tall"] {
-	gap: 1rem;
-}
-
-/* Smooth visual change on resize */
-.container {
-	transition: padding 120ms ease, gap 120ms ease, flex-direction 120ms ease;
+	&[data-h="short"] {
+		height: 100%;
+		overflow: auto;
+	}
 }
 ```
 
