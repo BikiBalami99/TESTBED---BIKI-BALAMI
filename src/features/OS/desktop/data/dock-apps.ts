@@ -18,6 +18,7 @@ export const DOCK_APPS: DockAppConfig[] = [
 	{ appId: "notes" },
 	{ appId: "settings" },
 	{ appId: "features-checklist" },
+	{ appId: "memory" },
 ];
 
 /**

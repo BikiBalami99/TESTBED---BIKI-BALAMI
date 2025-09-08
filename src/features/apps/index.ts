@@ -1,6 +1,6 @@
 // Auto-discovery system for apps
 import React from "react";
-import { Grid3X3, Code, Settings, FileText, Sparkles } from "lucide-react";
+import { Grid3X3, Code, Settings, FileText, Sparkles, Database } from "lucide-react";
 
 export interface AppInfo {
 	id: string;
@@ -53,6 +53,14 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		component: React.lazy(() => import("./features-checklist/FeaturesChecklist")),
 		category: "system",
 		description: "Begin here • Quick tour and checklist",
+	},
+	{
+		id: "memory",
+		name: "Memory",
+		icon: Database,
+		component: React.lazy(() => import("./memory/Memory")),
+		category: "system",
+		description: "Manage browser storage and localStorage data",
 	},
 ];
 
