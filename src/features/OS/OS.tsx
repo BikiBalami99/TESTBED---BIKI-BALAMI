@@ -9,6 +9,7 @@ import React, {
 	useEffect,
 } from "react";
 import Window from "./Window/Window";
+import { DevProvider } from "./DevContext";
 import styles from "./OS.module.css";
 
 export interface WindowData {
@@ -509,41 +510,43 @@ export default function OS({ children }: OSProps) {
 	};
 
 	return (
-		<WindowContext.Provider value={contextValue}>
-			<div className={styles.os}>
-				{/* Layer 1: Desktop Background & Apps (z-index: 1-10) */}
-				<div className={styles.desktopLayer}>{children}</div>
+		<DevProvider>
+			<WindowContext.Provider value={contextValue}>
+				<div className={styles.os}>
+					{/* Layer 1: Desktop Background & Apps (z-index: 1-10) */}
+					<div className={styles.desktopLayer}>{children}</div>
 
-				{/* Layer 2: Windows (z-index: 100+) */}
-				<div className={styles.windowLayer}>
-					{visibleWindows.map((window) => (
-						<Window
-							key={window.id}
-							id={window.id}
-							title={window.title}
-							initialX={window.x}
-							initialY={window.y}
-							initialWidth={window.width}
-							initialHeight={window.height}
-							onClose={closeWindow}
-							onMinimize={minimizeWindow}
-							onMaximize={maximizeWindow}
-							onFocus={focusWindow}
-							onPositionUpdate={updateWindowPosition}
-							isFocused={window.id === focusedWindowId}
-							isMaximized={window.isMaximized}
-							isRestoring={window.isRestoring}
-							dockPosition={window.dockPosition}
-							zIndex={window.zIndex}
-						>
-							{window.content}
-						</Window>
-					))}
+					{/* Layer 2: Windows (z-index: 100+) */}
+					<div className={styles.windowLayer}>
+						{visibleWindows.map((window) => (
+							<Window
+								key={window.id}
+								id={window.id}
+								title={window.title}
+								initialX={window.x}
+								initialY={window.y}
+								initialWidth={window.width}
+								initialHeight={window.height}
+								onClose={closeWindow}
+								onMinimize={minimizeWindow}
+								onMaximize={maximizeWindow}
+								onFocus={focusWindow}
+								onPositionUpdate={updateWindowPosition}
+								isFocused={window.id === focusedWindowId}
+								isMaximized={window.isMaximized}
+								isRestoring={window.isRestoring}
+								dockPosition={window.dockPosition}
+								zIndex={window.zIndex}
+							>
+								{window.content}
+							</Window>
+						))}
+					</div>
+
+					{/* Layer 3: System UI (Menu Bar, Dock) - handled by children but with proper z-index */}
+					{/* These will be rendered by Desktop component but with correct stacking context */}
 				</div>
-
-				{/* Layer 3: System UI (Menu Bar, Dock) - handled by children but with proper z-index */}
-				{/* These will be rendered by Desktop component but with correct stacking context */}
-			</div>
-		</WindowContext.Provider>
+			</WindowContext.Provider>
+		</DevProvider>
 	);
 }

@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { X, Minus, Maximize2 } from "lucide-react";
 import styles from "./Window.module.css";
 import { WindowProvider, useWindowContext, WindowContext } from "./WindowContext";
+import { useDevContextSafe } from "../DevContext";
 
 interface WindowProps {
 	id: string;
@@ -71,6 +72,9 @@ function WindowContent({
 }: WindowProps) {
 	const [position, setPosition] = useState({ x: initialX, y: initialY });
 	const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
+
+	// Dev context for debugging features
+	const devContext = useDevContextSafe();
 
 	// Get WindowContext to notify about dimension changes
 	const windowContext = React.useContext(WindowContext);
@@ -653,11 +657,51 @@ function WindowContent({
 				</div>
 
 				{/* Window Title */}
-				<div className={styles.windowTitle}>{title}</div>
+				<div className={styles.windowTitle}>
+					{title}
+					{devContext?.isDevMode && devContext?.features.showWindowZIndex && (
+						<span
+							style={{
+								marginLeft: "8px",
+								fontSize: "10px",
+								color: "rgba(255, 255, 255, 0.6)",
+								background: "rgba(255, 255, 255, 0.1)",
+								padding: "2px 6px",
+								borderRadius: "3px",
+								fontFamily: "monospace",
+							}}
+						>
+							z:{zIndex}
+						</span>
+					)}
+				</div>
 
 				{/* Empty space for balance */}
 				<div style={{ width: "60px" }}></div>
 			</div>
+
+			{/* Dev Mode Debug Overlay */}
+			{devContext?.isDevMode && devContext?.features.showWindowDimensions && (
+				<div
+					style={{
+						position: "absolute",
+						top: "40px",
+						right: "8px",
+						background: "rgba(0, 0, 0, 0.8)",
+						color: "#00ff00",
+						padding: "4px 8px",
+						borderRadius: "4px",
+						fontSize: "11px",
+						fontFamily: "monospace",
+						zIndex: 1000,
+						pointerEvents: "none",
+						border: "1px solid rgba(0, 255, 0, 0.3)",
+						backdropFilter: "blur(4px)",
+					}}
+				>
+					{size.width} × {size.height}
+				</div>
+			)}
 
 			{/* Content Area */}
 			<div className={styles.contentArea}>{children}</div>
