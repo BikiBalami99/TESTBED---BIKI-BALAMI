@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { AVAILABLE_APPS, AppInfo } from "../AppIcons/AppIcons";
+// Removed unused imports
 import {
 	createAppContextMenuItems,
 	createDesktopContextMenuItems,
@@ -20,7 +20,7 @@ interface UseContextMenuProps {
 	onNewWindow: (appId: string) => void;
 	onCloseAllWindows: (appId: string) => void;
 	onShowDesktop: () => void;
-	getAllWindowsForApp: (appId: string) => any[];
+	getAllWindowsForApp: (appId: string) => unknown[];
 }
 
 export function useContextMenu({

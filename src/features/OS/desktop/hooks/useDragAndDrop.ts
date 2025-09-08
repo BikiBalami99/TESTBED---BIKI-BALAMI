@@ -84,8 +84,8 @@ export function useDragAndDrop({
 			const viewportHeight = window.innerHeight;
 			const iconSize = 80;
 
-			let constrainedX = Math.max(20, Math.min(x, viewportWidth - iconSize));
-			let constrainedY = Math.max(60, Math.min(y, viewportHeight - iconSize - 100));
+			const constrainedX = Math.max(20, Math.min(x, viewportWidth - iconSize));
+			const constrainedY = Math.max(60, Math.min(y, viewportHeight - iconSize - 100));
 
 			if (
 				!isPositionOccupied(

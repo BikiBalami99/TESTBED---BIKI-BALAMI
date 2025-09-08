@@ -1,0 +1,234 @@
+/* Mobile Window - Android-style fullscreen app */
+
+.mobileWindow {
+	position: fixed;
+	background: #ffffff;
+	overflow: hidden;
+	user-select: none;
+	touch-action: manipulation;
+	/* Smooth transitions for mobile interactions */
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	/* Prevent overscroll */
+	overscroll-behavior: none;
+}
+
+.mobileWindow.focused {
+	/* Slightly more elevation when focused */
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.mobileWindow.closing {
+	transform: translateY(100%);
+	opacity: 0;
+}
+
+/* Mobile Header - Android-style app bar */
+.mobileHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 56px;
+	padding: 0 4px;
+	background: #ffffff;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	/* Sticky header */
+	position: relative;
+	z-index: 10;
+	/* Material Design elevation */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.headerLeft,
+.headerRight {
+	display: flex;
+	align-items: center;
+	min-width: 48px;
+}
+
+.headerCenter {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 8px;
+}
+
+.headerButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: none;
+	background: transparent;
+	border-radius: 24px;
+	color: rgba(0, 0, 0, 0.87);
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.1s ease;
+	/* Touch target optimization */
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.headerButton:hover {
+	background: rgba(0, 0, 0, 0.04);
+}
+
+.headerButton:active {
+	background: rgba(0, 0, 0, 0.08);
+	transform: scale(0.95);
+}
+
+.windowTitle {
+	font-size: 1.25rem;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.87);
+	margin: 0;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
+	font-family: -apple-system, BlinkMacSystemFont, "Roboto", "SF Pro Display", system-ui,
+		sans-serif;
+	line-height: 1.2;
+}
+
+.debugInfo {
+	display: inline-block;
+	margin-left: 8px;
+	font-size: 0.75rem;
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.54);
+	background: rgba(0, 0, 0, 0.08);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+}
+
+/* Content Area */
+.contentArea {
+	width: 100%;
+	overflow: auto;
+	background: #ffffff;
+	/* Smooth scrolling */
+	-webkit-overflow-scrolling: touch;
+	/* Prevent rubber band scrolling */
+	overscroll-behavior-y: none;
+}
+
+/* Dev Mode Debug Overlay */
+.debugOverlay {
+	position: absolute;
+	top: 64px;
+	right: 8px;
+	background: rgba(0, 0, 0, 0.8);
+	color: #00ff00;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+	z-index: 1000;
+	pointer-events: none;
+	border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+/* Swipe Gesture Indicator */
+.swipeIndicator {
+	position: absolute;
+	left: 20px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0, 0, 0, 0.6);
+	color: white;
+	padding: 12px;
+	border-radius: 50%;
+	z-index: 1001;
+	pointer-events: none;
+	animation: swipePulse 0.3s ease-out;
+}
+
+@keyframes swipePulse {
+	0% {
+		opacity: 0;
+		transform: translateY(-50%) translateX(-10px) scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(-50%) translateX(0) scale(1);
+	}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.mobileWindow {
+		background: #121212;
+	}
+
+	.mobileHeader {
+		background: #1e1e1e;
+		border-bottom-color: rgba(255, 255, 255, 0.12);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	.headerButton {
+		color: rgba(255, 255, 255, 0.87);
+	}
+
+	.headerButton:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.headerButton:active {
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.windowTitle {
+		color: rgba(255, 255, 255, 0.87);
+	}
+
+	.debugInfo {
+		color: rgba(255, 255, 255, 0.6);
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.contentArea {
+		background: #121212;
+	}
+}
+
+/* Landscape orientation adjustments */
+@media screen and (orientation: landscape) {
+	.mobileHeader {
+		height: 48px;
+	}
+
+	.headerButton {
+		width: 40px;
+		height: 40px;
+		border-radius: 20px;
+	}
+
+	.windowTitle {
+		font-size: 1.125rem;
+	}
+}
+
+/* Very small screens (< 375px wide) */
+@media screen and (max-width: 374px) {
+	.windowTitle {
+		font-size: 1.125rem;
+	}
+
+	.debugInfo {
+		font-size: 0.6875rem;
+	}
+}
+
+/* Large mobile screens (> 414px wide) */
+@media screen and (min-width: 415px) and (max-width: 768px) {
+	.windowTitle {
+		font-size: 1.375rem;
+	}
+}

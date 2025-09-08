@@ -22,8 +22,6 @@ export default function DockPreview({
 	position,
 	maxZIndex,
 }: DockPreviewProps) {
-	if (windows.length === 0) return null;
-
 	const previewZ = useMemo(() => {
 		// Simple z-index since we're now in the system UI layer which is already above all windows
 		const z = 1;
@@ -35,6 +33,8 @@ export default function DockPreview({
 		});
 		return z;
 	}, [maxZIndex, windows]);
+
+	if (windows.length === 0) return null;
 
 	return (
 		<div className={styles.previewInvisibleBackground} style={{ zIndex: previewZ }}>

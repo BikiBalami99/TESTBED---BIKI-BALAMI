@@ -1,0 +1,338 @@
+/* Mobile OS - Main mobile interface container */
+
+.mobileOS {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	/* Prevent overscroll on mobile */
+	overscroll-behavior: none;
+	/* Ensure touch interactions work properly */
+	touch-action: manipulation;
+}
+
+/* Desktop content wrapper for proper scaling */
+.desktopWrapper {
+	position: relative;
+	width: 100vw;
+	height: calc(100vh - 32px); /* Account for menu bar */
+	overflow: hidden;
+	transform-origin: top left;
+	/* Ensure proper viewport fit */
+	max-width: 100vw;
+	box-sizing: border-box;
+}
+
+/* Force desktop content to fit mobile viewport */
+.desktopWrapper :global(.desktop) {
+	width: 100vw !important;
+	height: calc(100vh - 32px) !important;
+	overflow: hidden;
+	position: relative;
+}
+
+/* Ensure all desktop children fit within bounds */
+.desktopWrapper * {
+	box-sizing: border-box;
+}
+
+/* Mobile dock wrapper */
+.mobileDockWrapper {
+	position: fixed;
+	bottom: 64px; /* Directly above mobile navigation (no gap) */
+	left: 0;
+	right: 0;
+	z-index: 9500;
+	pointer-events: auto !important;
+	display: flex;
+	justify-content: center;
+}
+
+/* Split Screen Mode */
+.splitScreenContainer {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+}
+
+.splitScreenApp {
+	flex: 1;
+	position: relative;
+	overflow: hidden;
+}
+
+.splitScreenDivider {
+	height: 2px;
+	background: rgba(0, 0, 0, 0.2);
+	position: relative;
+	z-index: 1500;
+	/* Add a handle for dragging (future enhancement) */
+}
+
+.splitScreenDivider::before {
+	content: "";
+	position: absolute;
+	top: -4px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 40px;
+	height: 10px;
+	background: rgba(0, 0, 0, 0.3);
+	border-radius: 2px;
+}
+
+/* Home Screen */
+.homeScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 140px; /* Account for dock + smaller navigation bar */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	background: linear-gradient(
+		135deg,
+		rgba(102, 126, 234, 0.1) 0%,
+		rgba(118, 75, 162, 0.1) 100%
+	);
+	backdrop-filter: blur(20px);
+}
+
+.homeScreenContent {
+	text-align: center;
+	max-width: 400px;
+	width: 100%;
+}
+
+.homeScreenTitle {
+	font-size: 2rem;
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.95);
+	margin-bottom: 2rem;
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+}
+
+.appGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	justify-items: center;
+}
+
+.homeAppIcon {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 16px;
+	background: transparent;
+	border: none;
+	border-radius: 20px;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	/* Touch optimization */
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.homeAppIcon:hover {
+	background: rgba(255, 255, 255, 0.1);
+	transform: translateY(-2px);
+}
+
+.homeAppIcon:active {
+	transform: translateY(0) scale(0.95);
+	background: rgba(255, 255, 255, 0.15);
+}
+
+.homeAppIconWrapper {
+	width: 64px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(10px);
+	border-radius: 18px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	color: rgba(255, 255, 255, 0.9);
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.homeAppIcon:hover .homeAppIconWrapper {
+	background: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.3);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.homeAppName {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 80px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.homeScreenTitle {
+		color: rgba(255, 255, 255, 0.95);
+	}
+
+	.homeAppIconWrapper {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.15);
+	}
+
+	.homeAppIcon:hover .homeAppIconWrapper {
+		background: rgba(255, 255, 255, 0.15);
+		border-color: rgba(255, 255, 255, 0.25);
+	}
+
+	.homeAppName {
+		color: rgba(255, 255, 255, 0.9);
+	}
+}
+
+/* Landscape orientation adjustments */
+@media screen and (orientation: landscape) {
+	.splitScreenContainer {
+		flex-direction: row;
+	}
+
+	.splitScreenDivider {
+		width: 2px;
+		height: 100%;
+	}
+
+	.splitScreenDivider::before {
+		top: 50%;
+		left: -4px;
+		transform: translateY(-50%);
+		width: 10px;
+		height: 40px;
+	}
+
+	.homeScreen {
+		bottom: 84px; /* Account for navigation bar being outside in landscape */
+	}
+
+	.homeScreenTitle {
+		font-size: 1.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.appGrid {
+		grid-template-columns: repeat(4, 1fr);
+		gap: 20px;
+	}
+
+	.homeAppIconWrapper {
+		width: 56px;
+		height: 56px;
+		border-radius: 16px;
+	}
+
+	.homeAppName {
+		font-size: 0.8125rem;
+		max-width: 70px;
+	}
+}
+
+/* Small screens adjustments */
+@media screen and (max-width: 374px) {
+	.homeScreen {
+		padding: 16px;
+	}
+
+	.homeScreenTitle {
+		font-size: 1.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.appGrid {
+		gap: 20px;
+	}
+
+	.homeAppIcon {
+		padding: 12px;
+	}
+
+	.homeAppIconWrapper {
+		width: 56px;
+		height: 56px;
+		border-radius: 16px;
+	}
+
+	.homeAppName {
+		font-size: 0.8125rem;
+		max-width: 70px;
+	}
+}
+
+/* Large mobile screens */
+@media screen and (min-width: 415px) and (max-width: 768px) {
+	.homeScreenTitle {
+		font-size: 2.25rem;
+		margin-bottom: 2.5rem;
+	}
+
+	.appGrid {
+		grid-template-columns: repeat(4, 1fr);
+		gap: 28px;
+	}
+
+	.homeAppIconWrapper {
+		width: 72px;
+		height: 72px;
+		border-radius: 20px;
+	}
+
+	.homeAppName {
+		font-size: 0.9375rem;
+		max-width: 90px;
+	}
+}
+
+/* Prevent text selection on mobile */
+.mobileOS * {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* Allow text selection in content areas */
+.mobileOS input,
+.mobileOS textarea,
+.mobileOS [contenteditable] {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+/* Smooth scrolling for mobile */
+.mobileOS {
+	-webkit-overflow-scrolling: touch;
+	scroll-behavior: smooth;
+}
+
+/* Hide scrollbars on mobile */
+.mobileOS::-webkit-scrollbar {
+	display: none;
+}
+
+.mobileOS {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
