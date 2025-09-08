@@ -13,6 +13,7 @@ import {
 	CheckCircle,
 	Info,
 	Square,
+	ChevronRight,
 } from "lucide-react";
 import styles from "./JavaScriptPlayground.module.css";
 
@@ -23,8 +24,16 @@ interface OutputEntry {
 	timestamp: Date;
 }
 
-export default function JavaScriptPlayground() {
-	const [code, setCode] = useState(`// ⚡ MATRIX HACKER TERMINAL ⚡
+interface Tab {
+	id: string;
+	name: string;
+	code: string;
+	output: OutputEntry[];
+	executionTime: number;
+	isRunning: boolean;
+}
+
+const defaultCode = `// ⚡ MATRIX HACKER TERMINAL ⚡
 // EXECUTE YOUR CODE IN THE MATRIX
 
 console.log("SYSTEM ONLINE... ACCESS GRANTED");
@@ -49,16 +58,48 @@ const hackSequence = (depth) => {
 
 console.log("HACK_SEQUENCE(10):", hackSequence(10));
 
-// EXECUTE: await infiltrateSystem()`);
+// EXECUTE: await infiltrateSystem()`;
 
-	const [output, setOutput] = useState<OutputEntry[]>([]);
-	const [isRunning, setIsRunning] = useState(false);
-	const [executionTime, setExecutionTime] = useState<number>(0);
-	const [isOutputCollapsed, setIsOutputCollapsed] = useState(false);
+export default function JavaScriptPlayground() {
+	const [tabs, setTabs] = useState<Tab[]>([
+		{
+			id: "tab-1",
+			name: "HACK_01",
+			code: defaultCode,
+			output: [],
+			executionTime: 0,
+			isRunning: false,
+		},
+	]);
+	const [activeTabId, setActiveTabId] = useState<string>("tab-1");
 	const [leftPanelWidth, setLeftPanelWidth] = useState<number>(50); // percentage
 	const [isDragging, setIsDragging] = useState(false);
+	const [isCollapsed, setIsCollapsed] = useState(false);
+
+	// Dynamic responsive thresholds
+	const getResponsiveThresholds = useCallback(() => {
+		if (!containerRef.current)
+			return { minWidth: 20, maxWidth: 95, collapseThreshold: 85 };
+
+		const containerWidth = containerRef.current.offsetWidth;
+
+		if (containerWidth < 600) {
+			// Mobile-like behavior
+			return { minWidth: 15, maxWidth: 98, collapseThreshold: 90 };
+		} else if (containerWidth < 900) {
+			// Tablet-like behavior
+			return { minWidth: 18, maxWidth: 96, collapseThreshold: 88 };
+		} else {
+			// Desktop behavior
+			return { minWidth: 20, maxWidth: 95, collapseThreshold: 85 };
+		}
+	}, []);
 	const outputRef = useRef<HTMLDivElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
+
+	// Get current active tab
+	const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0];
+	const { code, output, executionTime, isRunning } = activeTab;
 
 	// Scroll to bottom when output changes
 	useEffect(() => {
@@ -68,23 +109,40 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 	}, [output]);
 
 	// Handle textarea changes
-	const handleCodeChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setCode(e.target.value);
-	}, []);
+	const handleCodeChange = useCallback(
+		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			const newCode = e.target.value;
+			setTabs((prevTabs) =>
+				prevTabs.map((tab) => (tab.id === activeTabId ? { ...tab, code: newCode } : tab))
+			);
+		},
+		[activeTabId]
+	);
 
-	const addOutputEntry = useCallback((type: OutputEntry["type"], message: string) => {
-		const entry: OutputEntry = {
-			id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-			type,
-			message,
-			timestamp: new Date(),
-		};
-		setOutput((prev) => [...prev, entry]);
-	}, []);
+	const addOutputEntry = useCallback(
+		(type: OutputEntry["type"], message: string) => {
+			const entry: OutputEntry = {
+				id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+				type,
+				message,
+				timestamp: new Date(),
+			};
+			setTabs((prevTabs) =>
+				prevTabs.map((tab) =>
+					tab.id === activeTabId ? { ...tab, output: [...tab.output, entry] } : tab
+				)
+			);
+		},
+		[activeTabId]
+	);
 
 	const runCode = async () => {
-		setIsRunning(true);
-		setOutput([]);
+		// Update running state and clear output for active tab
+		setTabs((prevTabs) =>
+			prevTabs.map((tab) =>
+				tab.id === activeTabId ? { ...tab, isRunning: true, output: [] } : tab
+			)
+		);
 		const startTime = performance.now();
 
 		// Store original console methods
@@ -145,7 +203,12 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 			await eval(asyncCode);
 
 			const endTime = performance.now();
-			setExecutionTime(endTime - startTime);
+			const executionTime = endTime - startTime;
+			setTabs((prevTabs) =>
+				prevTabs.map((tab) =>
+					tab.id === activeTabId ? { ...tab, executionTime, isRunning: false } : tab
+				)
+			);
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			addOutputEntry("error", `⚠ SYSTEM ERROR: ${errorMessage}`);
@@ -160,49 +223,39 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 			console.error = originalError;
 			console.warn = originalWarn;
 			console.info = originalInfo;
-			setIsRunning(false);
+			setTabs((prevTabs) =>
+				prevTabs.map((tab) =>
+					tab.id === activeTabId ? { ...tab, isRunning: false } : tab
+				)
+			);
 		}
 	};
 
 	const clearOutput = () => {
-		setOutput([]);
-		setExecutionTime(0);
+		setTabs((prevTabs) =>
+			prevTabs.map((tab) =>
+				tab.id === activeTabId ? { ...tab, output: [], executionTime: 0 } : tab
+			)
+		);
+		addOutputEntry("info", "⚡ OUTPUT CLEARED");
 	};
 
 	const clearCode = () => {
-		setCode("");
+		setTabs((prevTabs) =>
+			prevTabs.map((tab) => (tab.id === activeTabId ? { ...tab, code: "" } : tab))
+		);
 		addOutputEntry("info", "⚡ CODE CLEARED");
 	};
 
-	const resetCode = () => {
-		setCode(`// ⚡ MATRIX HACKER TERMINAL ⚡
-// EXECUTE YOUR CODE IN THE MATRIX
-
-console.log("SYSTEM ONLINE... ACCESS GRANTED");
-
-// HACK THE MATRIX WITH MODERN JS:
-const dataStream = [1, 0, 1, 0, 1];
-const encrypted = dataStream.map(bit => bit ^ 1);
-console.log("ENCRYPTED DATA:", encrypted);
-
-// ASYNC BREACH PROTOCOL
-async function infiltrateSystem() {
-  return new Promise(resolve => {
-    setTimeout(() => resolve("FIREWALL BREACHED ⚡"), 1000);
-  });
-}
-
-// RECURSIVE ALGORITHM
-const hackSequence = (depth) => {
-  if (depth <= 1) return depth;
-  return hackSequence(depth - 1) + hackSequence(depth - 2);
-};
-
-console.log("HACK_SEQUENCE(10):", hackSequence(10));
-
-// EXECUTE: await infiltrateSystem()`);
-		setOutput([]);
-		setExecutionTime(0);
+	const resetTab = () => {
+		setTabs((prevTabs) =>
+			prevTabs.map((tab) =>
+				tab.id === activeTabId
+					? { ...tab, code: defaultCode, output: [], executionTime: 0 }
+					: tab
+			)
+		);
+		addOutputEntry("info", "⚡ TAB RESET TO DEFAULT");
 	};
 
 	const copyCode = () => {
@@ -229,11 +282,55 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 			const reader = new FileReader();
 			reader.onload = (e) => {
 				const content = e.target?.result as string;
-				setCode(content);
+				setTabs((prevTabs) =>
+					prevTabs.map((tab) =>
+						tab.id === activeTabId ? { ...tab, code: content } : tab
+					)
+				);
 				addOutputEntry("info", `⚡ UPLOADED HACK: ${file.name}`);
 			};
 			reader.readAsText(file);
 		}
+	};
+
+	// Tab management functions
+	const createNewTab = () => {
+		const newTabId = `tab-${Date.now()}`;
+		const newTab: Tab = {
+			id: newTabId,
+			name: `HACK_${String(tabs.length + 1).padStart(2, "0")}`,
+			code: "",
+			output: [],
+			executionTime: 0,
+			isRunning: false,
+		};
+		setTabs((prevTabs) => [...prevTabs, newTab]);
+		setActiveTabId(newTabId);
+		addOutputEntry("info", "⚡ NEW TAB CREATED");
+	};
+
+	const closeTab = (tabId: string) => {
+		if (tabs.length <= 1) return; // Don't close the last tab
+
+		setTabs((prevTabs) => {
+			const newTabs = prevTabs.filter((tab) => tab.id !== tabId);
+			// If closing active tab, switch to the first remaining tab
+			if (tabId === activeTabId) {
+				setActiveTabId(newTabs[0].id);
+			}
+			return newTabs;
+		});
+		addOutputEntry("info", "⚡ TAB CLOSED");
+	};
+
+	const switchTab = (tabId: string) => {
+		setActiveTabId(tabId);
+	};
+
+	const renameTab = (tabId: string, newName: string) => {
+		setTabs((prevTabs) =>
+			prevTabs.map((tab) => (tab.id === tabId ? { ...tab, name: newName } : tab))
+		);
 	};
 
 	const formatTime = (ms: number) => {
@@ -255,16 +352,35 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 		}
 	};
 
-	// Toggle output panel collapse
-	const toggleOutputCollapse = useCallback(() => {
-		setIsOutputCollapsed((prev) => !prev);
-	}, []);
+	// Toggle collapse with intelligent behavior
+	const toggleCollapse = useCallback(() => {
+		const thresholds = getResponsiveThresholds();
 
-	// Handle resizer drag
-	const handleMouseDown = useCallback((e: React.MouseEvent) => {
-		e.preventDefault();
-		setIsDragging(true);
-	}, []);
+		if (isCollapsed) {
+			// Expand to a reasonable size
+			const targetWidth = Math.min(50, thresholds.maxWidth - 10);
+			setLeftPanelWidth(targetWidth);
+			setIsCollapsed(false);
+		} else {
+			// Collapse to maximum width (hide output)
+			setLeftPanelWidth(thresholds.maxWidth);
+			setIsCollapsed(true);
+		}
+	}, [isCollapsed, getResponsiveThresholds]);
+
+	// Handle resizer drag with intelligent collapse detection
+	const handleMouseDown = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			setIsDragging(true);
+
+			// If collapsed, start expanding immediately
+			if (isCollapsed) {
+				setIsCollapsed(false);
+			}
+		},
+		[isCollapsed]
+	);
 
 	const handleMouseMove = useCallback(
 		(e: MouseEvent) => {
@@ -272,12 +388,24 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 
 			const containerRect = containerRef.current.getBoundingClientRect();
 			const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+			const thresholds = getResponsiveThresholds();
 
-			// Constrain between 20% and 80%
-			const clampedWidth = Math.min(Math.max(newLeftWidth, 20), 80);
-			setLeftPanelWidth(clampedWidth);
+			// Constrain to responsive thresholds
+			const constrainedWidth = Math.max(
+				thresholds.minWidth,
+				Math.min(thresholds.maxWidth, newLeftWidth)
+			);
+
+			// Auto-collapse detection: if dragging near max width, collapse
+			if (constrainedWidth >= thresholds.collapseThreshold) {
+				setLeftPanelWidth(thresholds.maxWidth);
+				setIsCollapsed(true);
+			} else {
+				setLeftPanelWidth(constrainedWidth);
+				setIsCollapsed(false);
+			}
 		},
-		[isDragging]
+		[isDragging, getResponsiveThresholds]
 	);
 
 	const handleMouseUp = useCallback(() => {
@@ -306,6 +434,38 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 
 	return (
 		<div className={styles.playground}>
+			{/* Tab Bar */}
+			<div className={styles.tabBar}>
+				<div className={styles.tabs}>
+					{tabs.map((tab) => (
+						<div
+							key={tab.id}
+							className={`${styles.tab} ${
+								tab.id === activeTabId ? styles.activeTab : ""
+							}`}
+							onClick={() => switchTab(tab.id)}
+						>
+							<span className={styles.tabName}>{tab.name}</span>
+							{tabs.length > 1 && (
+								<button
+									className={styles.closeTabButton}
+									onClick={(e) => {
+										e.stopPropagation();
+										closeTab(tab.id);
+									}}
+									title="Close Tab"
+								>
+									×
+								</button>
+							)}
+						</div>
+					))}
+				</div>
+				<button className={styles.newTabButton} onClick={createNewTab} title="New Tab">
+					+
+				</button>
+			</div>
+
 			{/* Header with hacker controls */}
 			<div className={styles.header}>
 				<div className={styles.titleSection}>
@@ -352,13 +512,6 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 								style={{ display: "none" }}
 							/>
 						</label>
-						<button
-							className={styles.secondaryButton}
-							onClick={resetCode}
-							title="Reset Terminal"
-						>
-							<RotateCcw size={14} />
-						</button>
 					</div>
 				</div>
 			</div>
@@ -366,7 +519,13 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 			{/* Main content area - resizable panels */}
 			<div className={styles.content} ref={containerRef}>
 				{/* Left panel - Code editor */}
-				<div className={styles.leftPanel} style={{ width: `${leftPanelWidth}%` }}>
+				<div
+					className={`${styles.leftPanel} ${isCollapsed ? styles.expanded : ""}`}
+					style={{
+						width: `${leftPanelWidth}%`,
+						transition: isDragging ? "none" : "width 0.2s ease-out",
+					}}
+				>
 					<div className={styles.editorHeader}>
 						<h3 className={styles.sectionTitle}>HACK EDITOR</h3>
 						<div className={styles.editorControls}>
@@ -381,7 +540,7 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 								title="Clear Code"
 							>
 								<Trash2 size={12} />
-								CLEAR
+								CLEAR CODE
 							</button>
 						</div>
 					</div>
@@ -401,33 +560,61 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 					</div>
 				</div>
 
-				{/* Resizer handle */}
-				{!isOutputCollapsed && (
-					<div
-						className={styles.resizer}
-						onMouseDown={handleMouseDown}
-						style={{ cursor: isDragging ? "col-resize" : "col-resize" }}
-					/>
-				)}
+				{/* Resizer handle - always show, but make it edge-accessible when collapsed */}
+				<div
+					className={`${styles.resizer} ${isCollapsed ? styles.edgeResizer : ""}`}
+					onMouseDown={handleMouseDown}
+					style={{
+						cursor: isDragging ? "col-resize" : "col-resize",
+						opacity: isCollapsed ? 0.3 : 1,
+						transition: isDragging ? "none" : "opacity 0.2s ease-out",
+					}}
+					title={isCollapsed ? "Drag to expand output panel" : "Resize panels"}
+				/>
 
-				{/* Right panel - Output */}
-				{!isOutputCollapsed && (
+				{/* Right panel - Output or Collapsed Panel */}
+				{isCollapsed ? (
+					<div className={styles.collapsedPanel}>
+						<button
+							className={styles.showOutputButton}
+							onClick={toggleCollapse}
+							title="Show Output (or drag the resize handle)"
+						>
+							<ChevronRight size={16} />
+						</button>
+						<div className={styles.collapsedHint}>
+							<span>Output hidden - click button or drag edge to expand</span>
+						</div>
+					</div>
+				) : (
 					<div
 						className={styles.rightPanel}
-						style={{ width: `${100 - leftPanelWidth}%` }}
+						style={{
+							width: `${100 - leftPanelWidth}%`,
+							transition: isDragging ? "none" : "width 0.2s ease-out",
+						}}
 					>
 						<div className={styles.outputHeader}>
 							<h3 className={styles.sectionTitle}>SYSTEM OUTPUT</h3>
 							<div className={styles.outputControls}>
 								<button
-									className={styles.clearButton}
+									className={styles.clearOutputButton}
 									onClick={clearOutput}
 									disabled={output.length === 0}
+									title="Clear Output"
 								>
 									<Trash2 size={14} />
-									PURGE
+									CLEAR OUTPUT
 								</button>
-								<button className={styles.collapseButton} onClick={toggleOutputCollapse}>
+								<button
+									className={styles.resetTabButton}
+									onClick={resetTab}
+									title="Reset Tab to Default"
+								>
+									<RotateCcw size={14} />
+									RESET TAB
+								</button>
+								<button className={styles.collapseButton} onClick={toggleCollapse}>
 									<Square size={14} />
 									HIDE
 								</button>
@@ -463,16 +650,6 @@ console.log("HACK_SEQUENCE(10):", hackSequence(10));
 								</div>
 							)}
 						</div>
-					</div>
-				)}
-
-				{/* Show output button when collapsed */}
-				{isOutputCollapsed && (
-					<div className={styles.collapsedPanel}>
-						<button className={styles.showOutputButton} onClick={toggleOutputCollapse}>
-							<Square size={14} />
-							SHOW OUTPUT
-						</button>
 					</div>
 				)}
 			</div>

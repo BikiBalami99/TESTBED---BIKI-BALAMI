@@ -17,6 +17,112 @@
 	text-shadow: 0 0 5px #00ff41;
 }
 
+/* Tab Bar */
+.tabBar {
+	display: flex;
+	align-items: center;
+	background: #000000;
+	border-bottom: 2px solid #00ff41;
+	padding: 0;
+	height: 40px;
+	min-height: 40px;
+}
+
+.tabs {
+	display: flex;
+	flex: 1;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.tab {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	background: #000000;
+	color: #00ff41;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: 11px;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	text-shadow: 0 0 3px #00ff41;
+	min-width: 120px;
+	position: relative;
+
+	transition: border-bottom 0.2s ease-in-out;
+}
+
+.tab:hover {
+	background: rgba(0, 255, 65, 0.1);
+	text-shadow: 0 0 5px #00ff41;
+}
+
+.activeTab {
+	background: rgba(0, 255, 65, 0.15);
+	border-bottom: 1px solid #00ff41;
+	text-shadow: 0 0 8px #00ff41;
+	box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+}
+
+.tabName {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.closeTabButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #ff3333;
+	background: rgba(255, 51, 51, 0.1);
+	color: #ff3333;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: 12px;
+	font-weight: 400;
+	text-shadow: 0 0 3px #ff3333;
+	border-radius: 2px;
+}
+
+.closeTabButton:hover {
+	background: rgba(255, 51, 51, 0.2);
+	box-shadow: 0 0 5px #ff3333;
+}
+
+.newTabButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid #00ff41;
+	background: rgba(0, 255, 65, 0.1);
+	color: #00ff41;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: 16px;
+	font-weight: 400;
+	text-shadow: 0 0 5px #00ff41;
+	margin: 4px 8px;
+}
+
+.newTabButton:hover {
+	background: rgba(0, 255, 65, 0.2);
+	box-shadow: 0 0 10px #00ff41;
+}
+
 /* Header Styles */
 .header {
 	background: #000000;
@@ -191,8 +297,14 @@
 	display: flex;
 	flex-direction: column;
 	background: #000000;
-	min-width: 200px;
-	max-width: 80%;
+	min-width: 150px;
+	position: relative;
+	border-right: 1px solid #00ff41;
+}
+
+.leftPanel.expanded {
+	border-right: 2px solid #00ff41;
+	box-shadow: 2px 0 8px rgba(0, 255, 65, 0.2);
 }
 
 /* Resizer Handle */
@@ -202,12 +314,28 @@
 	cursor: col-resize;
 	position: relative;
 	flex-shrink: 0;
-	transition: none;
+	transition: box-shadow 0.2s ease;
 }
 
 .resizer:hover {
 	background: #00ff41;
 	box-shadow: 0 0 10px #00ff41;
+}
+
+.resizer.edgeResizer {
+	background: #00ff41;
+	box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+	animation: edgePulse 2s ease-in-out infinite;
+}
+
+@keyframes edgePulse {
+	0%,
+	100% {
+		box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+	}
+	50% {
+		box-shadow: 0 0 25px rgba(0, 255, 65, 1);
+	}
 }
 
 .resizer::before {
@@ -225,18 +353,35 @@
 	display: flex;
 	flex-direction: column;
 	background: #000000;
-	min-width: 200px;
-	max-width: 80%;
+	min-width: 150px;
+	position: relative;
 }
 
 /* Collapsed Panel */
 .collapsedPanel {
-	flex: 0 0 60px;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	background: #000000;
+	justify-content: flex-start;
+	background: rgba(0, 0, 0, 0.95);
 	border-left: 2px solid #00ff41;
+	padding-top: 60px;
+	box-shadow: -4px 0 12px rgba(0, 255, 65, 0.3);
+	backdrop-filter: blur(10px);
+	flex-shrink: 0;
+	min-width: 40px;
+	width: 40px;
+}
+
+.collapsedHint {
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	color: #00ff41;
+	font-size: 0.7rem;
+	margin-top: 20px;
+	opacity: 0.7;
+	text-transform: uppercase;
+	letter-spacing: 1px;
 }
 
 .editorHeader {
@@ -358,15 +503,42 @@
 	text-shadow: 0 0 5px #00ff41;
 }
 
-.collapseButton:hover,
-.showOutputButton:hover {
-	background: rgba(0, 255, 65, 0.2);
-	box-shadow: 0 0 10px #00ff41;
+.showOutputButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: 2px solid #00ff41;
+	background: rgba(0, 255, 65, 0.1);
+	color: #00ff41;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-family: inherit;
+	text-shadow: 0 0 5px #00ff41;
+	border-radius: 6px;
+	padding: 0;
+	margin: 0 0 10px 0;
+	box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
-.showOutputButton {
-	writing-mode: vertical-rl;
-	text-orientation: mixed;
+.showOutputButton svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+	fill: currentColor;
+	stroke: currentColor;
+	transform: rotate(180deg);
+}
+
+.showOutputButton:hover {
+	background: rgba(0, 255, 65, 0.2);
+	box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+	transform: scale(1.05);
+}
+
+.showOutputButton:active {
+	transform: scale(0.95);
 }
 
 .outputHeader {
@@ -386,7 +558,7 @@
 	gap: 6px;
 }
 
-.clearButton {
+.clearOutputButton {
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -404,16 +576,39 @@
 	text-shadow: 0 0 5px #ff3333;
 }
 
-.clearButton:hover:not(:disabled) {
+.clearOutputButton:hover:not(:disabled) {
 	background: rgba(255, 51, 51, 0.2);
 	box-shadow: 0 0 10px #ff3333;
 }
 
-.clearButton:disabled {
+.clearOutputButton:disabled {
 	opacity: 0.3;
 	cursor: not-allowed;
 	text-shadow: none;
 	box-shadow: none;
+}
+
+.resetTabButton {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border: 1px solid #ff3333;
+	background: rgba(255, 51, 51, 0.1);
+	color: #ff3333;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-family: inherit;
+	font-size: 10px;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	text-shadow: 0 0 5px #ff3333;
+}
+
+.resetTabButton:hover {
+	background: rgba(255, 51, 51, 0.2);
+	box-shadow: 0 0 10px #ff3333;
 }
 
 .clearCodeButton {
@@ -523,8 +718,8 @@
 }
 
 .outputEntry.info {
-	border-left-color: #00ffff;
-	background: rgba(0, 255, 255, 0.05);
+	border-left-color: #00ff41;
+	background: rgba(0, 255, 65, 0.05);
 }
 
 .outputEntryHeader {
