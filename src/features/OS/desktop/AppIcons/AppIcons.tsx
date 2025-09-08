@@ -11,9 +11,16 @@ interface AppIconProps {
 	size?: "small" | "medium" | "large";
 	onClick?: () => void;
 	className?: string;
+	variant?: "default" | "featured";
 }
 
-export function AppIcon({ app, size = "medium", onClick, className }: AppIconProps) {
+export function AppIcon({
+	app,
+	size = "medium",
+	onClick,
+	className,
+	variant = "default",
+}: AppIconProps) {
 	const Icon = app.icon;
 
 	const iconSize = {
@@ -22,16 +29,26 @@ export function AppIcon({ app, size = "medium", onClick, className }: AppIconPro
 		large: 64,
 	}[size];
 
+	const isFeatured = variant === "featured" || app.id === "features-checklist";
+
 	return (
 		<div
-			className={`${styles.appIcon} ${styles[size]} ${className || ""}`}
+			className={`${styles.appIcon} ${styles[size]} ${
+				isFeatured ? styles.featured : ""
+			} ${className || ""}`}
 			onClick={onClick}
 			title={app.description}
 		>
-			<div className={styles.iconWrapper}>
+			<div
+				className={`${styles.iconWrapper} ${
+					isFeatured ? styles.featuredIconWrapper : ""
+				}`}
+			>
 				<Icon size={iconSize} className={styles.icon} />
 			</div>
-			<span className={styles.appName}>{app.name}</span>
+			<span className={`${styles.appName} ${isFeatured ? styles.featuredName : ""}`}>
+				{app.name}
+			</span>
 		</div>
 	);
 }

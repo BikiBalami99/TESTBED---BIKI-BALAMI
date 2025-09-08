@@ -35,6 +35,30 @@ src/features/
 }
 ```
 
+### Place the app on Desktop and Dock
+
+Add your app ID to the centralized placement configs:
+
+```ts
+// Desktop icon placement (grid-based)
+// src/features/OS/desktop/data/desktop-apps.ts
+export const DESKTOP_APPS = [
+	{ appId: "javascript-playground", x: 64, y: 64 },
+	{ appId: "notes", x: 192, y: 64 },
+	{ appId: "settings", x: 320, y: 64 },
+	{ appId: "your-app-id", x: 448, y: 64 }, // add your app here
+];
+
+// Dock apps ordering
+// src/features/OS/desktop/data/dock-apps.ts
+export const DOCK_APPS = [
+	{ appId: "javascript-playground" },
+	{ appId: "notes" },
+	{ appId: "settings" },
+	{ appId: "your-app-id" }, // add your app here
+];
+```
+
 ## Window System
 
 Apps run inside draggable/resizable windows (`Window.tsx`). Each window:

@@ -17,6 +17,7 @@ export const DOCK_APPS: DockAppConfig[] = [
 	{ appId: "javascript-playground" },
 	{ appId: "notes" },
 	{ appId: "settings" },
+	{ appId: "features-checklist" },
 ];
 
 /**

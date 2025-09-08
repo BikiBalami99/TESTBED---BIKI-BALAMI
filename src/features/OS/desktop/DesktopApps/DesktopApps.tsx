@@ -62,7 +62,11 @@ export default function DesktopApps({
 						onMouseDown={(e) => handleMouseDown(e, desktopApp.appId)}
 						onContextMenu={(e) => onContextMenu(e, desktopApp)}
 					>
-						<AppIcon app={app} size="medium" />
+						<AppIcon
+							app={app}
+							size="medium"
+							variant={app.id === "features-checklist" ? "featured" : "default"}
+						/>
 					</div>
 				);
 			})}

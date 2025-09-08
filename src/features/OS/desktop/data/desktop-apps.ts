@@ -20,6 +20,7 @@ export const DESKTOP_APPS: DesktopAppConfig[] = [
 	{ appId: "javascript-playground", x: 64, y: 64 },
 	{ appId: "notes", x: 192, y: 64 },
 	{ appId: "settings", x: 320, y: 64 },
+	{ appId: "features-checklist", x: 448, y: 64 },
 ];
 
 /**

@@ -24,16 +24,23 @@ export default function DockItem({
 	previewContent,
 }: DockItemProps) {
 	const Icon = app.icon;
+	const isFeatured = app.id === "features-checklist";
 
 	return (
 		<div
-			className={`${styles.dockItem} ${isActive ? styles.active : ""}`}
+			className={`${styles.dockItem} ${isActive ? styles.active : ""} ${
+				isFeatured ? styles.featured : ""
+			}`}
 			onClick={onClick}
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
 			title={app.name}
 		>
-			<div className={styles.dockItemWrapper}>
+			<div
+				className={`${styles.dockItemWrapper} ${
+					isFeatured ? styles.featuredWrapper : ""
+				}`}
+			>
 				<Icon size={32} className={styles.dockItemSvg} />
 				{isActive && <div className={styles.activeIndicator} />}
 			</div>

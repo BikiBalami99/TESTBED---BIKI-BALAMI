@@ -1,6 +1,6 @@
 // Auto-discovery system for apps
 import React from "react";
-import { Grid3X3, Code, Settings, FileText } from "lucide-react";
+import { Grid3X3, Code, Settings, FileText, Sparkles } from "lucide-react";
 
 export interface AppInfo {
 	id: string;
@@ -45,6 +45,14 @@ export const AVAILABLE_APPS: AppInfo[] = [
 		component: React.lazy(() => import("./settings/Settings")),
 		category: "productivity",
 		description: "System preferences",
+	},
+	{
+		id: "features-checklist",
+		name: "Start Here",
+		icon: Sparkles,
+		component: React.lazy(() => import("./features-checklist/FeaturesChecklist")),
+		category: "system",
+		description: "Begin here • Quick tour and checklist",
 	},
 ];
 
