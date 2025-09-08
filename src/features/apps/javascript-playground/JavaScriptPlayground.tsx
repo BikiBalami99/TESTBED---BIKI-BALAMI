@@ -655,7 +655,7 @@ export default function JavaScriptPlayground() {
 							{output.length === 0 ? (
 								<div className={styles.noOutput}>
 									<div className={styles.noOutputIcon}></div>
-									<p>No output yet. Click "Run" to execute.</p>
+									<p>No output yet. Click &quot;Run&quot; to execute.</p>
 									<small>Logs and errors will appear here.</small>
 								</div>
 							) : (
