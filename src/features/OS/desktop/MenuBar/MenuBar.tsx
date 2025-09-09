@@ -3,7 +3,7 @@
 import React, { useCallback } from "react";
 import { useWindowManager } from "../../OS";
 import { AVAILABLE_APPS } from "../AppIcons/AppIcons";
-import SystemStatus from "../SystemStatus/SystemStatus";
+import SystemStatus from "./SystemStatus/SystemStatus";
 import styles from "./MenuBar.module.css";
 
 export default function MenuBar() {
