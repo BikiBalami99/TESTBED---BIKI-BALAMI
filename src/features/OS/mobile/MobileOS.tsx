@@ -52,7 +52,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 		if (savedDesktopApps) {
 			try {
 				desktopApps = JSON.parse(savedDesktopApps);
-			} catch (error) {
+			} catch {
 				console.warn("Failed to parse saved desktop apps");
 			}
 		}
@@ -272,7 +272,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 		[openOrFocusApp]
 	);
 
-	const handleDockContextMenu = useCallback((e: React.MouseEvent, appId: string) => {
+	const handleDockContextMenu = useCallback((e: React.MouseEvent) => {
 		// For now, prevent default context menu on mobile
 		e.preventDefault();
 		// Could implement mobile-specific context menu later

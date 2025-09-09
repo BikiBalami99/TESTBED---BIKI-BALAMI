@@ -222,7 +222,7 @@ export default function Settings() {
 															<span className={styles.debugLabel}>Active Features:</span>
 															<span className={styles.debugValue}>
 																{Object.entries(features)
-																	.filter(([_, enabled]) => enabled)
+																	.filter(([, enabled]) => enabled)
 																	.map(([key]) => key)
 																	.join(", ") || "None"}
 															</span>
@@ -396,7 +396,7 @@ export default function Settings() {
 													<span className={styles.debugLabel}>Active Features:</span>
 													<span className={styles.debugValue}>
 														{Object.entries(features)
-															.filter(([_, enabled]) => enabled)
+															.filter(([, enabled]) => enabled)
 															.map(([key]) => key)
 															.join(", ") || "None"}
 													</span>

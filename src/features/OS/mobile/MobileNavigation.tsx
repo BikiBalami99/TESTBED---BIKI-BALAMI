@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Home, ArrowLeft, ArrowRight, Square, Menu } from "lucide-react";
+import { Home, ArrowLeft, ArrowRight, Square } from "lucide-react";
 import styles from "./MobileNavigation.module.css";
 import { useMobile } from "../MobileContext";
 
@@ -22,13 +22,13 @@ export default function MobileNavigation({
 	onBack,
 	onForward,
 	onRecentApps,
-	onMenu,
+	onMenu: _onMenu,
 	canGoBack = false,
 	canGoForward = false,
 	hasRecentApps = false,
 	currentApp,
 }: MobileNavigationProps) {
-	const { screenWidth, orientation } = useMobile();
+	const { screenWidth } = useMobile();
 	const [pressedButton, setPressedButton] = useState<string | null>(null);
 
 	const handleButtonPress = useCallback((buttonId: string, action: () => void) => {

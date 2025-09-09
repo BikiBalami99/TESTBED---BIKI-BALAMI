@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { X, Minus, Maximize2 } from "lucide-react";
 import styles from "./Window.module.css";
-import { WindowProvider, useWindowContext, WindowContext } from "./WindowContext";
+import { WindowProvider, WindowContext } from "./WindowContext";
 import { useDevContextSafe } from "../DevContext";
 
 interface WindowProps {

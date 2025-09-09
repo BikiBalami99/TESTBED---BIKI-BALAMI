@@ -11,32 +11,7 @@ export default function FeaturesChecklist() {
 	const hTier = useMemo(() => (height < 400 ? "short" : "tall"), [height]);
 
 	// Plain-text, appendable checklist content. Keep this structure simple for future edits.
-	const checklist = `
-Features to try
-===============
-
-- Move + resize windows (8-way). Notice smooth focus and stacking.
-- Resize this window: mobile layout snaps (sm/xs) with a drag divider.
-- Read window size live (Dev Mode → Show Window Dimensions in Settings).
-- Explore the App Launcher: search and open any app as a window.
-- Use the Dock: hover for previews, restore/focus, context menu.
-- Drag desktop icons; positions persist via localStorage.
-- Code-split apps (React.lazy) — each app loads on demand.
-
-Short tours
------------
-
-- JavaScript Playground: write, run, and inspect output.
-- Notes: simple documents in a macOS‑style editor.
-- Settings: Dev toggles to help you build.
-
-Pro tips
---------
-
-- Keep CSS responsive via data-screen + nesting (no viewport media queries).
-- Each window provides its own width/height through WindowContext.
-- Add your own apps in src/features/apps/ and register in apps/index.ts.
-`.trim();
+	// const checklist = `...`; // Removed unused variable
 
 	return (
 		<div className={styles.editorShell} data-screen={screen} data-h={hTier}>

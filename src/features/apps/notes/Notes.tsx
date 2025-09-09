@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Search, Plus, Trash2, FileText, Calendar, ArrowLeft, Pin } from "lucide-react";
 import styles from "./Notes.module.css";
 import { useWindowDimensions } from "../../OS/Window/WindowContext";
@@ -33,7 +33,7 @@ export default function Notes() {
 	]);
 	const [selectedNote, setSelectedNote] = useState<string | null>("1");
 	const [searchQuery, setSearchQuery] = useState("");
-	const [isCreatingNote, setIsCreatingNote] = useState(false);
+	const [_isCreatingNote, setIsCreatingNote] = useState(false);
 	const [mobileView, setMobileView] = useState<"list" | "detail">("list"); // iOS-style navigation
 
 	// Sorting state

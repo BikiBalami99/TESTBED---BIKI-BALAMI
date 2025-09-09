@@ -43,7 +43,7 @@ export function DevProvider({ children }: DevProviderProps) {
 			try {
 				const parsedFeatures = JSON.parse(savedFeatures);
 				setFeatures({ ...defaultFeatures, ...parsedFeatures });
-			} catch (error) {
+			} catch {
 				console.warn("Failed to parse dev features from localStorage");
 			}
 		}

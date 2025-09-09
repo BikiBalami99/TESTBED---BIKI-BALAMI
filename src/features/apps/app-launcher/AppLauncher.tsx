@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppIcon, AVAILABLE_APPS, AppInfo } from "../../OS/desktop/AppIcons/AppIcons";
 import ContextMenu, {
 	createAppContextMenuItems,

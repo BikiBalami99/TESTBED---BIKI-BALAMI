@@ -309,7 +309,7 @@ export default function JavaScriptPlayground() {
 		setActiveTabId(tabId);
 	};
 
-	const renameTab = (tabId: string, newName: string) => {
+	const _renameTab = (tabId: string, newName: string) => {
 		setTabs((prevTabs) =>
 			prevTabs.map((tab) => (tab.id === tabId ? { ...tab, name: newName } : tab))
 		);

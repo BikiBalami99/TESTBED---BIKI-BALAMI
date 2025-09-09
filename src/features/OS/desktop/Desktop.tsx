@@ -13,8 +13,8 @@ import {
 	DESKTOP_APPS,
 	DOCK_APPS,
 	logConfigValidation,
-	type DesktopAppConfig,
-	type DockAppConfig,
+	// type DesktopAppConfig,
+	// type DockAppConfig,
 } from "./data";
 import styles from "./Desktop.module.css";
 
@@ -91,7 +91,7 @@ export default function Desktop() {
 						: { appId: configApp.appId, ...snapToGrid(configApp.x, configApp.y) };
 				});
 				setDesktopApps(mergedDesktopApps);
-			} catch (error) {
+			} catch {
 				console.warn("Failed to parse saved desktop apps, using default configuration");
 			}
 		}
@@ -107,7 +107,7 @@ export default function Desktop() {
 					return savedApp ? savedApp : { appId: configApp.appId };
 				});
 				setDockApps(mergedDockApps);
-			} catch (error) {
+			} catch {
 				console.warn("Failed to parse saved dock apps, using default configuration");
 			}
 		}

@@ -28,11 +28,14 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 		getCurrentMaxZIndex,
 	} = useWindowManager();
 
-	const handleDockAppHover = useCallback((appId: string) => {
-		const maxZ = getCurrentMaxZIndex();
-		console.log("[Dock] hover app →", { appId, maxZ });
-		setHoveredDockApp(appId);
-	}, []);
+	const handleDockAppHover = useCallback(
+		(appId: string) => {
+			const maxZ = getCurrentMaxZIndex();
+			console.log("[Dock] hover app →", { appId, maxZ });
+			setHoveredDockApp(appId);
+		},
+		[getCurrentMaxZIndex]
+	);
 
 	const handleDockAppLeave = useCallback(() => {
 		setHoveredDockApp(null);

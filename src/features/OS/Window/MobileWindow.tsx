@@ -23,9 +23,9 @@ interface MobileWindowProps {
 export default function MobileWindow({
 	id,
 	children,
-	onClose,
+	onClose: _onClose,
 	onBack,
-	onMinimize,
+	onMinimize: _onMinimize,
 	onFocus,
 	isFocused,
 	zIndex,
@@ -35,7 +35,7 @@ export default function MobileWindow({
 	const { screenWidth, screenHeight, orientation } = useMobile();
 	const devContext = useDevContextSafe();
 	const windowRef = useRef<HTMLDivElement>(null);
-	const [isVisible, setIsVisible] = useState(true);
+	const [isVisible] = useState(true);
 
 	// Calculate safe area for mobile devices (accounting for notches, menu bar, etc.)
 	const menuBarHeight = 32; // Height of the desktop menu bar
