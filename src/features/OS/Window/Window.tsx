@@ -553,10 +553,10 @@ function WindowContent({
 			setOriginalSize(size);
 			setOriginalPosition(position);
 
-			// Calculate fullscreen dimensions (entire viewport)
+			// Calculate fullscreen dimensions (account for menu bar and dock)
 			const fullscreenWidth = window.innerWidth;
-			const fullscreenHeight = window.innerHeight;
-			const fullscreenPosition = { x: 0, y: 0 };
+			const fullscreenHeight = window.innerHeight - 8 - 26; // Account for menu bar (8px) and dock (26px)
+			const fullscreenPosition = { x: 0, y: 8 }; // Start below menu bar
 
 			// Smoothly resize to fullscreen
 			setPosition(fullscreenPosition);
