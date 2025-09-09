@@ -39,11 +39,7 @@ export function AppIcon({
 			onClick={onClick}
 			title={app.description}
 		>
-			<div
-				className={`${styles.iconWrapper} ${
-					isFeatured ? styles.featuredIconWrapper : ""
-				}`}
-			>
+			<div className={styles.iconWrapper} data-app-id={app.id}>
 				<Icon size={iconSize} className={styles.icon} />
 			</div>
 			<span className={`${styles.appName} ${isFeatured ? styles.featuredName : ""}`}>

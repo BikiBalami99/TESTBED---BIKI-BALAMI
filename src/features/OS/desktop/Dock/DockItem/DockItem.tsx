@@ -36,11 +36,7 @@ export default function DockItem({
 			onMouseLeave={onMouseLeave}
 			title={app.name}
 		>
-			<div
-				className={`${styles.dockItemWrapper} ${
-					isFeatured ? styles.featuredWrapper : ""
-				}`}
-			>
+			<div className={styles.dockItemWrapper} data-app-id={app.id}>
 				<Icon size={32} className={styles.dockItemSvg} />
 				{isActive && <div className={styles.activeIndicator} />}
 			</div>

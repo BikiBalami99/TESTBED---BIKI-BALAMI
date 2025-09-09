@@ -504,7 +504,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 												className={styles.homeAppIcon}
 												onClick={() => handleAppLaunch(app.id)}
 											>
-												<div className={styles.homeAppIconWrapper}>
+												<div className={styles.homeAppIconWrapper} data-app-id={app.id}>
 													<app.icon size={32} />
 												</div>
 												<span className={styles.homeAppName}>{app.name}</span>
