@@ -21,12 +21,12 @@ export default function MobileMenuBar({
 	// Get active app name for menu bar (same logic as desktop)
 	const getActiveAppName = useCallback(() => {
 		if (!focusedWindowId) {
-			return "BikiOS";
+			return "DoorsOS";
 		}
 
 		const focusedWindow = getWindowById(focusedWindowId);
 		if (!focusedWindow) {
-			return "BikiOS";
+			return "DoorsOS";
 		}
 
 		// Find the app info for the focused window
