@@ -1,0 +1,185 @@
+/* macOS-Style Wallpaper Selection */
+
+.wallpaperSelection {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.previewSection {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.previewLabel {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1d1d1f;
+}
+
+.previewContainer {
+	position: relative;
+	width: 100%;
+	height: 200px;
+	border-radius: 12px;
+	overflow: hidden;
+	background: #f0f0f0;
+	border: 2px solid #e5e5e7;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.previewImage {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.previewOverlay {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+	padding: 20px;
+}
+
+.previewInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.previewName {
+	color: white;
+	font-size: 18px;
+	font-weight: 600;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.previewHint {
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 14px;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.wallpaperGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 16px;
+}
+
+.wallpaperCard {
+	position: relative;
+	aspect-ratio: 16/10;
+	border-radius: 8px;
+	overflow: hidden;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: 2px solid transparent;
+	background: #f0f0f0;
+}
+
+.wallpaperCard:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	border-color: #007aff;
+}
+
+.wallpaperCard.selected {
+	border-color: #007aff;
+	box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.wallpaperCard.previewing {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.wallpaperImage {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.selectedIndicator {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 24px;
+	height: 24px;
+	background: #007aff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.wallpaperSelection {
+		gap: 24px;
+	}
+
+	.previewContainer {
+		height: 160px;
+	}
+
+	.previewName {
+		font-size: 16px;
+	}
+
+	.previewHint {
+		font-size: 13px;
+	}
+
+	.wallpaperGrid {
+		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+		gap: 12px;
+	}
+
+	.wallpaperCard {
+		border-radius: 6px;
+	}
+
+	.selectedIndicator {
+		width: 20px;
+		height: 20px;
+		top: 6px;
+		right: 6px;
+	}
+
+	.selectedIndicator svg {
+		width: 12px;
+		height: 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.wallpaperGrid {
+		grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+		gap: 8px;
+	}
+
+	.previewContainer {
+		height: 140px;
+	}
+
+	.previewOverlay {
+		padding: 16px;
+	}
+
+	.previewName {
+		font-size: 14px;
+	}
+
+	.previewHint {
+		font-size: 12px;
+	}
+}

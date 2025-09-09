@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useDevContext } from "../../OS/DevContext";
 import { useWindowDimensions } from "../../OS/Window/WindowContext";
+import WallpaperSelection from "./WallpaperSelection";
 import styles from "./Settings.module.css";
 
 export default function Settings() {
@@ -109,10 +110,13 @@ export default function Settings() {
 								{activeTab === "display" && (
 									<div className={styles.section}>
 										<h2 className={styles.sectionTitle}>Display & Appearance</h2>
-										<div className={styles.placeholder}>
-											<Monitor size={48} />
-											<p>Display settings will be available soon</p>
-											<small>Customize visual appearance and layout</small>
+
+										<div className={styles.settingGroup}>
+											<h3 className={styles.groupTitle}>Desktop Background</h3>
+											<p className={styles.settingDescription}>
+												Choose a background image for your desktop
+											</p>
+											<WallpaperSelection />
 										</div>
 									</div>
 								)}
@@ -281,10 +285,13 @@ export default function Settings() {
 						{activeTab === "display" && (
 							<div className={styles.section}>
 								<h2 className={styles.sectionTitle}>Display & Appearance</h2>
-								<div className={styles.placeholder}>
-									<Monitor size={48} />
-									<p>Display settings will be available soon</p>
-									<small>Customize visual appearance and layout</small>
+
+								<div className={styles.settingGroup}>
+									<h3 className={styles.groupTitle}>Desktop Background</h3>
+									<p className={styles.settingDescription}>
+										Choose a background image for your desktop
+									</p>
+									<WallpaperSelection />
 								</div>
 							</div>
 						)}
