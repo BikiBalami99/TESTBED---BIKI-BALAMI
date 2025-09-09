@@ -36,51 +36,7 @@
 	transform: scale(1.1);
 }
 
-.appIcon {
-	width: 56px;
-	height: 56px;
-	background: rgba(255, 255, 255, 0.1);
-	backdrop-filter: blur(20px);
-	border-radius: 16px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: rgba(255, 255, 255, 0.9);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-	transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-	margin-bottom: 6px;
-}
-
-.desktopApp:hover .appIcon {
-	background: rgba(255, 255, 255, 0.15);
-	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.desktopApp.active .appIcon {
-	background: rgba(255, 255, 255, 0.2);
-	border-color: rgba(255, 255, 255, 0.4);
-	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.desktopApp.selected .appIcon {
-	background: rgba(0, 122, 255, 0.3);
-	border-color: rgba(0, 122, 255, 0.6);
-	box-shadow: 0 6px 25px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.appName {
-	font-size: 0.75rem;
-	font-weight: 500;
-	color: rgba(255, 255, 255, 0.9);
-	text-align: center;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-	max-width: 80px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-}
+/* Using desktop AppIcon component - removed custom app icon styles */
 
 .activeDot {
 	position: absolute;
@@ -101,17 +57,7 @@
 		height: 60px;
 	}
 
-	.appIcon {
-		width: 44px;
-		height: 44px;
-		border-radius: 12px;
-		margin-bottom: 4px;
-	}
-
-	.appName {
-		font-size: 0.6875rem;
-		max-width: 60px;
-	}
+	/* App icon sizing handled by desktop AppIcon component */
 }
 
 /* Very small screens */
@@ -121,16 +67,7 @@
 		height: 50px;
 	}
 
-	.appIcon {
-		width: 36px;
-		height: 36px;
-		border-radius: 10px;
-	}
-
-	.appName {
-		font-size: 0.625rem;
-		max-width: 50px;
-	}
+	/* App icon sizing handled by desktop AppIcon component */
 }
 
 /* Landscape orientation */
@@ -140,17 +77,7 @@
 		height: 60px;
 	}
 
-	.appIcon {
-		width: 44px;
-		height: 44px;
-		border-radius: 12px;
-		margin-bottom: 4px;
-	}
-
-	.appName {
-		font-size: 0.6875rem;
-		max-width: 60px;
-	}
+	/* App icon sizing handled by desktop AppIcon component */
 }
 
 /* Tablet adjustments */
@@ -160,15 +87,5 @@
 		height: 100px;
 	}
 
-	.appIcon {
-		width: 72px;
-		height: 72px;
-		border-radius: 20px;
-		margin-bottom: 8px;
-	}
-
-	.appName {
-		font-size: 0.875rem;
-		max-width: 100px;
-	}
+	/* App icon sizing handled by desktop AppIcon component */
 }

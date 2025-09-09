@@ -49,69 +49,7 @@
 	}
 }
 
-/* Removed home button and separator styles */
-
-.dockItem {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 48px;
-	height: 48px;
-	background: transparent;
-	border: none;
-	border-radius: 16px;
-	cursor: pointer;
-	transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-	flex-shrink: 0;
-	min-width: 48px; /* Ensure minimum width for scrolling */
-}
-
-.dockItem:hover {
-	transform: scale(1.1);
-}
-
-.dockItem:active {
-	transform: scale(0.95);
-}
-
-.dockItem.hovered {
-	background: rgba(255, 255, 255, 0.1);
-	backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.dockItem.active {
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.appIcon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: rgba(255, 255, 255, 0.9);
-	transition: all 0.2s ease;
-}
-
-.dockItem:hover .appIcon {
-	color: rgba(255, 255, 255, 1);
-}
-
-.activeDot {
-	position: absolute;
-	bottom: -2px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 4px;
-	height: 4px;
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 50%;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
+/* Using desktop DockItem component - removed custom dock item styles */
 
 .recentIndicator {
 	position: absolute;
@@ -153,12 +91,7 @@
 		gap: 12px;
 	}
 
-	.dockItem {
-		width: 44px;
-		height: 44px;
-		border-radius: 14px;
-		min-width: 44px;
-	}
+	/* Dock item sizing handled by desktop DockItem component */
 }
 
 /* Very small screens */
@@ -172,12 +105,7 @@
 		gap: 8px;
 	}
 
-	.dockItem {
-		width: 40px;
-		height: 40px;
-		border-radius: 12px;
-		min-width: 40px;
-	}
+	/* Dock item sizing handled by desktop DockItem component */
 }
 
 /* Landscape orientation */
@@ -192,12 +120,7 @@
 		gap: 12px;
 	}
 
-	.dockItem {
-		width: 40px;
-		height: 40px;
-		border-radius: 12px;
-		min-width: 40px;
-	}
+	/* Dock item sizing handled by desktop DockItem component */
 }
 
 /* Handle safe areas for devices with home indicator */

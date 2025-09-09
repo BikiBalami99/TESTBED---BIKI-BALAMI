@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-// Removed unused Home import
 import { AVAILABLE_APPS, AppInfo } from "../desktop/AppIcons/AppIcons";
 import { DOCK_APPS } from "../desktop/data";
 import { useWindowManager } from "../OS";
+import DockItem from "../desktop/Dock/DockItem/DockItem";
 import styles from "./MobileDock.module.css";
 
 interface MobileDockProps {
@@ -12,7 +12,7 @@ interface MobileDockProps {
 }
 
 export default function MobileDock({ onAppLaunch }: MobileDockProps) {
-	const [hoveredApp, setHoveredApp] = useState<string | null>(null);
+	// Removed hoveredApp state since DockItem handles its own hover states
 	const { getWindowForApp, focusWindow, restoreWindow, windows } = useWindowManager();
 
 	const handleAppClick = useCallback(
@@ -32,13 +32,7 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 		[getWindowForApp, restoreWindow, focusWindow, onAppLaunch]
 	);
 
-	const handleAppHover = useCallback((appId: string) => {
-		setHoveredApp(appId);
-	}, []);
-
-	const handleAppLeave = useCallback(() => {
-		setHoveredApp(null);
-	}, []);
+	// Removed hover handlers since DockItem handles its own hover states
 
 	return (
 		<div className={styles.mobileDock}>
@@ -50,24 +44,15 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 
 					const existingWindow = getWindowForApp(appLauncher.id);
 					const isActive = existingWindow !== null;
-					const IconComponent = appLauncher.icon;
 
 					return (
-						<button
+						<DockItem
 							key={appLauncher.id}
-							className={`${styles.dockItem} ${isActive ? styles.active : ""} ${
-								hoveredApp === appLauncher.id ? styles.hovered : ""
-							}`}
+							app={appLauncher}
 							onClick={() => handleAppClick(appLauncher)}
-							onMouseEnter={() => handleAppHover(appLauncher.id)}
-							onMouseLeave={handleAppLeave}
-							title={appLauncher.name}
-						>
-							<div className={styles.appIcon}>
-								<IconComponent size={28} />
-							</div>
-							{isActive && <div className={styles.activeDot} />}
-						</button>
+							isActive={isActive}
+							// Hover states handled by DockItem component
+						/>
 					);
 				})()}
 
@@ -78,24 +63,15 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 
 					const existingWindow = getWindowForApp(app.id);
 					const isActive = existingWindow !== null;
-					const IconComponent = app.icon;
 
 					return (
-						<button
+						<DockItem
 							key={dockApp.appId}
-							className={`${styles.dockItem} ${isActive ? styles.active : ""} ${
-								hoveredApp === app.id ? styles.hovered : ""
-							}`}
+							app={app}
 							onClick={() => handleAppClick(app)}
-							onMouseEnter={() => handleAppHover(app.id)}
-							onMouseLeave={handleAppLeave}
-							title={app.name}
-						>
-							<div className={styles.appIcon}>
-								<IconComponent size={28} />
-							</div>
-							{isActive && <div className={styles.activeDot} />}
-						</button>
+							isActive={isActive}
+							// Hover states handled by DockItem component
+						/>
 					);
 				})}
 			</div>

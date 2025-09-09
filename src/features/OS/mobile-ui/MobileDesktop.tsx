@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { AVAILABLE_APPS } from "../desktop/AppIcons/AppIcons";
+import { AVAILABLE_APPS, AppIcon } from "../desktop/AppIcons/AppIcons";
 import { DESKTOP_APPS } from "../desktop/data";
 import { useWindowManager } from "../OS";
 import styles from "./MobileDesktop.module.css";
@@ -125,7 +125,6 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 				const appWindows = getAllWindowsForApp(app.id);
 				const isActive = appWindows.length > 0;
 				const isSelected = selectedApps.has(app.id);
-				const IconComponent = app.icon;
 
 				return (
 					<div
@@ -143,10 +142,11 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 							handleAppLongPress(app.id);
 						}}
 					>
-						<div className={styles.appIcon}>
-							<IconComponent size={window.innerWidth < 480 ? 32 : 40} />
-						</div>
-						<span className={styles.appName}>{app.name}</span>
+						<AppIcon
+							app={app}
+							size={window.innerWidth < 480 ? "small" : "medium"}
+							variant={app.id === "features-checklist" ? "featured" : "default"}
+						/>
 
 						{/* Active indicator dot */}
 						{isActive && <div className={styles.activeDot} />}
