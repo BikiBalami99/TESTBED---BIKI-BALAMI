@@ -184,10 +184,12 @@ export default function MobileOS({ children }: MobileOSProps) {
 											key={window.id}
 											className={`${styles.appExposeItem} ${styles.appExposeItemOpen}`}
 											onClick={() => {
-												if (window.isMinimized) {
-													minimizeWindow(window.id);
-												} else {
-													focusWindow(window.id);
+												if (app) {
+													openOrFocusApp(
+														app.id,
+														app.name,
+														React.createElement(app.component)
+													);
 												}
 												setShowAppExpose(false);
 											}}
