@@ -31,7 +31,7 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 	const handleDockAppHover = useCallback(
 		(appId: string) => {
 			const maxZ = getCurrentMaxZIndex();
-			console.log("[Dock] hover app →", { appId, maxZ });
+			
 			setHoveredDockApp(appId);
 		},
 		[getCurrentMaxZIndex]
@@ -131,7 +131,7 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 										position="center"
 										maxZIndex={(() => {
 											const z = getCurrentMaxZIndex();
-											console.log("[Dock] pass maxZIndex to preview", z);
+											
 											return z;
 										})()}
 									/>

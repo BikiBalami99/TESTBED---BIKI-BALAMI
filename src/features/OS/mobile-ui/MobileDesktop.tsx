@@ -86,21 +86,19 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 	// Save positions to localStorage whenever they change
 	useEffect(() => {
 		if (desktopApps.length > 0) {
-			console.log("Saving mobile app positions to localStorage:", desktopApps);
+			
 			localStorage.setItem("mobileDesktopApps", JSON.stringify(desktopApps));
 		}
 	}, [desktopApps]);
 
 	// Load saved positions from localStorage on mount
 	useEffect(() => {
-		console.log("Loading mobile app positions from localStorage...");
+		
 		const savedApps = localStorage.getItem("mobileDesktopApps");
-		console.log("Saved apps from localStorage:", savedApps);
 
 		if (savedApps) {
 			try {
 				const parsedApps = JSON.parse(savedApps);
-				console.log("Parsed apps:", parsedApps);
 
 				if (Array.isArray(parsedApps) && parsedApps.length > 0) {
 					const requiredAppIds = DESKTOP_APPS.map((app) => app.appId);
@@ -108,10 +106,8 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 						parsedApps.some((app: DesktopApp) => app.appId === appId)
 					);
 
-					console.log("Has all required apps:", hasAllApps);
-
 					if (hasAllApps) {
-						console.log("Using saved positions");
+						
 						setDesktopApps(parsedApps);
 						return; // Don't recalculate if we have valid saved data
 					}
@@ -122,7 +118,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 		}
 
 		// Only calculate default positions if no valid saved data
-		console.log("Using calculated positions");
+		
 		setDesktopApps(calculateMobilePositions());
 	}, [calculateMobilePositions]); // Include calculateMobilePositions in dependencies
 

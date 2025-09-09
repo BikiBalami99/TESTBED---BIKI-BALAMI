@@ -25,12 +25,7 @@ export default function DockPreview({
 	const previewZ = useMemo(() => {
 		// Simple z-index since we're now in the system UI layer which is already above all windows
 		const z = 1;
-		console.log("[DockPreview] computed z-index", {
-			maxZIndex,
-			previewZ: z,
-			windows,
-			strategy: "simple z-index in system UI layer",
-		});
+		
 		return z;
 	}, [maxZIndex, windows]);
 

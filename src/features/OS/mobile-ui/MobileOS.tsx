@@ -106,7 +106,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 
 	const handleForward = useCallback(() => {
 		// For now, just a placeholder - could implement forward history
-		console.log("Forward navigation not implemented yet");
+		
 	}, []);
 
 	const handleAppExpose = useCallback(() => {

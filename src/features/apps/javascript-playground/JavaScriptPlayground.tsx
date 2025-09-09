@@ -35,9 +35,9 @@ interface Tab {
 }
 
 const defaultCode = `const msg = "Hello, JavaScript Playground";
-console.log(msg);
+
 const add = (a, b) => a + b;
-console.log(add(2, 3));`;
+`;
 
 export default function JavaScriptPlayground() {
 	const { width, height } = useWindowDimensions();

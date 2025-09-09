@@ -335,7 +335,7 @@ export default function SystemStatus() {
 				}
 			}
 		} catch (error) {
-			console.log("Bluetooth scan cancelled or failed:", error);
+			
 			setBluetoothInfo((prev) => ({ ...prev, isScanning: false }));
 		}
 	};
