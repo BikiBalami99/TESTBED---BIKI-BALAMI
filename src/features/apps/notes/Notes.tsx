@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Search, Plus, Trash2, FileText, Calendar, ArrowLeft, Pin } from "lucide-react";
 import styles from "./Notes.module.css";
 import { useWindowDimensions } from "../../OS/Window/WindowContext";
@@ -14,33 +14,90 @@ interface Note {
 	isPinned: boolean;
 }
 
+// localStorage key for notes data
+const NOTES_STORAGE_KEY = "doors-os-notes-v1";
+
+// Default welcome note
+const DEFAULT_WELCOME_NOTE: Note = {
+	id: "welcome-note",
+	title: "Welcome to Notes",
+	content:
+		"This is your personal note-taking app. Start writing your thoughts here!\n\nYou can create new notes, search through them, and organize your thoughts. Notes are automatically saved as you type.",
+	createdAt: new Date(),
+	updatedAt: new Date(),
+	isPinned: false,
+};
+
 export default function Notes() {
 	const { width, height } = useWindowDimensions();
 
 	// Follow the convention from other apps
 	const screen = useMemo(() => (width < 340 ? "xs" : width < 944 ? "sm" : "lg"), [width]);
 	const heightTier = useMemo(() => (height < 400 ? "short" : "tall"), [height]);
-	const [notes, setNotes] = useState<Note[]>([
-		{
-			id: "1",
-			title: "Welcome to Notes",
-			content:
-				"This is your personal note-taking app. Start writing your thoughts here!\n\nYou can create new notes, search through them, and organize your thoughts. Notes are automatically saved as you type.",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			isPinned: false,
-		},
-	]);
-	const [selectedNote, setSelectedNote] = useState<string | null>("1");
+
+	// State management with localStorage persistence
+	const [notes, setNotes] = useState<Note[]>([]);
+	const [selectedNote, setSelectedNote] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [_isCreatingNote, setIsCreatingNote] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
 	const [mobileView, setMobileView] = useState<"list" | "detail">("list"); // iOS-style navigation
+	const [isLoading, setIsLoading] = useState(true);
 
 	// Sorting state
 	type SortKey = "updatedAt" | "createdAt" | "title";
 	type SortDir = "asc" | "desc";
 	const [sortKey, setSortKey] = useState<SortKey>("updatedAt");
 	const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+	// localStorage utility functions
+	const loadNotesFromStorage = (): Note[] => {
+		try {
+			const stored = localStorage.getItem(NOTES_STORAGE_KEY);
+			if (!stored) {
+				// First time user - return default welcome note
+				return [DEFAULT_WELCOME_NOTE];
+			}
+
+			const parsed = JSON.parse(stored);
+			if (!Array.isArray(parsed)) {
+				throw new Error("Invalid notes data format");
+			}
+
+			// Convert date strings back to Date objects
+			return parsed.map((note: any) => ({
+				...note,
+				createdAt: new Date(note.createdAt),
+				updatedAt: new Date(note.updatedAt),
+			}));
+		} catch (error) {
+			console.warn("Failed to load notes from localStorage:", error);
+			// Return default welcome note on error
+			return [DEFAULT_WELCOME_NOTE];
+		}
+	};
+
+	const saveNotesToStorage = (notesToSave: Note[]) => {
+		try {
+			localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notesToSave));
+		} catch (error) {
+			console.error("Failed to save notes to localStorage:", error);
+		}
+	};
+
+	// Load notes from localStorage on component mount
+	useEffect(() => {
+		const loadedNotes = loadNotesFromStorage();
+		setNotes(loadedNotes);
+		setSelectedNote(loadedNotes.length > 0 ? loadedNotes[0].id : null);
+		setIsLoading(false);
+	}, []);
+
+	// Save notes to localStorage whenever notes change
+	useEffect(() => {
+		if (!isLoading) {
+			saveNotesToStorage(notes);
+		}
+	}, [notes, isLoading]);
 
 	// Filter notes based on search query
 	const filteredNotes = useMemo(() => {
@@ -149,6 +206,23 @@ export default function Notes() {
 			return date.toLocaleDateString([], { month: "short", day: "numeric" });
 		}
 	};
+
+	// Loading component
+	const LoadingState = () => (
+		<div className={styles.loadingState}>
+			<div className={styles.loadingSpinner} />
+			<p>Loading your notes...</p>
+		</div>
+	);
+
+	// Show loading state while data is being loaded
+	if (isLoading) {
+		return (
+			<div className={styles.notes} data-screen={screen} data-h={heightTier}>
+				<LoadingState />
+			</div>
+		);
+	}
 
 	return (
 		<div className={styles.notes} data-screen={screen} data-h={heightTier}>
