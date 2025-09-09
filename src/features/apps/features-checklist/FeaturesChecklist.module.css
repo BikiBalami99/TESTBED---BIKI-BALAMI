@@ -109,6 +109,21 @@
 	color: #93c5fd;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.platformBadge {
+	font-size: 10px;
+	color: #fbbf24;
+	background: rgba(251, 191, 36, 0.15);
+	border: 1px solid rgba(251, 191, 36, 0.3);
+	border-radius: 6px;
+	padding: 2px 6px;
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: 0;
 }
 
 .checklistProgress {
