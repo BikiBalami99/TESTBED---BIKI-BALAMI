@@ -47,7 +47,7 @@ export default function MobileNavigation({
 				</button>
 
 				{/* Home Button */}
-				<button className={styles.homeButton} onClick={onHome} title="Home">
+				<button className={styles.navButton} onClick={onHome} title="Home">
 					<Home size={20} />
 				</button>
 

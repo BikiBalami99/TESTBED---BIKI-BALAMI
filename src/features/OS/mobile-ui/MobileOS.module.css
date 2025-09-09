@@ -5,7 +5,7 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	bottom: 0;
+	bottom: 0; /* Full height, navigation will overlay */
 	/* Background handled by parent BackgroundDisplay */
 	display: flex;
 	flex-direction: column;
@@ -20,7 +20,7 @@
 	position: relative;
 	overflow: hidden;
 	margin-top: 44px; /* Mobile menu bar height */
-	margin-bottom: 80px; /* Mobile dock height only */
+	margin-bottom: 80px; /* Space for mobile navigation */
 }
 
 /* Smooth transitions */
@@ -47,7 +47,7 @@
 @media screen and (orientation: landscape) {
 	.contentArea {
 		margin-top: 32px; /* Smaller menu bar in landscape */
-		margin-bottom: 60px; /* Smaller navigation in landscape */
+		margin-bottom: 60px; /* Smaller space for navigation in landscape */
 	}
 }
 
