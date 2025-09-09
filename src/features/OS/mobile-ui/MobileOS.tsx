@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useMobile } from "../MobileContext";
 import { useWindowManager } from "../OS";
 import { AVAILABLE_APPS } from "../desktop/AppIcons/AppIcons";
+import { AppIcon } from "../desktop/AppIcons/AppIcons";
 import BackgroundDisplay from "../BackgroundDisplay";
 import MobileDesktop from "./MobileDesktop";
 import MobileWindow from "./MobileWindow";
@@ -176,34 +177,47 @@ export default function MobileOS({ children }: MobileOSProps) {
 					{showAppExpose && (
 						<div className={styles.appExposeContainer}>
 							<div className={styles.appExposeGrid}>
-								{windows.map((window) => (
-									<div
-										key={window.id}
-										className={`${styles.appExposeItem} ${styles.appExposeItemOpen}`}
-										onClick={() => {
-											if (window.isMinimized) {
-												minimizeWindow(window.id);
-											} else {
-												focusWindow(window.id);
-											}
-											setShowAppExpose(false);
-										}}
-									>
-										<button
-											className={styles.appExposeCloseButton}
-											onClick={(e) => {
-												e.stopPropagation();
-												closeWindow(window.id);
+								{windows.map((window) => {
+									const app = AVAILABLE_APPS.find((a) => a.id === window.appId);
+									return (
+										<div
+											key={window.id}
+											className={`${styles.appExposeItem} ${styles.appExposeItemOpen}`}
+											onClick={() => {
+												if (window.isMinimized) {
+													minimizeWindow(window.id);
+												} else {
+													focusWindow(window.id);
+												}
+												setShowAppExpose(false);
 											}}
-											title="Close app"
 										>
-											×
-										</button>
-										<div className={styles.appExposePreview}>{window.content}</div>
-										<span className={styles.appExposeTitle}>{window.title}</span>
-										<div className={styles.appExposeIndicator} />
-									</div>
-								))}
+											<button
+												className={styles.appExposeCloseButton}
+												onClick={(e) => {
+													e.stopPropagation();
+													closeWindow(window.id);
+												}}
+												title="Close app"
+											/>
+											<div className={styles.appExposePreview}>{window.content}</div>
+											<div className={styles.appExposeIconContainer}>
+												{app && <AppIcon app={app} size="small" />}
+											</div>
+										</div>
+									);
+								})}
+							</div>
+							<div className={styles.clearAllBar}>
+								<button
+									className={styles.clearAllButton}
+									onClick={() => {
+										windows.forEach((w) => closeWindow(w.id));
+										setShowAppExpose(false);
+									}}
+								>
+									Clear All
+								</button>
 							</div>
 						</div>
 					)}
