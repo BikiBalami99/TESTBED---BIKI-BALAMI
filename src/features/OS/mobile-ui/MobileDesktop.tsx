@@ -37,7 +37,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 		const availableHeight = screenHeight - menuBarHeight - dockHeight;
 
 		// Icon dimensions
-		const iconSize = screenWidth < 480 ? 60 : 80;
+		const iconSize = 60;
 		const padding = screenWidth < 480 ? 16 : 24;
 
 		// Calculate grid
@@ -86,14 +86,12 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 	// Save positions to localStorage whenever they change
 	useEffect(() => {
 		if (desktopApps.length > 0) {
-			
 			localStorage.setItem("mobileDesktopApps", JSON.stringify(desktopApps));
 		}
 	}, [desktopApps]);
 
 	// Load saved positions from localStorage on mount
 	useEffect(() => {
-		
 		const savedApps = localStorage.getItem("mobileDesktopApps");
 
 		if (savedApps) {
@@ -107,7 +105,6 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 					);
 
 					if (hasAllApps) {
-						
 						setDesktopApps(parsedApps);
 						return; // Don't recalculate if we have valid saved data
 					}
@@ -118,7 +115,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 		}
 
 		// Only calculate default positions if no valid saved data
-		
+
 		setDesktopApps(calculateMobilePositions());
 	}, [calculateMobilePositions]); // Include calculateMobilePositions in dependencies
 
@@ -184,7 +181,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 			handleAppPositionChange(draggedApp, newX, newY);
 
 			// Show snap indicator
-			const iconSize = window.innerWidth < 480 ? 60 : 80;
+			const iconSize = 60;
 			const snapX = Math.round(newX / iconSize) * iconSize;
 			const snapY = Math.round(newY / iconSize) * iconSize;
 
@@ -202,7 +199,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 			if (!draggedApp) return;
 
 			// Snap to grid
-			const iconSize = window.innerWidth < 480 ? 60 : 80;
+			const iconSize = 60;
 			const finalX = e.changedTouches[0].clientX - dragOffset.x;
 			const finalY = e.changedTouches[0].clientY - dragOffset.y;
 
@@ -264,7 +261,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 					>
 						<AppIcon
 							app={app}
-							size={window.innerWidth < 480 ? "small" : "medium"}
+							size="small"
 							variant={app.id === "features-checklist" ? "featured" : "default"}
 						/>
 
