@@ -25,17 +25,11 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 		focusWindow,
 		restoreWindow,
 		closeWindow,
-		getCurrentMaxZIndex,
 	} = useWindowManager();
 
-	const handleDockAppHover = useCallback(
-		(appId: string) => {
-			const maxZ = getCurrentMaxZIndex();
-			
-			setHoveredDockApp(appId);
-		},
-		[getCurrentMaxZIndex]
-	);
+	const handleDockAppHover = useCallback((appId: string) => {
+		setHoveredDockApp(appId);
+	}, []);
 
 	const handleDockAppLeave = useCallback(() => {
 		setHoveredDockApp(null);
@@ -129,11 +123,6 @@ export default function Dock({ dockApps, onAppClick, onContextMenu }: DockProps)
 										onWindowClick={handleWindowClick}
 										onCloseWindow={handleCloseWindow}
 										position="center"
-										maxZIndex={(() => {
-											const z = getCurrentMaxZIndex();
-											
-											return z;
-										})()}
 									/>
 								) : null
 							}

@@ -5,3 +5,17 @@ body {
 	font-size: 16px;
 	line-height: 1.5;
 }
+
+/* Ensure backdrop-filter support across browsers */
+@supports (backdrop-filter: blur(1px)) {
+	/* Modern browsers that support backdrop-filter */
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+	/* Fallback for browsers that don't support backdrop-filter */
+	.window,
+	.windowChrome,
+	.menuBar {
+		background: rgba(255, 255, 255, 0.8) !important;
+	}
+}

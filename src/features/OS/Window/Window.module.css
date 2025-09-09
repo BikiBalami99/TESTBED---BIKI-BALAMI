@@ -4,8 +4,8 @@
 	position: absolute;
 	/* Transparent background to show app content */
 	background: transparent;
-	backdrop-filter: blur(20px) saturate(1.2);
 	-webkit-backdrop-filter: blur(20px) saturate(1.2);
+	backdrop-filter: blur(20px) saturate(1.2);
 	border-radius: 16px;
 	/* Enhanced liquid glass shadows */
 	box-shadow:
@@ -28,8 +28,8 @@
 .window.focused {
 	/* Enhanced liquid glass when focused */
 	background: transparent;
-	backdrop-filter: blur(25px) saturate(1.4);
 	-webkit-backdrop-filter: blur(25px) saturate(1.4);
+	backdrop-filter: blur(25px) saturate(1.4);
 	/* Enhanced floating shadows when focused */
 	box-shadow:
 		/* Main floating shadow */ 0 35px 70px rgba(0, 0, 0, 0.3),
@@ -92,8 +92,8 @@
 .windowChrome {
 	/* Liquid glass chrome background */
 	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(15px) saturate(1.1);
 	-webkit-backdrop-filter: blur(15px) saturate(1.1);
+	backdrop-filter: blur(15px) saturate(1.1);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	padding: 0.5rem 0.75rem;
 	display: flex;

@@ -64,11 +64,20 @@ export default function Notes() {
 			}
 
 			// Convert date strings back to Date objects
-			return parsed.map((note: any) => ({
-				...note,
-				createdAt: new Date(note.createdAt),
-				updatedAt: new Date(note.updatedAt),
-			}));
+			return parsed.map(
+				(note: {
+					id: string;
+					title: string;
+					content: string;
+					createdAt: string;
+					updatedAt: string;
+					isPinned: boolean;
+				}) => ({
+					...note,
+					createdAt: new Date(note.createdAt),
+					updatedAt: new Date(note.updatedAt),
+				})
+			);
 		} catch (error) {
 			console.warn("Failed to load notes from localStorage:", error);
 			// Return default welcome note on error

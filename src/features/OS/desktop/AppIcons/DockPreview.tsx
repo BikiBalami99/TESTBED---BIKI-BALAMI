@@ -11,7 +11,6 @@ interface DockPreviewProps {
 	onWindowClick: (windowId: string) => void;
 	onCloseWindow: (windowId: string) => void;
 	position: "left" | "center" | "right";
-	maxZIndex: number;
 }
 
 export default function DockPreview({
@@ -20,14 +19,13 @@ export default function DockPreview({
 	onWindowClick,
 	onCloseWindow,
 	position,
-	maxZIndex,
 }: DockPreviewProps) {
 	const previewZ = useMemo(() => {
 		// Simple z-index since we're now in the system UI layer which is already above all windows
 		const z = 1;
-		
+
 		return z;
-	}, [maxZIndex, windows]);
+	}, []);
 
 	if (windows.length === 0) return null;
 

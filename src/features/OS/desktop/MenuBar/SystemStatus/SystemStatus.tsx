@@ -334,8 +334,7 @@ export default function SystemStatus() {
 					}));
 				}
 			}
-		} catch (error) {
-			
+		} catch {
 			setBluetoothInfo((prev) => ({ ...prev, isScanning: false }));
 		}
 	};
