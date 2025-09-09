@@ -1,0 +1,174 @@
+/* Mobile Desktop - macOS Style with Responsive Grid */
+
+.mobileDesktop {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	cursor: default;
+	/* Background handled by parent */
+}
+
+.desktopApp {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 80px;
+	height: 80px;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.desktopApp:hover {
+	transform: scale(1.05);
+}
+
+.desktopApp:active {
+	transform: scale(0.95);
+}
+
+.desktopApp.selected {
+	transform: scale(1.1);
+}
+
+.appIcon {
+	width: 56px;
+	height: 56px;
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(20px);
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	margin-bottom: 6px;
+}
+
+.desktopApp:hover .appIcon {
+	background: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.desktopApp.active .appIcon {
+	background: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.desktopApp.selected .appIcon {
+	background: rgba(0, 122, 255, 0.3);
+	border-color: rgba(0, 122, 255, 0.6);
+	box-shadow: 0 6px 25px rgba(0, 122, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.appName {
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	text-align: center;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	max-width: 80px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+.activeDot {
+	position: absolute;
+	bottom: -2px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 4px;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Small screens (phones) */
+@media (max-width: 480px) {
+	.desktopApp {
+		width: 60px;
+		height: 60px;
+	}
+
+	.appIcon {
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		margin-bottom: 4px;
+	}
+
+	.appName {
+		font-size: 0.6875rem;
+		max-width: 60px;
+	}
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+	.desktopApp {
+		width: 50px;
+		height: 50px;
+	}
+
+	.appIcon {
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+	}
+
+	.appName {
+		font-size: 0.625rem;
+		max-width: 50px;
+	}
+}
+
+/* Landscape orientation */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+	.desktopApp {
+		width: 60px;
+		height: 60px;
+	}
+
+	.appIcon {
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		margin-bottom: 4px;
+	}
+
+	.appName {
+		font-size: 0.6875rem;
+		max-width: 60px;
+	}
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+	.desktopApp {
+		width: 100px;
+		height: 100px;
+	}
+
+	.appIcon {
+		width: 72px;
+		height: 72px;
+		border-radius: 20px;
+		margin-bottom: 8px;
+	}
+
+	.appName {
+		font-size: 0.875rem;
+		max-width: 100px;
+	}
+}

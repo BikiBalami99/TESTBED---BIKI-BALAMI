@@ -1,0 +1,284 @@
+/* Mobile Menu Bar - macOS Style */
+
+.menuBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 44px;
+	/* Same glassmorphism as desktop but optimized for mobile */
+	background: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.15) 0%,
+			rgba(255, 255, 255, 0.08) 50%,
+			rgba(255, 255, 255, 0.05) 100%
+		),
+		linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.03) 0%,
+			rgba(255, 255, 255, 0.01) 50%,
+			rgba(255, 255, 255, 0.03) 100%
+		);
+	backdrop-filter: blur(60px) saturate(1.8) brightness(1.05);
+	-webkit-backdrop-filter: blur(60px) saturate(1.8) brightness(1.05);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1rem;
+	z-index: 60000;
+	font-size: 0.875rem; /* Slightly larger for mobile */
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+	padding-top: env(safe-area-inset-top);
+}
+
+.menuBarLeft {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.menuItem {
+	color: rgba(255, 255, 255, 0.9);
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 500;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+.menuItem:hover {
+	color: rgba(255, 255, 255, 1);
+	background: rgba(255, 255, 255, 0.15);
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.menuBarRight {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.statusButton {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: transparent;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 20px;
+	color: #000000;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.statusButton:hover {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.statusButton:active {
+	background: rgba(0, 0, 0, 0.1);
+	transform: scale(0.95);
+}
+
+/* Control Center */
+.controlCenterOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(10px);
+	z-index: 70000;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 60px;
+}
+
+.controlCenter {
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(30px);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 24px;
+	width: 90%;
+	max-width: 400px;
+	animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.controlCenterHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.controlCenterHeader h3 {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #000000;
+}
+
+.closeButton {
+	width: 32px;
+	height: 32px;
+	background: rgba(0, 0, 0, 0.1);
+	border: none;
+	border-radius: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-size: 1.5rem;
+	color: #000000;
+	transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+	background: rgba(0, 0, 0, 0.15);
+	transform: scale(1.05);
+}
+
+.controlGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+}
+
+.controlItem {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 20px 16px;
+	background: rgba(255, 255, 255, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 16px;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.controlItem:hover {
+	background: rgba(255, 255, 255, 0.8);
+	transform: translateY(-2px);
+}
+
+.controlItem span {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #000000;
+}
+
+.controlStatus {
+	font-size: 0.75rem;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+	.menuBar {
+		background: rgba(28, 28, 30, 0.95);
+		border-bottom-color: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.time {
+		color: #ffffff;
+	}
+
+	.notch {
+		background: #ffffff;
+	}
+
+	.statusButton {
+		color: #ffffff;
+	}
+
+	.statusButton:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.statusButton:active {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.controlCenter {
+		background: rgba(28, 28, 30, 0.95);
+	}
+
+	.controlCenterHeader h3 {
+		color: #ffffff;
+	}
+
+	.closeButton {
+		background: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.closeButton:hover {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.controlItem {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.controlItem:hover {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.controlItem span {
+		color: #ffffff;
+	}
+
+	.controlStatus {
+		color: rgba(255, 255, 255, 0.6);
+	}
+}
+
+/* Landscape adjustments */
+@media screen and (orientation: landscape) {
+	.menuBar {
+		height: 32px;
+		font-size: 0.8125rem;
+	}
+
+	.notch {
+		width: 100px;
+		height: 20px;
+		border-radius: 10px;
+	}
+
+	.controlCenterOverlay {
+		padding-top: 40px;
+	}
+}
+
+/* Small screens */
+@media screen and (max-width: 374px) {
+	.menuBar {
+		padding: 0 16px;
+		font-size: 0.8125rem;
+	}
+
+	.notch {
+		width: 100px;
+		height: 20px;
+	}
+}

@@ -13,7 +13,7 @@ import { DevProvider } from "./DevContext";
 import { MobileProvider } from "./MobileContext";
 import { BackgroundProvider } from "./BackgroundContext";
 import BackgroundDisplay from "./BackgroundDisplay";
-import MobileOS from "./mobile/MobileOS";
+import { MobileOS } from "./mobile-ui";
 import styles from "./OS.module.css";
 
 export interface WindowData {
