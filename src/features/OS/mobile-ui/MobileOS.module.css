@@ -19,8 +19,9 @@
 	flex: 1;
 	position: relative;
 	overflow: hidden;
-	margin-top: 44px; /* Mobile menu bar height */
-	margin-bottom: 80px; /* Space for mobile navigation */
+
+	margin-top: 44px;
+	margin-bottom: 34px;
 }
 
 /* Smooth transitions */

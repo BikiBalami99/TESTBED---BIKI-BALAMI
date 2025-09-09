@@ -188,8 +188,8 @@ export default function MobileOS({ children }: MobileOSProps) {
 						{currentWindow && <MobileWindow>{currentWindow.content}</MobileWindow>}
 					</div>
 
-					{/* Mobile Dock */}
-					<MobileDock onAppLaunch={handleAppLaunch} />
+					{/* Mobile Dock (hidden when an app is open or in exposé) */}
+					{showDesktop && <MobileDock onAppLaunch={handleAppLaunch} />}
 				</div>,
 				mobilePortalRoot
 			)}
