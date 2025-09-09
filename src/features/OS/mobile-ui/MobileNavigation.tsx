@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, ArrowRight, Home, Grid3X3 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, AppWindow } from "lucide-react";
 import styles from "./MobileNavigation.module.css";
 
 interface MobileNavigationProps {
@@ -52,13 +52,8 @@ export default function MobileNavigation({
 				</button>
 
 				{/* App Exposé Button */}
-				<button
-					className={`${styles.navButton} ${!hasApps ? styles.disabled : ""}`}
-					onClick={onAppExpose}
-					disabled={!hasApps}
-					title="App Exposé"
-				>
-					<Grid3X3 size={20} />
+				<button className={styles.navButton} onClick={onAppExpose} title="App Exposé">
+					<AppWindow size={20} />
 				</button>
 			</div>
 		</div>

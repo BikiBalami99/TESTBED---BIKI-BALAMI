@@ -19,7 +19,14 @@ interface MobileOSProps {
 
 export default function MobileOS({ children }: MobileOSProps) {
 	const { isMobile } = useMobile();
-	const { windows, focusedWindowId, openOrFocusApp, minimizeWindow } = useWindowManager();
+	const {
+		windows,
+		focusedWindowId,
+		openOrFocusApp,
+		minimizeWindow,
+		closeWindow,
+		focusWindow,
+	} = useWindowManager();
 
 	// Mobile-specific state
 	const [mobilePortalRoot, setMobilePortalRoot] = useState<HTMLElement | null>(null);
@@ -162,31 +169,44 @@ export default function MobileOS({ children }: MobileOSProps) {
 							<MobileDesktop onAppLaunch={handleAppLaunch} isJiggleMode={isJiggleMode} />
 						)}
 
-						{showAppExpose && (
-							<div className={styles.appExposeContainer}>
-								<div className={styles.appExposeGrid}>
-									{windows.map((window) => (
-										<div
-											key={window.id}
-											className={styles.appExposeItem}
-											onClick={() => {
-												if (window.isMinimized) {
-													// Restore minimized window
-													minimizeWindow(window.id); // This will un-minimize it
-												}
-												setShowAppExpose(false);
-											}}
-										>
-											<div className={styles.appExposePreview}>{window.content}</div>
-											<span className={styles.appExposeTitle}>{window.title}</span>
-										</div>
-									))}
-								</div>
-							</div>
-						)}
-
 						{currentWindow && <MobileWindow>{currentWindow.content}</MobileWindow>}
 					</div>
+
+					{/* App Expose - Only open apps, with close control */}
+					{showAppExpose && (
+						<div className={styles.appExposeContainer}>
+							<div className={styles.appExposeGrid}>
+								{windows.map((window) => (
+									<div
+										key={window.id}
+										className={`${styles.appExposeItem} ${styles.appExposeItemOpen}`}
+										onClick={() => {
+											if (window.isMinimized) {
+												minimizeWindow(window.id);
+											} else {
+												focusWindow(window.id);
+											}
+											setShowAppExpose(false);
+										}}
+									>
+										<button
+											className={styles.appExposeCloseButton}
+											onClick={(e) => {
+												e.stopPropagation();
+												closeWindow(window.id);
+											}}
+											title="Close app"
+										>
+											×
+										</button>
+										<div className={styles.appExposePreview}>{window.content}</div>
+										<span className={styles.appExposeTitle}>{window.title}</span>
+										<div className={styles.appExposeIndicator} />
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 
 					{/* Mobile Dock (hidden when an app is open or in exposé) */}
 					{showDesktop && <MobileDock onAppLaunch={handleAppLaunch} />}
@@ -205,7 +225,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 						navigationHistory.length > 0 || currentWindow !== null || showAppExpose
 					}
 					canGoForward={false}
-					hasApps={windows.length > 0}
+					hasApps={true}
 				/>
 			)}
 		</>
