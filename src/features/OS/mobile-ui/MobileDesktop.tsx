@@ -124,7 +124,7 @@ export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDeskt
 		// Only calculate default positions if no valid saved data
 		console.log("Using calculated positions");
 		setDesktopApps(calculateMobilePositions());
-	}, []); // Empty dependency array - only run once on mount
+	}, [calculateMobilePositions]); // Include calculateMobilePositions in dependencies
 
 	// Recalculate positions on resize (but preserve saved positions if they exist)
 	useEffect(() => {

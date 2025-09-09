@@ -61,11 +61,11 @@ function WindowContent({
 	initialHeight = 400,
 	onClose,
 	onMinimize,
-	onMaximize,
+	onMaximize, // eslint-disable-line @typescript-eslint/no-unused-vars
 	onFocus,
 	onPositionUpdate,
 	isFocused,
-	isMaximized: _isMaximized, // Keep prop for compatibility but use internal state
+	isMaximized: _isMaximized, // eslint-disable-line @typescript-eslint/no-unused-vars
 	isRestoring = false,
 	dockPosition,
 	zIndex,

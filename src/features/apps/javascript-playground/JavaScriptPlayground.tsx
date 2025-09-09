@@ -309,7 +309,7 @@ export default function JavaScriptPlayground() {
 		setActiveTabId(tabId);
 	};
 
-	const _renameTab = (tabId: string, newName: string) => {
+	const _renameTab = (tabId: string, newName: string) => { // eslint-disable-line @typescript-eslint/no-unused-vars
 		setTabs((prevTabs) =>
 			prevTabs.map((tab) => (tab.id === tabId ? { ...tab, name: newName } : tab))
 		);

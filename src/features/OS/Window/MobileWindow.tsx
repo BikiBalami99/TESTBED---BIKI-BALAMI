@@ -23,9 +23,9 @@ interface MobileWindowProps {
 export default function MobileWindow({
 	id,
 	children,
-	onClose: _onClose,
+	onClose: _onClose, // eslint-disable-line @typescript-eslint/no-unused-vars
 	onBack,
-	onMinimize: _onMinimize,
+	onMinimize: _onMinimize, // eslint-disable-line @typescript-eslint/no-unused-vars
 	onFocus,
 	isFocused,
 	zIndex,

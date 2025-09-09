@@ -26,7 +26,6 @@ export default function MobileOS({ children }: MobileOSProps) {
 		openOrFocusApp,
 		minimizeWindow,
 		closeWindow,
-		focusWindow,
 	} = useWindowManager();
 
 	// Mobile-specific state

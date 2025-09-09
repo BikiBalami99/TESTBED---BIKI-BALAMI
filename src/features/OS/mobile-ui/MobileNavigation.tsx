@@ -21,7 +21,7 @@ export default function MobileNavigation({
 	onAppExpose,
 	canGoBack,
 	canGoForward,
-	hasApps,
+	hasApps, // eslint-disable-line @typescript-eslint/no-unused-vars
 }: MobileNavigationProps) {
 	return (
 		<div className={styles.mobileNavigation}>

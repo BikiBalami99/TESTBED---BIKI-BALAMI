@@ -33,7 +33,7 @@ export default function Notes() {
 	]);
 	const [selectedNote, setSelectedNote] = useState<string | null>("1");
 	const [searchQuery, setSearchQuery] = useState("");
-	const [_isCreatingNote, setIsCreatingNote] = useState(false);
+	const [_isCreatingNote, setIsCreatingNote] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
 	const [mobileView, setMobileView] = useState<"list" | "detail">("list"); // iOS-style navigation
 
 	// Sorting state

@@ -13,7 +13,7 @@ interface MobileDockProps {
 
 export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 	// Removed hoveredApp state since DockItem handles its own hover states
-	const { getWindowForApp, focusWindow, restoreWindow, windows } = useWindowManager();
+	const { getWindowForApp, focusWindow, restoreWindow } = useWindowManager();
 
 	const handleAppClick = useCallback(
 		(app: AppInfo) => {
