@@ -1,20 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	compiler: {
-		// Ensure CSS properties are properly prefixed
-		styledComponents: false,
-	},
-	webpack: (config, { isServer }) => {
-		// Ensure CSS autoprefixer works correctly
-		if (!isServer) {
-			config.resolve.fallback = {
-				...config.resolve.fallback,
-				fs: false,
-			};
-		}
-		return config;
-	},
+  compiler: {
+    // Ensure CSS properties are properly prefixed
+    styledComponents: false,
+  },
+  // Remove webpack config since we're using Turbopack
+  // PostCSS with autoprefixer will handle CSS prefixing
 };
 
 export default nextConfig;
