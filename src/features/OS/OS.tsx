@@ -111,7 +111,7 @@ export default function OS({ children }: OSProps) {
 			const minX = 0;
 			const minY = 0;
 			const maxX = viewportWidth - constrainedWidth;
-			const maxY = viewportHeight - constrainedHeight;
+			const maxY = viewportHeight - constrainedHeight - 26;
 
 			const constrainedX = Math.max(minX, Math.min(maxX, x));
 			const constrainedY = Math.max(minY, Math.min(maxY, y));

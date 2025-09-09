@@ -259,7 +259,7 @@ function WindowContent({
 
 			// Check if window is outside viewport bounds
 			const maxX = viewportWidth - sizeRef.current.width;
-			const maxY = viewportHeight - sizeRef.current.height;
+			const maxY = viewportHeight - sizeRef.current.height - 26;
 
 			if (
 				positionRef.current.x > maxX ||
@@ -350,9 +350,9 @@ function WindowContent({
 				const viewportWidth = window.innerWidth;
 				const viewportHeight = window.innerHeight;
 				const minX = 0;
-				const minY = 0;
+				const minY = 8;
 				const maxX = viewportWidth - sizeRef.current.width;
-				const maxY = viewportHeight - sizeRef.current.height;
+				const maxY = viewportHeight - sizeRef.current.height - 26;
 
 				// Clamp position to viewport bounds
 				newX = Math.max(minX, Math.min(maxX, newX));
@@ -436,7 +436,7 @@ function WindowContent({
 				const minX = 0;
 				const minY = 0;
 				const maxX = viewportWidth - newWidth;
-				const maxY = viewportHeight - newHeight;
+				const maxY = viewportHeight - newHeight - 26;
 
 				newX = Math.max(minX, Math.min(maxX, newX));
 				newY = Math.max(minY, Math.min(maxY, newY));
