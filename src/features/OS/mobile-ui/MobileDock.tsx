@@ -75,13 +75,6 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 					);
 				})}
 			</div>
-
-			{/* Recent Apps indicator */}
-			{windows.some((w) => w.isMinimized) && (
-				<div className={styles.recentIndicator}>
-					<div className={styles.recentDot} />
-				</div>
-			)}
 		</div>
 	);
 }
