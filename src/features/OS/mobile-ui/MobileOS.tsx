@@ -25,6 +25,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 	const [mobilePortalRoot, setMobilePortalRoot] = useState<HTMLElement | null>(null);
 	const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
 	const [showAppExpose, setShowAppExpose] = useState(false);
+	const [isJiggleMode, setIsJiggleMode] = useState(false);
 
 	// Get current mobile window (only one at a time on mobile)
 	const currentWindow =
@@ -105,6 +106,10 @@ export default function MobileOS({ children }: MobileOSProps) {
 		setShowAppExpose(!showAppExpose);
 	}, [showAppExpose]);
 
+	const handleToggleJiggleMode = useCallback(() => {
+		setIsJiggleMode(!isJiggleMode);
+	}, [isJiggleMode]);
+
 	const handleAppLaunch = useCallback(
 		(appId: string) => {
 			const app = AVAILABLE_APPS.find((a) => a.id === appId);
@@ -146,11 +151,16 @@ export default function MobileOS({ children }: MobileOSProps) {
 					<BackgroundDisplay />
 
 					{/* Mobile Menu Bar */}
-					<MobileMenuBar />
+					<MobileMenuBar
+						isJiggleMode={isJiggleMode}
+						onToggleJiggleMode={handleToggleJiggleMode}
+					/>
 
 					{/* Main Content Area */}
 					<div className={styles.contentArea}>
-						{showDesktop && <MobileDesktop onAppLaunch={handleAppLaunch} />}
+						{showDesktop && (
+							<MobileDesktop onAppLaunch={handleAppLaunch} isJiggleMode={isJiggleMode} />
+						)}
 
 						{showAppExpose && (
 							<div className={styles.appExposeContainer}>

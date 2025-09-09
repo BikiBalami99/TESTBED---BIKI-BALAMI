@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { AVAILABLE_APPS, AppInfo } from "../desktop/AppIcons/AppIcons";
 import { DOCK_APPS } from "../desktop/data";
 import { useWindowManager } from "../OS";

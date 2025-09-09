@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AVAILABLE_APPS, AppIcon } from "../desktop/AppIcons/AppIcons";
 import { DESKTOP_APPS } from "../desktop/data";
 import { useWindowManager } from "../OS";
@@ -14,11 +14,16 @@ interface DesktopApp {
 
 interface MobileDesktopProps {
 	onAppLaunch: (appId: string) => void;
+	isJiggleMode: boolean;
 }
 
-export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
+export default function MobileDesktop({ onAppLaunch, isJiggleMode }: MobileDesktopProps) {
 	const { getAllWindowsForApp } = useWindowManager();
-	const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
+	// const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set()); // For future features
+	const [draggedApp, setDraggedApp] = useState<string | null>(null);
+	const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+	const [snapIndicator, setSnapIndicator] = useState({ visible: false, x: 0, y: 0 });
+	const dragStartPos = useRef({ x: 0, y: 0 });
 
 	// Smart responsive grid positioning
 	const calculateMobilePositions = useCallback(() => {
@@ -69,13 +74,76 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 		});
 	}, []);
 
-	const [desktopApps, setDesktopApps] = useState<DesktopApp[]>(() =>
-		calculateMobilePositions()
-	);
+	const [desktopApps, setDesktopApps] = useState<DesktopApp[]>([]);
 
-	// Recalculate positions on resize
+	// Handle app position changes
+	const handleAppPositionChange = useCallback((appId: string, x: number, y: number) => {
+		setDesktopApps((prev) =>
+			prev.map((app) => (app.appId === appId ? { ...app, x, y } : app))
+		);
+	}, []);
+
+	// Save positions to localStorage whenever they change
+	useEffect(() => {
+		if (desktopApps.length > 0) {
+			console.log("Saving mobile app positions to localStorage:", desktopApps);
+			localStorage.setItem("mobileDesktopApps", JSON.stringify(desktopApps));
+		}
+	}, [desktopApps]);
+
+	// Load saved positions from localStorage on mount
+	useEffect(() => {
+		console.log("Loading mobile app positions from localStorage...");
+		const savedApps = localStorage.getItem("mobileDesktopApps");
+		console.log("Saved apps from localStorage:", savedApps);
+
+		if (savedApps) {
+			try {
+				const parsedApps = JSON.parse(savedApps);
+				console.log("Parsed apps:", parsedApps);
+
+				if (Array.isArray(parsedApps) && parsedApps.length > 0) {
+					const requiredAppIds = DESKTOP_APPS.map((app) => app.appId);
+					const hasAllApps = requiredAppIds.every((appId) =>
+						parsedApps.some((app: DesktopApp) => app.appId === appId)
+					);
+
+					console.log("Has all required apps:", hasAllApps);
+
+					if (hasAllApps) {
+						console.log("Using saved positions");
+						setDesktopApps(parsedApps);
+						return; // Don't recalculate if we have valid saved data
+					}
+				}
+			} catch (error) {
+				console.warn("Failed to parse saved mobile app positions:", error);
+			}
+		}
+
+		// Only calculate default positions if no valid saved data
+		console.log("Using calculated positions");
+		setDesktopApps(calculateMobilePositions());
+	}, []); // Empty dependency array - only run once on mount
+
+	// Recalculate positions on resize (but preserve saved positions if they exist)
 	useEffect(() => {
 		const handleResize = () => {
+			// Check if we have saved positions first
+			const savedApps = localStorage.getItem("mobileDesktopApps");
+			if (savedApps) {
+				try {
+					const parsedApps = JSON.parse(savedApps);
+					if (Array.isArray(parsedApps) && parsedApps.length > 0) {
+						// Keep saved positions, don't recalculate
+						return;
+					}
+				} catch {
+					// If parsing fails, fall back to calculation
+				}
+			}
+
+			// Only recalculate if no saved positions
 			setDesktopApps(calculateMobilePositions());
 		};
 
@@ -83,38 +151,95 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [calculateMobilePositions]);
 
-	// Load saved positions (merge with calculated positions)
-	useEffect(() => {
-		const savedApps = localStorage.getItem("mobileDesktopApps");
-		if (savedApps) {
-			try {
-				// For mobile, we'll use calculated positions but could allow customization later
-				setDesktopApps(calculateMobilePositions());
-			} catch {
-				setDesktopApps(calculateMobilePositions());
+	// Jiggle mode drag handlers
+	const handleTouchStart = useCallback(
+		(e: React.TouchEvent, appId: string) => {
+			if (!isJiggleMode) {
+				// Normal tap - open app
+				onAppLaunch(appId);
+				return;
 			}
-		}
-	}, [calculateMobilePositions]);
 
-	const handleAppClick = useCallback(
-		(appId: string) => {
-			onAppLaunch(appId);
+			// Jiggle mode - start drag
+			const touch = e.touches[0];
+			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			const app = desktopApps.find((a) => a.appId === appId);
+			if (!app) return;
+
+			setDraggedApp(appId);
+			dragStartPos.current = { x: touch.clientX, y: touch.clientY };
+			setDragOffset({ x: touch.clientX - rect.left, y: touch.clientY - rect.top });
 		},
-		[onAppLaunch]
+		[isJiggleMode, onAppLaunch, desktopApps]
 	);
 
-	const handleAppLongPress = useCallback((appId: string) => {
-		// Toggle selection for future features (like organizing)
-		setSelectedApps((prev) => {
-			const newSet = new Set(prev);
-			if (newSet.has(appId)) {
-				newSet.delete(appId);
-			} else {
-				newSet.add(appId);
-			}
-			return newSet;
-		});
-	}, []);
+	const handleTouchMove = useCallback(
+		(e: TouchEvent) => {
+			if (!draggedApp) return;
+
+			e.preventDefault();
+			const touch = e.touches[0];
+
+			// Calculate position directly from touch position minus offset
+			const newX = touch.clientX - dragOffset.x;
+			const newY = touch.clientY - dragOffset.y;
+
+			// Update position
+			handleAppPositionChange(draggedApp, newX, newY);
+
+			// Show snap indicator
+			const iconSize = window.innerWidth < 480 ? 60 : 80;
+			const snapX = Math.round(newX / iconSize) * iconSize;
+			const snapY = Math.round(newY / iconSize) * iconSize;
+
+			setSnapIndicator({
+				visible: true,
+				x: Math.max(20, Math.min(snapX, window.innerWidth - iconSize)),
+				y: Math.max(64, Math.min(snapY, window.innerHeight - iconSize - 100)),
+			});
+		},
+		[draggedApp, dragOffset, handleAppPositionChange]
+	);
+
+	const handleTouchEnd = useCallback(
+		(e: TouchEvent) => {
+			if (!draggedApp) return;
+
+			// Snap to grid
+			const iconSize = window.innerWidth < 480 ? 60 : 80;
+			const finalX = e.changedTouches[0].clientX - dragOffset.x;
+			const finalY = e.changedTouches[0].clientY - dragOffset.y;
+
+			const snapX = Math.round(finalX / iconSize) * iconSize;
+			const snapY = Math.round(finalY / iconSize) * iconSize;
+
+			const constrainedX = Math.max(20, Math.min(snapX, window.innerWidth - iconSize));
+			const constrainedY = Math.max(
+				64,
+				Math.min(snapY, window.innerHeight - iconSize - 100)
+			);
+
+			handleAppPositionChange(draggedApp, constrainedX, constrainedY);
+
+			// Reset drag state
+			setDraggedApp(null);
+			setSnapIndicator({ visible: false, x: 0, y: 0 });
+		},
+		[draggedApp, dragOffset, handleAppPositionChange]
+	);
+
+	// Add global touch event listeners for drag
+	useEffect(() => {
+		if (draggedApp) {
+			document.addEventListener("touchmove", handleTouchMove, { passive: false });
+			document.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+			return () => {
+				document.removeEventListener("touchmove", handleTouchMove);
+				document.removeEventListener("touchend", handleTouchEnd);
+			};
+		}
+	}, [draggedApp, handleTouchMove, handleTouchEnd]);
 
 	return (
 		<div className={styles.mobileDesktop}>
@@ -124,23 +249,22 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 
 				const appWindows = getAllWindowsForApp(app.id);
 				const isActive = appWindows.length > 0;
-				const isSelected = selectedApps.has(app.id);
+				// const isSelected = selectedApps.has(app.id); // For future features
+				const isDragging = draggedApp === desktopApp.appId;
 
 				return (
 					<div
 						key={desktopApp.appId}
 						className={`${styles.desktopApp} ${isActive ? styles.active : ""} ${
-							isSelected ? styles.selected : ""
-						}`}
+							isDragging ? styles.dragging : ""
+						} ${isJiggleMode ? styles.jiggle : ""}`}
 						style={{
 							left: desktopApp.x,
 							top: desktopApp.y,
+							cursor: isJiggleMode ? (isDragging ? "grabbing" : "grab") : "pointer",
+							zIndex: isDragging ? 1000 : 10,
 						}}
-						onClick={() => handleAppClick(app.id)}
-						onContextMenu={(e) => {
-							e.preventDefault();
-							handleAppLongPress(app.id);
-						}}
+						onTouchStart={(e) => handleTouchStart(e, app.id)}
 					>
 						<AppIcon
 							app={app}
@@ -153,6 +277,17 @@ export default function MobileDesktop({ onAppLaunch }: MobileDesktopProps) {
 					</div>
 				);
 			})}
+
+			{/* Snap Indicator */}
+			{snapIndicator.visible && (
+				<div
+					className={styles.snapIndicator}
+					style={{
+						left: snapIndicator.x,
+						top: snapIndicator.y,
+					}}
+				/>
+			)}
 		</div>
 	);
 }
