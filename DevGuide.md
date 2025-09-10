@@ -187,6 +187,62 @@ function useWindowDimensions(): WindowDimensions;
 4. **Test responsiveness**: Use `useWindowDimensions()` instead of media queries
 5. **Validate config**: Check console for desktop/dock config validation logs
 
+## Mobile vs Desktop Differences
+
+The OS simulation automatically adapts between desktop and mobile modes based on device detection and screen size.
+
+### Device Detection
+
+The system distinguishes between actual mobile devices and small desktop windows:
+
+```typescript
+// Mobile detection logic in MobileContext.tsx
+const isActualMobileDevice = typeof window !== "undefined" && 
+    (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+     ('ontouchstart' in window && navigator.maxTouchPoints > 0));
+
+const isMobile = screenWidth <= 768 && isActualMobileDevice;
+const isDesktop = screenWidth > 1024 || (screenWidth <= 768 && !isActualMobileDevice);
+```
+
+### Desktop Mode (Default)
+- **Window System**: Full desktop experience with draggable/resizable windows
+- **Event Handling**: Mouse events (click, drag, hover)
+- **UI Components**: Desktop dock, menu bar, desktop icons
+- **Interaction**: Click to open apps, drag to move windows
+
+### Mobile Mode (Touch Devices)
+- **Window System**: Single-window focus with mobile navigation
+- **Event Handling**: Touch events (touchstart, touchmove, touchend)
+- **UI Components**: Mobile dock, mobile menu bar, mobile navigation
+- **Interaction**: Tap to open apps, swipe gestures for navigation
+
+### Event Handling Strategy
+
+Desktop components handle both mouse and touch events for universal compatibility:
+
+```typescript
+// Desktop apps support both interaction types
+<div
+  onMouseDown={(e) => handleMouseDown(e, appId)}
+  onTouchStart={(e) => handleTouchStart(e, appId)}
+  onClick={onClick}
+>
+```
+
+### Responsive Breakpoints
+
+- **Mobile**: ≤ 768px AND actual mobile device
+- **Tablet**: 769px - 1024px  
+- **Desktop**: > 1024px OR small desktop window (≤ 768px but not mobile device)
+
+### Development Considerations
+
+- **Testing**: Use Chrome DevTools responsive mode with touch simulation
+- **Event Handling**: Desktop components work in both modes
+- **Styling**: Use `useMobile()` hook for mobile-specific styling
+- **Navigation**: Mobile mode provides back/forward navigation
+
 ## Architecture Notes
 
 - **OS.tsx**: Main container, manages all windows and global state
