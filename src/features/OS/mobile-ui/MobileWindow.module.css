@@ -6,7 +6,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: #ffffff;
+	background: transparent;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
@@ -17,7 +17,7 @@
 	flex: 1;
 	overflow: hidden;
 	position: relative;
-	background: #ffffff;
+	background: transparent;
 }
 
 /* Ensure app content fills the space */
@@ -26,14 +26,14 @@
 	width: 100%;
 }
 
-/* Dark mode */
+/* Dark mode - transparent to allow glassmorphic effects */
 @media (prefers-color-scheme: dark) {
 	.mobileWindow {
-		background: #000000;
+		background: transparent;
 	}
 
 	.windowContent {
-		background: #000000;
+		background: transparent;
 	}
 }
 
