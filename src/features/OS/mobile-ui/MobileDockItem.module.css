@@ -1,0 +1,153 @@
+/* Mobile Dock Item - macOS Style (Mobile Version of Desktop Dock) */
+
+.mobileDockItem {
+	position: relative;
+	cursor: pointer;
+	border-radius: 12px;
+	transition: all 0.2s ease-in-out;
+	/* Mobile-appropriate sizing - smaller than desktop dock */
+	width: 38px;
+	height: 38px;
+	min-width: 38px;
+	min-height: 38px;
+	max-width: 38px;
+	max-height: 38px;
+	padding: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	/* Default glassmorphic background - will be overridden by app-specific colors */
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.25) 0%,
+		rgba(255, 255, 255, 0.1) 100%
+	);
+	backdrop-filter: blur(20px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* App-specific colored backgrounds for mobile dock items - iOS 18 style */
+
+/* Development Apps */
+.mobileDockItem[data-app-id="javascript-playground"] {
+	background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
+	border: 1px solid rgba(0, 255, 65, 0.4);
+	box-shadow: 0 6px 24px rgba(0, 204, 51, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* System Apps */
+.mobileDockItem[data-app-id="app-launcher"] {
+	background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+	border: 1px solid rgba(0, 122, 255, 0.4);
+	box-shadow: 0 6px 24px rgba(0, 122, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.mobileDockItem[data-app-id="settings"] {
+	background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+	border: 1px solid rgba(30, 58, 138, 0.4);
+	box-shadow: 0 6px 24px rgba(30, 58, 138, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.mobileDockItem[data-app-id="features-checklist"] {
+	background: linear-gradient(135deg, #ff6b35 0%, #ff2d92 50%, #ff1744 100%);
+	border: 1px solid rgba(255, 107, 53, 0.5);
+	box-shadow: 0 10px 32px rgba(255, 45, 146, 0.35), 0 3px 12px rgba(255, 107, 53, 0.25),
+		inset 0 1px 0 rgba(255, 255, 255, 0.5);
+	position: relative;
+}
+
+.mobileDockItem[data-app-id="features-checklist"]::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.2) 0%,
+		transparent 30%,
+		rgba(255, 255, 255, 0.1) 70%,
+		transparent 100%
+	);
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+.mobileDockItem[data-app-id="memory"] {
+	background: linear-gradient(135deg, #af52de 0%, #8e44ad 100%);
+	border: 1px solid rgba(175, 82, 222, 0.4);
+	box-shadow: 0 6px 24px rgba(175, 82, 222, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Productivity Apps */
+.mobileDockItem[data-app-id="notes"] {
+	background: linear-gradient(135deg, #ffcc02 0%, #ff9500 100%);
+	border: 1px solid rgba(255, 204, 2, 0.4);
+	box-shadow: 0 6px 24px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Enhanced glassmorphic effects for mobile dock items */
+.mobileDockItem::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.1) 0%,
+		transparent 50%,
+		rgba(0, 0, 0, 0.05) 100%
+	);
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+.featured {
+	filter: drop-shadow(0 6px 20px rgba(0, 195, 255, 0.25));
+}
+
+.mobileDockItemSvg {
+	color: rgba(255, 255, 255, 0.95);
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+	z-index: 1;
+	position: relative;
+}
+
+.activeIndicator {
+	position: absolute;
+	bottom: -8px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 3px;
+	height: 3px;
+	background: #000000c1;
+	border-radius: 50%;
+	box-shadow: 0 0 6px rgba(0, 122, 255, 0.6);
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) scale(1);
+	}
+	50% {
+		opacity: 0.7;
+		transform: translateX(-50%) scale(1.2);
+	}
+}
+
+/* Preview Wrapper */
+.previewWrapper {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 2000;
+}
