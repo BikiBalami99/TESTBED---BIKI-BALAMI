@@ -304,33 +304,6 @@
 	border-radius: 2px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-	.window {
-		min-width: 250px;
-		min-height: 150px;
-	}
-
-	.windowChrome {
-		padding: 0.5rem 0.75rem;
-		height: 44px;
-	}
-
-	.contentArea {
-		height: calc(100% - 44px);
-		padding: 1rem;
-	}
-
-	.windowTitle {
-		font-size: 0.8rem;
-		margin: 0 0.5rem;
-	}
-
-	.trafficLight {
-		width: 10px;
-		height: 10px;
-	}
-}
 
 /* Pulsing glow animations for traffic lights */
 @keyframes pulseGlowRed {

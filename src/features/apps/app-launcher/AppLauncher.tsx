@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { AppIcon, AVAILABLE_APPS, AppInfo } from "../../OS/desktop/AppIcons/AppIcons";
 import ContextMenu, {
 	createAppContextMenuItems,
@@ -74,17 +74,16 @@ export default function AppLauncher() {
 		}
 	};
 
+	const clearSearch = () => {
+		setSearchQuery("");
+	};
+
 	return (
 		<div className={styles.launcher}>
-			{/* Header */}
-			<div className={styles.header}>
-				<h2 className={styles.title}>App Launcher</h2>
-			</div>
-
-			{/* Search Bar */}
+			{/* Search Bar - macOS Tahoe style */}
 			<div className={styles.searchContainer}>
 				<div className={styles.searchWrapper}>
-					<Search size={18} className={styles.searchIcon} />
+					<Search size={16} className={styles.searchIcon} />
 					<input
 						type="text"
 						placeholder="Search apps..."
@@ -93,10 +92,19 @@ export default function AppLauncher() {
 						className={styles.searchInput}
 						autoFocus
 					/>
+					{searchQuery && (
+						<button
+							onClick={clearSearch}
+							className={styles.clearButton}
+							aria-label="Clear search"
+						>
+							<X size={14} />
+						</button>
+					)}
 				</div>
 			</div>
 
-			{/* Apps Grid */}
+			{/* Apps Grid - iPhone home screen style */}
 			<div className={styles.appsGrid}>
 				{filteredApps.length > 0 ? (
 					filteredApps.map((app) => (
@@ -105,25 +113,20 @@ export default function AppLauncher() {
 							className={styles.appItem}
 							onClick={() => handleAppClick(app)}
 							onContextMenu={(e) => handleContextMenu(e, app.id)}
+							title={app.name}
 						>
-							<AppIcon app={app} size="large" />
-							<div className={styles.appInfo}>
-								<h3 className={styles.appItemTitle}>{app.name}</h3>
-								<p className={styles.appItemDescription}>{app.description}</p>
-								<span className={styles.appCategory}>{app.category}</span>
+							<div className={styles.appIconContainer}>
+								<AppIcon app={app} size="large" />
 							</div>
 						</div>
 					))
 				) : (
 					<div className={styles.noResults}>
-						<p>No apps found matching &quot;{searchQuery}&quot;</p>
+						<div className={styles.noResultsIcon}>🔍</div>
+						<p>No apps found</p>
+						<span>Try a different search term</span>
 					</div>
 				)}
-			</div>
-
-			{/* Footer */}
-			<div className={styles.footer}>
-				<p className={styles.footerText}>{filteredApps.length} apps available</p>
 			</div>
 
 			{/* Context Menu */}

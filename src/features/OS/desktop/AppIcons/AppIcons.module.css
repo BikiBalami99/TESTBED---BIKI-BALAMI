@@ -182,24 +182,6 @@
 
 /* Preview Wrapper moved to DockItem component */
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-	.appIcon {
-		gap: 0.25rem;
-		padding: 0.25rem;
-	}
-
-	.iconWrapper {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-	}
-
-	.appName {
-		font-size: 0.625rem;
-		max-width: 60px;
-	}
-}
 
 /* Enhanced glassmorphic effects for better visual appeal */
 .iconWrapper::before {

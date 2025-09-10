@@ -67,16 +67,3 @@
 	}
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-	.desktopApp {
-		/* Adjust desktop app positions for mobile */
-	}
-}
-
-/* Hide desktop apps on very small screens */
-@media (max-width: 480px) {
-	.desktopApp {
-		display: none;
-	}
-}

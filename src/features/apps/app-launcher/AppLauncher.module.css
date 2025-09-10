@@ -1,144 +1,97 @@
-/* App Launcher - Beautiful Dark Theme */
+/* App Launcher - iPhone Home Screen + macOS Tahoe Style with Liquid Glass Glassmorphism */
 
 .launcher {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	background: 
-		/* Dark gradient base */ linear-gradient(
-			145deg,
-			#1a1a2e 0%,
-			#16213e 25%,
-			#0f3460 50%,
-			#1a1a2e 100%
+		/* Ultra-thin glassmorphic base */ linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.1) 0%,
+			rgba(255, 255, 255, 0.05) 25%,
+			rgba(255, 255, 255, 0.02) 50%,
+			rgba(255, 255, 255, 0.08) 100%
 		),
-		/* Subtle pattern overlay */
-		radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-		radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
-	backdrop-filter: blur(20px) saturate(1.2);
-	-webkit-backdrop-filter: blur(20px) saturate(1.2);
-	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-	margin: -1.5rem; /* Negative margin to counteract window padding */
-	border-radius: 12px;
+		/* Subtle color hints */
+			radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.08) 0%, transparent 50%),
+		radial-gradient(circle at 80% 80%, rgba(255, 45, 85, 0.06) 0%, transparent 50%),
+		radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.04) 0%, transparent 70%);
+
+	backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
+	-webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
+
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+		system-ui, sans-serif;
+
 	overflow: hidden;
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.1),
-		inset 0 0 40px rgba(120, 119, 198, 0.1),
-		0 20px 40px rgba(0, 0, 0, 0.3);
+
 	position: relative;
 }
 
 .launcher::before {
-	content: '';
+	content: "";
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 1px;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+		radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+	pointer-events: none;
+	z-index: 0;
 }
 
-.header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 28px 32px;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.05) 0%,
-		rgba(255, 255, 255, 0.02) 100%
-	);
-	backdrop-filter: blur(10px);
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.08),
-		0 1px 3px rgba(0, 0, 0, 0.2);
-	position: relative;
-}
-
-.title {
-	margin: 0;
-	font-size: 32px;
-	font-weight: 800;
-	background: linear-gradient(135deg, 
-		#ffffff 0%, 
-		#e2e8f0 50%, 
-		#cbd5e1 100%
-	);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-	letter-spacing: -0.03em;
-	position: relative;
-}
-
-.title::after {
-	content: '';
-	position: absolute;
-	bottom: -4px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 40px;
-	height: 2px;
-	background: linear-gradient(90deg, transparent, #7c3aed, transparent);
-	border-radius: 1px;
-}
-
+/* Search Container - macOS Tahoe style */
 .searchContainer {
-	padding: 24px 32px;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-	background: rgba(0, 0, 0, 0.1);
+	padding: 20px 24px;
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(20px);
+	border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+	position: relative;
+	z-index: 1;
 }
 
 .searchWrapper {
 	position: relative;
-	max-width: 450px;
+	max-width: 400px;
 	margin: 0 auto;
 }
 
 .searchIcon {
 	position: absolute;
-	left: 16px;
+	left: 14px;
 	top: 50%;
 	transform: translateY(-50%);
 	color: rgba(255, 255, 255, 0.6);
 	pointer-events: none;
+	z-index: 2;
 }
 
 .searchInput {
 	width: 100%;
-	padding: 16px 20px 16px 48px;
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	border-radius: 16px;
-	font-size: 16px;
+	padding: 12px 16px 12px 44px;
+	border: 0.5px solid rgba(255, 255, 255, 0.2);
+	border-radius: 12px;
+	font-size: 15px;
+	font-weight: 400;
 	outline: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.1) 0%,
-		rgba(255, 255, 255, 0.05) 100%
-	);
-	backdrop-filter: blur(15px);
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.1),
-		0 4px 20px rgba(0, 0, 0, 0.2);
-	color: #ffffff;
-	font-weight: 500;
+	transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+	/* Ultra-thin glassmorphic background */
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(20px) saturate(1.5);
+	-webkit-backdrop-filter: blur(20px) saturate(1.5);
+
+	color: rgba(255, 255, 255, 0.9);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .searchInput:focus {
-	border-color: rgba(124, 58, 237, 0.6);
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.15) 0%,
-		rgba(255, 255, 255, 0.08) 100%
-	);
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.15),
-		0 0 0 3px rgba(124, 58, 237, 0.2),
-		0 8px 32px rgba(124, 58, 237, 0.3);
-	transform: translateY(-2px);
+	border-color: rgba(0, 122, 255, 0.6);
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 0 3px rgba(0, 122, 255, 0.15),
+		0 4px 12px rgba(0, 122, 255, 0.2);
+	transform: translateY(-1px);
 }
 
 .searchInput::placeholder {
@@ -146,202 +99,170 @@
 	font-weight: 400;
 }
 
-.appsGrid {
-	flex: 1;
-	padding: 32px;
-	overflow-y: auto;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-	gap: 20px;
-	align-content: start;
-	background: rgba(0, 0, 0, 0.05);
-}
-
-.appItem {
+.clearButton {
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(255, 255, 255, 0.1);
+	border: none;
+	border-radius: 6px;
+	width: 24px;
+	height: 24px;
 	display: flex;
 	align-items: center;
-	gap: 20px;
-	padding: 24px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 20px;
+	justify-content: center;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.08) 0%,
-		rgba(255, 255, 255, 0.04) 100%
-	);
-	backdrop-filter: blur(20px);
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.1),
-		0 8px 32px rgba(0, 0, 0, 0.2);
-	min-height: 110px; /* Ensure consistent height */
-	position: relative;
-	overflow: hidden;
+	transition: all 0.2s ease;
+	color: rgba(255, 255, 255, 0.7);
+	backdrop-filter: blur(10px);
 }
 
-.appItem::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 1px;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+.clearButton:hover {
+	background: rgba(255, 255, 255, 0.2);
+	color: rgba(255, 255, 255, 0.9);
+	transform: translateY(-50%) scale(1.1);
 }
 
-/* Ensure consistent icon sizing in app launcher */
-.appItem :global(.appIcon) {
-	flex-shrink: 0;
-	width: 64px !important;
-	height: 64px !important;
-}
-
-.appItem :global(.iconWrapper) {
-	width: 64px !important;
-	height: 64px !important;
-	border-radius: 16px !important;
-}
-
-.appItem:hover {
-	border-color: rgba(124, 58, 237, 0.4);
-	background: linear-gradient(
-		135deg,
-		rgba(124, 58, 237, 0.15) 0%,
-		rgba(124, 58, 237, 0.08) 50%,
-		rgba(255, 255, 255, 0.08) 100%
-	);
-	box-shadow: 
-		inset 0 1px 0 rgba(255, 255, 255, 0.2),
-		0 0 0 2px rgba(124, 58, 237, 0.3),
-		0 12px 40px rgba(124, 58, 237, 0.2);
-	transform: translateY(-3px) scale(1.02);
-}
-
-.appInfo {
+/* Apps Grid - iPhone home screen style */
+.appsGrid {
 	flex: 1;
-	min-width: 0;
+	padding: 24px 20px;
+	overflow-y: auto;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 70px);
+	gap: 30px 30px;
+	justify-content: center;
+	align-content: start;
+	position: relative;
+	z-index: 1;
+}
+
+.appIconContainer {
+	position: relative;
 	display: flex;
-	flex-direction: column;
+	align-items: center;
 	justify-content: center;
 }
 
-.appItemTitle {
-	margin: 0 0 8px 0;
-	font-size: 20px;
-	font-weight: 700;
-	color: #ffffff;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	line-height: 1.2;
-	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+/* Override AppIcon styles for launcher */
+.appIconContainer :global(.appIcon) {
+	width: 60px !important;
+	height: 60px !important;
 }
 
-.appItemDescription {
-	margin: 0 0 12px 0;
-	font-size: 14px;
-	color: rgba(255, 255, 255, 0.7);
-	line-height: 1.4;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-	opacity: 0.9;
+.appIconContainer :global(.iconWrapper) {
+	width: 60px !important;
+	height: 60px !important;
+	border-radius: 14px !important;
+	background: rgba(255, 255, 255, 0.1) !important;
+	backdrop-filter: blur(20px) !important;
+	border: 0.5px solid rgba(255, 255, 255, 0.2) !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+	transition: all 0.2s ease !important;
 }
 
-.appCategory {
-	display: inline-block;
-	padding: 6px 12px;
-	background: linear-gradient(
-		135deg,
-		rgba(124, 58, 237, 0.25) 0%,
-		rgba(124, 58, 237, 0.15) 100%
-	);
-	color: #c084fc;
-	font-size: 11px;
-	font-weight: 700;
-	border-radius: 10px;
-	text-transform: uppercase;
-	border: 1px solid rgba(124, 58, 237, 0.3);
-	backdrop-filter: blur(5px);
-	letter-spacing: 0.05em;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.appItem:hover .appIconContainer :global(.iconWrapper) {
+	background: rgba(255, 255, 255, 0.15) !important;
+	border-color: rgba(255, 255, 255, 0.3) !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
+/* No Results - Enhanced design */
 .noResults {
 	grid-column: 1 / -1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	padding: 80px 20px;
+	padding: 60px 20px;
 	text-align: center;
 	color: rgba(255, 255, 255, 0.6);
+	background: rgba(255, 255, 255, 0.03);
+	border-radius: 16px;
+	backdrop-filter: blur(20px);
+	border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.noResultsIcon {
+	font-size: 32px;
+	margin-bottom: 16px;
+	opacity: 0.7;
 }
 
 .noResults p {
-	margin: 0;
-	font-size: 18px;
-	font-weight: 500;
+	margin: 0 0 8px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.8);
 }
 
-.footer {
-	padding: 20px 32px;
-	border-top: 1px solid rgba(255, 255, 255, 0.08);
-	background: linear-gradient(
-		135deg,
-		rgba(0, 0, 0, 0.15) 0%,
-		rgba(0, 0, 0, 0.05) 100%
-	);
-	backdrop-filter: blur(15px);
-	text-align: center;
-}
-
-.footerText {
-	margin: 0;
+.noResults span {
 	font-size: 13px;
 	color: rgba(255, 255, 255, 0.5);
-	font-weight: 500;
-	letter-spacing: 0.02em;
+	font-weight: 400;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - Ultra-thin */
 .appsGrid::-webkit-scrollbar {
-	width: 6px;
+	width: 4px;
 }
 
 .appsGrid::-webkit-scrollbar-track {
 	background: rgba(255, 255, 255, 0.05);
-	border-radius: 3px;
+	border-radius: 2px;
 }
 
 .appsGrid::-webkit-scrollbar-thumb {
-	background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(124, 58, 237, 0.4));
-	border-radius: 3px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 2px;
 	transition: all 0.2s ease;
 }
 
 .appsGrid::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(124, 58, 237, 0.6));
+	background: rgba(255, 255, 255, 0.3);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
 	.appsGrid {
-		grid-template-columns: 1fr;
-		padding: 16px;
+		grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+		gap: 16px 12px;
+		padding: 16px 12px;
 	}
 
-	.appItem {
-		padding: 12px;
+	.appIconContainer {
+		width: 50px;
+		height: 50px;
 	}
 
-	.header {
-		padding: 16px;
+	.appIconContainer :global(.appIcon),
+	.appIconContainer :global(.iconWrapper) {
+		width: 50px !important;
+		height: 50px !important;
+		border-radius: 12px !important;
 	}
 
 	.searchContainer {
-		padding: 16px;
+		padding: 16px 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.appsGrid {
+		grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+		gap: 14px 10px;
+	}
+
+	.appIconContainer {
+		width: 45px;
+		height: 45px;
+	}
+
+	.appIconContainer :global(.appIcon),
+	.appIconContainer :global(.iconWrapper) {
+		width: 45px !important;
+		height: 45px !important;
+		border-radius: 10px !important;
 	}
 }

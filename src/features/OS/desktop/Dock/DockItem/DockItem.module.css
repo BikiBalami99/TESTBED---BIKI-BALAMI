@@ -161,21 +161,3 @@
 	z-index: 2000;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-	.dockItem {
-		padding: 0.25rem;
-		margin: 0 0.0625rem;
-	}
-
-	.dockItemWrapper {
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-	}
-
-	.dockItemSvg {
-		width: 24px;
-		height: 24px;
-	}
-}
