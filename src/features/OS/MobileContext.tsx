@@ -57,11 +57,19 @@ export function MobileProvider({ children }: MobileProviderProps) {
 		};
 	}, []);
 
-	// Determine device type based on screen width
-	// Mobile: <= 768px, Tablet: 769px - 1024px, Desktop: > 1024px
-	const isMobile = screenWidth <= 768;
+	// Determine device type based on screen width and user agent
+	// Check if it's actually a mobile device (not just a small desktop window)
+	const isActualMobileDevice =
+		typeof window !== "undefined" &&
+		(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		) ||
+			("ontouchstart" in window && navigator.maxTouchPoints > 0));
+
+	// Mobile: <= 768px AND actual mobile device, Tablet: 769px - 1024px, Desktop: > 1024px OR small desktop window
+	const isMobile = screenWidth <= 768 && isActualMobileDevice;
 	const isTablet = screenWidth > 768 && screenWidth <= 1024;
-	const isDesktop = screenWidth > 1024;
+	const isDesktop = screenWidth > 1024 || (screenWidth <= 768 && !isActualMobileDevice);
 
 	const contextValue: MobileContextType = {
 		isMobile,

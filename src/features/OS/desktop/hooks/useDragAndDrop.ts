@@ -168,12 +168,46 @@ export function useDragAndDrop({
 		[desktopApps, dragState.clickTimeout]
 	);
 
-	const handleMouseMove = useCallback(
-		(e: MouseEvent) => {
+	const handleTouchStart = useCallback(
+		(e: React.TouchEvent, appId: string) => {
+			const app = desktopApps.find((a) => a.appId === appId);
+			if (!app) return;
+
+			const touch = e.touches[0];
+			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			const offsetX = touch.clientX - rect.left;
+			const offsetY = touch.clientY - rect.top;
+
+			// Clear any existing click timeout
+			if (dragState.clickTimeout) {
+				clearTimeout(dragState.clickTimeout);
+			}
+
+			setDragState({
+				isDragging: false, // Don't mark as dragging until movement is detected
+				draggedAppId: appId,
+				dragStartX: touch.clientX,
+				dragStartY: touch.clientY,
+				appStartX: app.x,
+				appStartY: app.y,
+				offset: { x: offsetX, y: offsetY },
+				hasMoved: false,
+				isPotentialDrag: true, // Mark as potential drag
+				clickTimeout: null,
+			});
+
+			// Prevent the default touch behavior
+			e.preventDefault();
+		},
+		[desktopApps, dragState.clickTimeout]
+	);
+
+	const handlePointerMove = useCallback(
+		(clientX: number, clientY: number) => {
 			if (!dragState.isPotentialDrag || !dragState.draggedAppId) return;
 
-			const deltaX = e.clientX - dragState.dragStartX;
-			const deltaY = e.clientY - dragState.dragStartY;
+			const deltaX = clientX - dragState.dragStartX;
+			const deltaY = clientY - dragState.dragStartY;
 
 			// Check if we've moved enough to start dragging (10px threshold)
 			const hasMovedEnough = Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10;
@@ -203,8 +237,8 @@ export function useDragAndDrop({
 			const newY = dragState.appStartY + deltaY;
 
 			// Calculate snap position for indicator
-			const snapX = Math.round((e.clientX - dragState.offset.x) / gridSize) * gridSize;
-			const snapY = Math.round((e.clientY - dragState.offset.y) / gridSize) * gridSize;
+			const snapX = Math.round((clientX - dragState.offset.x) / gridSize) * gridSize;
+			const snapY = Math.round((clientY - dragState.offset.y) / gridSize) * gridSize;
 
 			// Constrain snap position to viewport bounds
 			const viewportWidth = window.innerWidth;
@@ -232,8 +266,24 @@ export function useDragAndDrop({
 		[dragState, gridSize, onAppPositionChange]
 	);
 
-	const handleMouseUp = useCallback(
+	const handleMouseMove = useCallback(
 		(e: MouseEvent) => {
+			handlePointerMove(e.clientX, e.clientY);
+		},
+		[handlePointerMove]
+	);
+
+	const handleTouchMove = useCallback(
+		(e: TouchEvent) => {
+			if (e.touches.length > 0) {
+				handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+			}
+		},
+		[handlePointerMove]
+	);
+
+	const handlePointerUp = useCallback(
+		(clientX: number, clientY: number) => {
 			if (!dragState.isPotentialDrag) return;
 
 			// Reset user selection
@@ -245,8 +295,8 @@ export function useDragAndDrop({
 			}
 
 			// Calculate total movement
-			const deltaX = e.clientX - dragState.dragStartX;
-			const deltaY = e.clientY - dragState.dragStartY;
+			const deltaX = clientX - dragState.dragStartX;
+			const deltaY = clientY - dragState.dragStartY;
 			const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
 			// If movement is less than 10px and we never started dragging, it's a click!
@@ -273,8 +323,8 @@ export function useDragAndDrop({
 			}
 
 			// Snap to grid
-			const snapX = Math.round((e.clientX - dragState.offset.x) / gridSize) * gridSize;
-			const snapY = Math.round((e.clientY - dragState.offset.y) / gridSize) * gridSize;
+			const snapX = Math.round((clientX - dragState.offset.x) / gridSize) * gridSize;
+			const snapY = Math.round((clientY - dragState.offset.y) / gridSize) * gridSize;
 
 			// Find final position
 			const finalPosition = findNearestUnoccupiedPosition(snapX, snapY);
@@ -312,23 +362,50 @@ export function useDragAndDrop({
 		[dragState, gridSize, onAppClick, onAppPositionChange, findNearestUnoccupiedPosition]
 	);
 
-	// Add global mouse event listeners for drag
+	const handleMouseUp = useCallback(
+		(e: MouseEvent) => {
+			handlePointerUp(e.clientX, e.clientY);
+		},
+		[handlePointerUp]
+	);
+
+	const handleTouchEnd = useCallback(
+		(e: TouchEvent) => {
+			if (e.changedTouches.length > 0) {
+				handlePointerUp(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+			}
+		},
+		[handlePointerUp]
+	);
+
+	// Add global event listeners for drag (both mouse and touch)
 	useEffect(() => {
 		if (dragState.isPotentialDrag) {
 			document.addEventListener("mousemove", handleMouseMove);
 			document.addEventListener("mouseup", handleMouseUp);
+			document.addEventListener("touchmove", handleTouchMove, { passive: false });
+			document.addEventListener("touchend", handleTouchEnd, { passive: false });
 
 			return () => {
 				document.removeEventListener("mousemove", handleMouseMove);
 				document.removeEventListener("mouseup", handleMouseUp);
+				document.removeEventListener("touchmove", handleTouchMove);
+				document.removeEventListener("touchend", handleTouchEnd);
 			};
 		}
-	}, [dragState.isPotentialDrag, handleMouseMove, handleMouseUp]);
+	}, [
+		dragState.isPotentialDrag,
+		handleMouseMove,
+		handleMouseUp,
+		handleTouchMove,
+		handleTouchEnd,
+	]);
 
 	return {
 		dragState,
 		snapIndicator,
 		handleMouseDown,
+		handleTouchStart,
 		snapToGrid,
 	};
 }

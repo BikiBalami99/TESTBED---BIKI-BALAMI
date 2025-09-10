@@ -26,7 +26,7 @@ export default function DesktopApps({
 	onAppClick,
 	onContextMenu,
 }: DesktopAppsProps) {
-	const { dragState, snapIndicator, handleMouseDown } = useDragAndDrop({
+	const { dragState, snapIndicator, handleMouseDown, handleTouchStart } = useDragAndDrop({
 		desktopApps,
 		onAppPositionChange,
 		onAppClick: (appId) => {
@@ -60,6 +60,7 @@ export default function DesktopApps({
 							zIndex: isDragging ? 1000 : 10,
 						}}
 						onMouseDown={(e) => handleMouseDown(e, desktopApp.appId)}
+						onTouchStart={(e) => handleTouchStart(e, desktopApp.appId)}
 						onContextMenu={(e) => onContextMenu(e, desktopApp)}
 					>
 						<AppIcon
