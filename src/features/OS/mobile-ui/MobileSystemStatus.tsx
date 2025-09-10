@@ -20,6 +20,7 @@ import {
 	HardDrive,
 	Clock,
 	X,
+	ChevronLeft,
 } from "lucide-react";
 import styles from "./MobileSystemStatus.module.css";
 
@@ -433,12 +434,19 @@ export default function MobileSystemStatus() {
 						<div
 							className={`${styles.controlCenter} ${
 								controlCenterOpen ? styles.panelOpen : styles.panelClosing
-							}`}
+							} ${activeDetail ? styles.hasDetail : ""}`}
 							onClick={(e) => e.stopPropagation()}
 						>
 							{/* First row: Connectivity */}
-							<div className={styles.controlRow}>
-								<div className={styles.controlGroup}>
+							<div
+								className={`${styles.controlRow} ${
+									activeDetail ? styles.gridHidden : styles.gridVisible
+								}`}
+							>
+								<div
+									className={`${styles.controlGroup} ${styles.gridContainer}`}
+									aria-hidden={!!activeDetail}
+								>
 									<button
 										className={styles.controlButton}
 										onClick={() => setActiveDetail("bluetooth")}
@@ -478,8 +486,15 @@ export default function MobileSystemStatus() {
 							</div>
 
 							{/* Second row: Audio and Battery */}
-							<div className={styles.controlRow}>
-								<div className={styles.controlGroup}>
+							<div
+								className={`${styles.controlRow} ${
+									activeDetail ? styles.gridHidden : styles.gridVisible
+								}`}
+							>
+								<div
+									className={`${styles.controlGroup} ${styles.gridContainer}`}
+									aria-hidden={!!activeDetail}
+								>
 									<button
 										className={styles.controlButton}
 										onClick={() => setActiveDetail("volume")}
@@ -508,8 +523,15 @@ export default function MobileSystemStatus() {
 
 							{/* Detail Panel */}
 							{activeDetail && (
-								<div className={styles.detailPanel}>
-									<div className={styles.detailHeader}>
+								<div className={`${styles.detailFullView} ${styles.detailEnter}`}>
+									<div className={styles.detailNav}>
+										<button
+											className={styles.backButton}
+											onClick={() => setActiveDetail(null)}
+											aria-label="Back"
+										>
+											<ChevronLeft size={16} />
+										</button>
 										<span className={styles.detailTitle}>
 											{activeDetail === "battery" && "Battery"}
 											{activeDetail === "network" && "Network"}
@@ -519,12 +541,6 @@ export default function MobileSystemStatus() {
 											{activeDetail === "volume" && "Volume"}
 											{activeDetail === "time" && "Date & Time"}
 										</span>
-										<button
-											className={styles.detailClose}
-											onClick={() => setActiveDetail(null)}
-										>
-											<X size={16} />
-										</button>
 									</div>
 
 									<div className={styles.detailContent}>
