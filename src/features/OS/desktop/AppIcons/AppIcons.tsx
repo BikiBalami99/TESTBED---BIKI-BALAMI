@@ -8,10 +8,16 @@ import type { AppInfo } from "../../../apps";
 
 interface AppIconProps {
 	app: AppInfo;
-	size?: "small" | "medium" | "large";
+	size?: "small" | "medium" | "large" | "dock";
 	onClick?: () => void;
 	className?: string;
 	variant?: "default" | "featured";
+	showName?: boolean;
+	isActive?: boolean;
+	onMouseEnter?: () => void;
+	onMouseLeave?: () => void;
+	showPreview?: boolean;
+	previewContent?: React.ReactNode;
 }
 
 export function AppIcon({
@@ -20,6 +26,12 @@ export function AppIcon({
 	onClick,
 	className,
 	variant = "default",
+	showName = true,
+	isActive = false,
+	onMouseEnter,
+	onMouseLeave,
+	showPreview = false,
+	previewContent,
 }: AppIconProps) {
 	const Icon = app.icon;
 
@@ -27,6 +39,7 @@ export function AppIcon({
 		small: 24,
 		medium: 48,
 		large: 64,
+		dock: 32,
 	}[size];
 
 	const isFeatured = variant === "featured" || app.id === "features-checklist";
@@ -35,16 +48,24 @@ export function AppIcon({
 		<div
 			className={`${styles.appIcon} ${styles[size]} ${
 				isFeatured ? styles.featured : ""
-			} ${className || ""}`}
+			} ${isActive ? styles.active : ""} ${className || ""}`}
 			onClick={onClick}
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}
 			title={app.description}
 		>
 			<div className={styles.iconWrapper} data-app-id={app.id}>
 				<Icon size={iconSize} className={styles.icon} />
+				{isActive && size === "dock" && <div className={styles.activeIndicator} />}
 			</div>
-			<span className={`${styles.appName} ${isFeatured ? styles.featuredName : ""}`}>
-				{app.name}
-			</span>
+			{showName && size !== "dock" && (
+				<span className={`${styles.appName} ${isFeatured ? styles.featuredName : ""}`}>
+					{app.name}
+				</span>
+			)}
+			{showPreview && previewContent && (
+				<div className={styles.previewWrapper}>{previewContent}</div>
+			)}
 		</div>
 	);
 }

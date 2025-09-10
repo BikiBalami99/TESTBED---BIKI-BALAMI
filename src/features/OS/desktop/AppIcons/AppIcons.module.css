@@ -72,11 +72,20 @@
 	box-shadow: 0 8px 32px rgba(0, 204, 51, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+/* Dock-specific overrides for better shadows */
+.appIcon.dock .iconWrapper[data-app-id="javascript-playground"] {
+	box-shadow: 0 6px 24px rgba(0, 204, 51, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
 /* System Apps */
 .iconWrapper[data-app-id="app-launcher"] {
 	background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
 	border: 1px solid rgba(0, 122, 255, 0.4);
 	box-shadow: 0 8px 32px rgba(0, 122, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.appIcon.dock .iconWrapper[data-app-id="app-launcher"] {
+	box-shadow: 0 6px 24px rgba(0, 122, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .iconWrapper[data-app-id="settings"] {
@@ -85,12 +94,21 @@
 	box-shadow: 0 8px 32px rgba(30, 58, 138, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+.appIcon.dock .iconWrapper[data-app-id="settings"] {
+	box-shadow: 0 6px 24px rgba(30, 58, 138, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
 .iconWrapper[data-app-id="features-checklist"] {
 	background: linear-gradient(135deg, #ff6b35 0%, #ff2d92 50%, #ff1744 100%);
 	border: 1px solid rgba(255, 107, 53, 0.5);
 	box-shadow: 0 12px 40px rgba(255, 45, 146, 0.35), 0 4px 16px rgba(255, 107, 53, 0.25),
 		inset 0 1px 0 rgba(255, 255, 255, 0.5);
 	position: relative;
+}
+
+.appIcon.dock .iconWrapper[data-app-id="features-checklist"] {
+	box-shadow: 0 10px 32px rgba(255, 45, 146, 0.35), 0 3px 12px rgba(255, 107, 53, 0.25),
+		inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .iconWrapper[data-app-id="features-checklist"]::after {
@@ -117,11 +135,19 @@
 	box-shadow: 0 8px 32px rgba(175, 82, 222, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+.appIcon.dock .iconWrapper[data-app-id="memory"] {
+	box-shadow: 0 6px 24px rgba(175, 82, 222, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
 /* Productivity Apps */
 .iconWrapper[data-app-id="notes"] {
 	background: linear-gradient(135deg, #ffcc02 0%, #ff9500 100%);
 	border: 1px solid rgba(255, 204, 2, 0.4);
 	box-shadow: 0 8px 32px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.appIcon.dock .iconWrapper[data-app-id="notes"] {
+	box-shadow: 0 6px 24px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .appIcon.small .iconWrapper {
@@ -205,6 +231,77 @@
 
 .appIcon.large .appName {
 	font-size: 0.875rem;
+}
+
+/* Dock size - no name, just icon */
+.appIcon.dock {
+	width: 64px;
+	height: 64px;
+	min-width: 64px;
+	min-height: 64px;
+	max-width: 64px;
+	max-height: 64px;
+	padding: 0.5rem;
+	margin: 0 0.125rem;
+	border-radius: 8px;
+	transition: all 0.2s ease-in-out;
+	/* Ensure proper flex layout for dock icons */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.appIcon.dock:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+}
+
+.appIcon.dock .iconWrapper {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	/* Let app-specific colors show through - only set backdrop-filter */
+	backdrop-filter: blur(20px) saturate(180%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+/* Active indicator for dock */
+.activeIndicator {
+	position: absolute;
+	bottom: -10px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 4px;
+	height: 4px;
+	background: #000000c1;
+	border-radius: 50%;
+	box-shadow: 0 0 6px rgba(0, 122, 255, 0.6);
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) scale(1);
+	}
+	50% {
+		opacity: 0.7;
+		transform: translateX(-50%) scale(1.2);
+	}
+}
+
+/* Preview wrapper for dock */
+.previewWrapper {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: 0.5rem;
+	z-index: 2000;
 }
 
 /* Dock Icons moved to DockItem component */

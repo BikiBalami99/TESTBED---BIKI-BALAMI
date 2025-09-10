@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useCallback } from "react";
-import { AVAILABLE_APPS, AppInfo } from "../desktop/AppIcons/AppIcons";
+import { AVAILABLE_APPS, AppInfo, AppIcon } from "../desktop/AppIcons/AppIcons";
 import { DOCK_APPS } from "../desktop/data";
 import { useWindowManager } from "../OS";
-import DockItem from "../desktop/Dock/DockItem/DockItem";
 import styles from "./MobileDock.module.css";
 
 interface MobileDockProps {
@@ -46,12 +45,12 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 					const isActive = existingWindow !== null;
 
 					return (
-						<DockItem
+						<AppIcon
 							key={appLauncher.id}
 							app={appLauncher}
+							size="dock"
 							onClick={() => handleAppClick(appLauncher)}
 							isActive={isActive}
-							// Hover states handled by DockItem component
 						/>
 					);
 				})()}
@@ -65,12 +64,12 @@ export default function MobileDock({ onAppLaunch }: MobileDockProps) {
 					const isActive = existingWindow !== null;
 
 					return (
-						<DockItem
+						<AppIcon
 							key={dockApp.appId}
 							app={app}
+							size="dock"
 							onClick={() => handleAppClick(app)}
 							isActive={isActive}
-							// Hover states handled by DockItem component
 						/>
 					);
 				})}
