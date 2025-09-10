@@ -19,7 +19,6 @@ import {
 	Cpu,
 	HardDrive,
 	Clock,
-	X,
 	ChevronLeft,
 } from "lucide-react";
 import styles from "./MobileSystemStatus.module.css";
