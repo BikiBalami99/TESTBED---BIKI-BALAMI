@@ -9,21 +9,17 @@ import {
 	BatteryLow,
 	BatteryMedium,
 	Volume2,
+	Volume,
+	Volume1,
+	VolumeX,
 	Wifi,
 	WifiOff,
 	BluetoothOff,
-	Sun,
-	Airplay,
-	Flashlight,
-	MoonStar,
-	AlarmClock,
-	Vibrate,
-	Bell,
-	BellOff,
-	Camera,
-	SkipBack,
-	Play,
-	SkipForward,
+	Bluetooth,
+	Cpu,
+	HardDrive,
+	Clock,
+	X,
 } from "lucide-react";
 import styles from "./MobileSystemStatus.module.css";
 
@@ -85,42 +81,30 @@ export default function MobileSystemStatus() {
 		saveData: false,
 	});
 
-	const [, /* bluetoothInfo */ setBluetoothInfo] = useState<BluetoothInfo>({
+	const [bluetoothInfo, setBluetoothInfo] = useState<BluetoothInfo>({
 		available: false,
 		canScan: false,
 		devices: [],
 		isScanning: false,
 	});
 
-	const [, /* systemInfo */ setSystemInfo] = useState<SystemInfo>({
+	const [systemInfo, setSystemInfo] = useState<SystemInfo>({
 		memory: { used: 0, total: 0, percentage: 0 },
 		cores: 4,
 	});
 
 	const [volume, setVolume] = useState(75);
-	const [brightness, setBrightness] = useState(80);
-	const [focusMode, setFocusMode] = useState(false);
-	const [flashlightOn, setFlashlightOn] = useState(false);
-	const [airplaneMode, setAirplaneMode] = useState(false);
-	const [wifiEnabled, setWifiEnabled] = useState(true);
-	const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
-	const [cellularEnabled, setCellularEnabled] = useState(true);
 
-	// Prevent body scroll when Control Center is mounted (open or animating out)
-	useEffect(() => {
-		if (!controlCenterMounted) return;
-		const originalOverflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-		return () => {
-			document.body.style.overflow = originalOverflow;
-		};
-	}, [controlCenterMounted]);
+	// Mobile detail panel routing
+	const [activeDetail, setActiveDetail] = useState<
+		null | "bluetooth" | "network" | "memory" | "cpu" | "volume" | "battery" | "time"
+	>(null);
 
-	// Update time every minute
+	// Update time every second
 	useEffect(() => {
 		const timer = setInterval(() => {
 			setCurrentTime(new Date());
-		}, 60000);
+		}, 1000);
 		return () => clearInterval(timer);
 	}, []);
 
@@ -295,6 +279,41 @@ export default function MobileSystemStatus() {
 		}
 	}, []);
 
+	// Volume simulation
+	useEffect(() => {
+		const handleKeyPress = (e: KeyboardEvent) => {
+			if (e.altKey) {
+				if (e.key === "ArrowUp") {
+					e.preventDefault();
+					setVolume((prev) => Math.min(100, prev + 5));
+				} else if (e.key === "ArrowDown") {
+					e.preventDefault();
+					setVolume((prev) => Math.max(0, prev - 5));
+				}
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyPress);
+		return () => window.removeEventListener("keydown", handleKeyPress);
+	}, []);
+
+	// Helpers
+	const formatBytes = (bytes: number) => {
+		if (bytes === 0) return "0 B";
+		const k = 1024;
+		const sizes = ["B", "KB", "MB", "GB"];
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+	};
+
+	const formatTime = (seconds: number) => {
+		if (!isFinite(seconds) || seconds <= 0) return "Unknown";
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+		if (hours > 0) return `${hours}h ${minutes}m`;
+		return `${minutes}m`;
+	};
+
 	const getBatteryIcon = useCallback(() => {
 		const level = batteryInfo.level * 100;
 		if (batteryInfo.charging) return BatteryCharging;
@@ -304,30 +323,28 @@ export default function MobileSystemStatus() {
 		return Battery;
 	}, [batteryInfo]);
 
-	//	const getVolumeIcon = useCallback(() => {
-	//		if (volume === 0) return VolumeX;
-	//		if (volume < 33) return Volume;
-	//		if (volume < 66) return Volume1;
-	//		return Volume2;
-	//	}, [volume]);
+	const getVolumeIcon = useCallback(() => {
+		if (volume === 0) return VolumeX;
+		if (volume < 33) return Volume;
+		if (volume < 66) return Volume1;
+		return Volume2;
+	}, [volume]);
 
-	const getWifiIcon = useCallback(() => {
-		if (!wifiEnabled || !networkInfo.isOnline) return WifiOff;
-		// lucide-react does not export WifiHigh/Medium/Low consistently; fallback to Wifi
+	const getNetworkIcon = useCallback(() => {
+		if (!networkInfo.isOnline) return WifiOff;
 		return Wifi;
-	}, [wifiEnabled, networkInfo]);
+	}, [networkInfo.isOnline]);
 
 	const openControlCenter = () => {
 		if (controlCenterMounted && controlCenterOpen) return;
 		setControlCenterMounted(true);
-		// Next frame to allow CSS transition from initial state
 		requestAnimationFrame(() => setControlCenterOpen(true));
 	};
 
 	const closeControlCenter = () => {
 		if (!controlCenterMounted) return;
 		setControlCenterOpen(false);
-		// Wait for CSS closing animation before unmounting (match 0.175s)
+		setActiveDetail(null);
 		window.setTimeout(() => setControlCenterMounted(false), 180);
 	};
 
@@ -336,6 +353,54 @@ export default function MobileSystemStatus() {
 		minute: "2-digit",
 		hour12: false,
 	});
+
+	// Bluetooth scanning function
+	const scanForBluetoothDevices = async () => {
+		if (!bluetoothInfo.available || bluetoothInfo.isScanning) return;
+
+		setBluetoothInfo((prev) => ({ ...prev, isScanning: true }));
+
+		try {
+			const navigatorWithBluetooth = navigator as Navigator & {
+				bluetooth?: {
+					requestDevice(options?: {
+						acceptAllDevices?: boolean;
+						optionalServices?: string[];
+					}): Promise<{
+						id?: string;
+						name?: string;
+						gatt?: {
+							connected?: boolean;
+						};
+					}>;
+					getAvailability(): Promise<boolean>;
+				};
+			};
+
+			if (navigatorWithBluetooth.bluetooth) {
+				const device = await navigatorWithBluetooth.bluetooth.requestDevice({
+					acceptAllDevices: true,
+					optionalServices: ["battery_service", "device_information"],
+				});
+
+				if (device) {
+					const newDevice: BluetoothDevice = {
+						id: device.id || Math.random().toString(36),
+						name: device.name || "Unknown Device",
+						connected: device.gatt?.connected || false,
+					};
+
+					setBluetoothInfo((prev) => ({
+						...prev,
+						devices: [...prev.devices.filter((d) => d.id !== newDevice.id), newDevice],
+						isScanning: false,
+					}));
+				}
+			}
+		} catch {
+			setBluetoothInfo((prev) => ({ ...prev, isScanning: false }));
+		}
+	};
 
 	return (
 		<>
@@ -356,7 +421,7 @@ export default function MobileSystemStatus() {
 				</div>
 			</button>
 
-			{/* Control Center Modal (rendered in portal to avoid clipping) */}
+			{/* Control Center Modal */}
 			{controlCenterMounted &&
 				createPortal(
 					<div
@@ -375,155 +440,306 @@ export default function MobileSystemStatus() {
 							<div className={styles.controlRow}>
 								<div className={styles.controlGroup}>
 									<button
-										className={`${styles.controlButton} ${
-											airplaneMode ? styles.active : ""
-										}`}
-										onClick={() => setAirplaneMode(!airplaneMode)}
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("bluetooth")}
 									>
-										<Airplay size={24} />
-										<span>Airplane</span>
+										{bluetoothInfo.available ? (
+											<Bluetooth size={24} />
+										) : (
+											<BluetoothOff size={24} />
+										)}
+										<span>Bluetooth</span>
 									</button>
 
 									<button
-										className={`${styles.controlButton} ${
-											cellularEnabled ? styles.active : ""
-										}`}
-										onClick={() => setCellularEnabled(!cellularEnabled)}
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("network")}
 									>
-										<div className={styles.cellularIcon}>
-											<div className={styles.cellularBar} style={{ height: "20%" }}></div>
-											<div className={styles.cellularBar} style={{ height: "40%" }}></div>
-											<div className={styles.cellularBar} style={{ height: "60%" }}></div>
-											<div className={styles.cellularBar} style={{ height: "80%" }}></div>
-										</div>
-										<span>Cellular</span>
-									</button>
-
-									<button
-										className={`${styles.controlButton} ${
-											wifiEnabled ? styles.active : ""
-										}`}
-										onClick={() => setWifiEnabled(!wifiEnabled)}
-									>
-										{React.createElement(getWifiIcon(), { size: 24 })}
+										{React.createElement(getNetworkIcon(), { size: 24 })}
 										<span>Wi-Fi</span>
 									</button>
 
 									<button
-										className={`${styles.controlButton} ${
-											bluetoothEnabled ? styles.active : ""
-										}`}
-										onClick={() => setBluetoothEnabled(!bluetoothEnabled)}
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("memory")}
 									>
-										{false &&
-											(bluetoothEnabled ? (
-												<BluetoothOff size={24} />
-											) : (
-												<BluetoothOff size={24} />
-											))}
-										<span>Bluetooth</span>
+										<HardDrive size={24} />
+										<span>Memory</span>
 									</button>
-								</div>
-							</div>
-
-							{/* Second row: Audio and Focus */}
-							<div className={styles.controlRow}>
-								<div className={styles.controlGroup}>
-									<div className={styles.sliderControl}>
-										<div className={styles.sliderHeader}>
-											<Volume2 size={20} />
-											<span>Volume</span>
-										</div>
-										<input
-											type="range"
-											min="0"
-											max="100"
-											value={volume}
-											onChange={(e) => setVolume(parseInt(e.target.value))}
-											className={styles.slider}
-										/>
-									</div>
-
-									<div className={styles.sliderControl}>
-										<div className={styles.sliderHeader}>
-											<Sun size={20} />
-											<span>Brightness</span>
-										</div>
-										<input
-											type="range"
-											min="0"
-											max="100"
-											value={brightness}
-											onChange={(e) => setBrightness(parseInt(e.target.value))}
-											className={styles.slider}
-										/>
-									</div>
 
 									<button
-										className={`${styles.controlButton} ${
-											focusMode ? styles.active : ""
-										}`}
-										onClick={() => setFocusMode(!focusMode)}
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("cpu")}
 									>
-										<MoonStar size={24} />
-										<span>Focus</span>
-									</button>
-
-									<button className={`${styles.controlButton}`} onClick={() => {}}>
-										<AlarmClock size={24} />
-										<span>Timer</span>
+										<Cpu size={24} />
+										<span>CPU</span>
 									</button>
 								</div>
 							</div>
 
-							{/* Third row: Media and Utilities */}
+							{/* Second row: Audio and Battery */}
 							<div className={styles.controlRow}>
 								<div className={styles.controlGroup}>
 									<button
-										className={`${styles.controlButton} ${
-											flashlightOn ? styles.active : ""
-										}`}
-										onClick={() => setFlashlightOn(!flashlightOn)}
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("volume")}
 									>
-										<Flashlight size={24} />
-										<span>Flashlight</span>
+										{React.createElement(getVolumeIcon(), { size: 24 })}
+										<span>Volume</span>
 									</button>
 
-									<button className={`${styles.controlButton}`} onClick={() => {}}>
-										<Camera size={24} />
-										<span>Camera</span>
+									<button
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("battery")}
+									>
+										{React.createElement(getBatteryIcon(), { size: 24 })}
+										<span>Battery</span>
 									</button>
 
-									<button className={`${styles.controlButton}`} onClick={() => {}}>
-										<Vibrate size={24} />
-										<span>Silent</span>
-									</button>
-
-									<button className={`${styles.controlButton}`} onClick={() => {}}>
-										{focusMode ? <BellOff size={24} /> : <Bell size={24} />}
-										<span>Sounds</span>
+									<button
+										className={styles.controlButton}
+										onClick={() => setActiveDetail("time")}
+									>
+										<Clock size={24} />
+										<span>Time</span>
 									</button>
 								</div>
 							</div>
 
-							{/* Media playback controls (simplified) */}
-							<div className={styles.mediaControl}>
-								<div className={styles.mediaInfo}>
-									<div className={styles.mediaTitle}>Not Playing</div>
-									<div className={styles.mediaSubtitle}>Music</div>
+							{/* Detail Panel */}
+							{activeDetail && (
+								<div className={styles.detailPanel}>
+									<div className={styles.detailHeader}>
+										<span className={styles.detailTitle}>
+											{activeDetail === "battery" && "Battery"}
+											{activeDetail === "network" && "Network"}
+											{activeDetail === "bluetooth" && "Bluetooth"}
+											{activeDetail === "memory" && "Memory Usage"}
+											{activeDetail === "cpu" && "Processor"}
+											{activeDetail === "volume" && "Volume"}
+											{activeDetail === "time" && "Date & Time"}
+										</span>
+										<button
+											className={styles.detailClose}
+											onClick={() => setActiveDetail(null)}
+										>
+											<X size={16} />
+										</button>
+									</div>
+
+									<div className={styles.detailContent}>
+										{activeDetail === "battery" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>Charge Level</span>
+													<span>{Math.round(batteryInfo.level * 100)}%</span>
+												</div>
+												<div className={styles.progressBar}>
+													<div
+														className={`${styles.progressFill} ${
+															batteryInfo.level < 0.2
+																? styles.danger
+																: batteryInfo.level < 0.5
+																? styles.warning
+																: ""
+														}`}
+														style={{ width: `${batteryInfo.level * 100}%` }}
+													/>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Status</span>
+													<span>{batteryInfo.charging ? "Charging" : "On Battery"}</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Time Remaining</span>
+													<span>
+														{batteryInfo.charging
+															? formatTime(batteryInfo.chargingTime)
+															: formatTime(batteryInfo.dischargingTime)}
+													</span>
+												</div>
+											</div>
+										)}
+
+										{activeDetail === "network" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>Connection Status</span>
+													<span>{networkInfo.isOnline ? "Connected" : "Offline"}</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Connection Type</span>
+													<span>
+														{networkInfo.effectiveType?.toUpperCase() || "Unknown"}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Speed</span>
+													<span>
+														{networkInfo.downlink > 0
+															? `${networkInfo.downlink} Mbps`
+															: "Unknown"}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Latency</span>
+													<span>
+														{networkInfo.rtt > 0 ? `${networkInfo.rtt}ms` : "Unknown"}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Data Saver</span>
+													<span>{networkInfo.saveData ? "Enabled" : "Disabled"}</span>
+												</div>
+											</div>
+										)}
+
+										{activeDetail === "bluetooth" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>Status</span>
+													<span>
+														{bluetoothInfo.available ? "Available" : "Not Available"}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Devices Found</span>
+													<span>{bluetoothInfo.devices.length}</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Scan Status</span>
+													<span>
+														{bluetoothInfo.isScanning ? "Scanning..." : "Ready"}
+													</span>
+												</div>
+												{bluetoothInfo.available && (
+													<>
+														{bluetoothInfo.devices.length > 0 && (
+															<div className={styles.detailSubSection}>
+																<div className={styles.detailLabel}>
+																	Connected Devices
+																</div>
+																{bluetoothInfo.devices.map((device) => (
+																	<div key={device.id} className={styles.detailValue}>
+																		{device.name} {device.connected ? "✓" : "○"}
+																	</div>
+																))}
+															</div>
+														)}
+														<button
+															className={styles.actionButton}
+															onClick={scanForBluetoothDevices}
+															disabled={bluetoothInfo.isScanning}
+														>
+															{bluetoothInfo.isScanning
+																? "Scanning..."
+																: "Scan for Devices"}
+														</button>
+													</>
+												)}
+											</div>
+										)}
+
+										{activeDetail === "memory" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>JavaScript Heap</span>
+													<span>
+														{formatBytes(systemInfo.memory.used)} /{" "}
+														{formatBytes(systemInfo.memory.total)}
+													</span>
+												</div>
+												<div className={styles.progressBar}>
+													<div
+														className={`${styles.progressFill} ${
+															systemInfo.memory.percentage > 90
+																? styles.danger
+																: systemInfo.memory.percentage > 70
+																? styles.warning
+																: ""
+														}`}
+														style={{ width: `${systemInfo.memory.percentage}%` }}
+													/>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Usage Percentage</span>
+													<span>{Math.round(systemInfo.memory.percentage)}%</span>
+												</div>
+											</div>
+										)}
+
+										{activeDetail === "cpu" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>Logical Cores</span>
+													<span>{systemInfo.cores}</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Platform</span>
+													<span>{navigator.platform || "Unknown"}</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>User Agent</span>
+													<span className={styles.smallText}>
+														{navigator.userAgent.split(" ").slice(0, 3).join(" ")}...
+													</span>
+												</div>
+											</div>
+										)}
+
+										{activeDetail === "volume" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>System Volume</span>
+													<span>{volume}%</span>
+												</div>
+												<input
+													type="range"
+													min="0"
+													max="100"
+													value={volume}
+													onChange={(e) => setVolume(parseInt(e.target.value))}
+													className={styles.slider}
+												/>
+												<div className={styles.detailHint}>
+													Alt + ↑/↓ to adjust volume
+												</div>
+											</div>
+										)}
+
+										{activeDetail === "time" && (
+											<div className={styles.detailSection}>
+												<div className={styles.detailRow}>
+													<span>Current Time</span>
+													<span className={styles.largeText}>
+														{currentTime.toLocaleTimeString([], {
+															hour: "2-digit",
+															minute: "2-digit",
+															second: "2-digit",
+															hour12: true,
+														})}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Date</span>
+													<span>
+														{currentTime.toLocaleDateString([], {
+															weekday: "long",
+															year: "numeric",
+															month: "long",
+															day: "numeric",
+														})}
+													</span>
+												</div>
+												<div className={styles.detailRow}>
+													<span>Timezone</span>
+													<span>{Intl.DateTimeFormat().resolvedOptions().timeZone}</span>
+												</div>
+											</div>
+										)}
+									</div>
 								</div>
-								<div className={styles.mediaButtons}>
-									<button className={styles.mediaButton}>
-										<SkipBack size={20} />
-									</button>
-									<button className={styles.mediaButton}>
-										<Play size={20} />
-									</button>
-									<button className={styles.mediaButton}>
-										<SkipForward size={20} />
-									</button>
-								</div>
-							</div>
+							)}
 						</div>
 					</div>,
 					document.body
