@@ -5,8 +5,6 @@ import {
 	Settings as SettingsIcon,
 	Monitor,
 	Smartphone,
-	Wifi,
-	Shield,
 	ArrowLeft,
 	ChevronRight,
 } from "lucide-react";
@@ -27,10 +25,7 @@ export default function Settings() {
 	const { isDevMode, features, toggleDevMode, toggleFeature } = useDevContext();
 
 	const tabs = [
-		{ id: "general", label: "General", icon: SettingsIcon },
 		{ id: "display", label: "Display", icon: Monitor },
-		{ id: "network", label: "Network", icon: Wifi },
-		{ id: "privacy", label: "Privacy & Security", icon: Shield },
 		{ id: "developer", label: "Developer", icon: Smartphone },
 	];
 
@@ -96,16 +91,7 @@ export default function Settings() {
 								</button>
 							</div>
 							<div className={styles.content}>
-								{activeTab === "general" && (
-									<div className={styles.section}>
-										<h2 className={styles.sectionTitle}>General</h2>
-										<div className={styles.placeholder}>
-											<SettingsIcon size={48} />
-											<p>General settings will be available soon</p>
-											<small>Configure basic system preferences</small>
-										</div>
-									</div>
-								)}
+								
 
 								{activeTab === "display" && (
 									<div className={styles.section}>
@@ -121,27 +107,7 @@ export default function Settings() {
 									</div>
 								)}
 
-								{activeTab === "network" && (
-									<div className={styles.section}>
-										<h2 className={styles.sectionTitle}>Network</h2>
-										<div className={styles.placeholder}>
-											<Wifi size={48} />
-											<p>Network settings will be available soon</p>
-											<small>Configure connectivity and sync options</small>
-										</div>
-									</div>
-								)}
-
-								{activeTab === "privacy" && (
-									<div className={styles.section}>
-										<h2 className={styles.sectionTitle}>Privacy & Security</h2>
-										<div className={styles.placeholder}>
-											<Shield size={48} />
-											<p>Privacy settings will be available soon</p>
-											<small>Manage data protection and security features</small>
-										</div>
-									</div>
-								)}
+								
 
 								{activeTab === "developer" && (
 									<div className={styles.section}>
@@ -271,16 +237,7 @@ export default function Settings() {
 					</div>
 
 					<div className={styles.content}>
-						{activeTab === "general" && (
-							<div className={styles.section}>
-								<h2 className={styles.sectionTitle}>General</h2>
-								<div className={styles.placeholder}>
-									<SettingsIcon size={48} />
-									<p>General settings will be available soon</p>
-									<small>Configure basic system preferences</small>
-								</div>
-							</div>
-						)}
+						
 
 						{activeTab === "display" && (
 							<div className={styles.section}>
@@ -296,27 +253,7 @@ export default function Settings() {
 							</div>
 						)}
 
-						{activeTab === "network" && (
-							<div className={styles.section}>
-								<h2 className={styles.sectionTitle}>Network</h2>
-								<div className={styles.placeholder}>
-									<Wifi size={48} />
-									<p>Network settings will be available soon</p>
-									<small>Configure connectivity and sync options</small>
-								</div>
-							</div>
-						)}
-
-						{activeTab === "privacy" && (
-							<div className={styles.section}>
-								<h2 className={styles.sectionTitle}>Privacy & Security</h2>
-								<div className={styles.placeholder}>
-									<Shield size={48} />
-									<p>Privacy settings will be available soon</p>
-									<small>Manage data protection and security features</small>
-								</div>
-							</div>
-						)}
+						
 
 						{activeTab === "developer" && (
 							<div className={styles.section}>
