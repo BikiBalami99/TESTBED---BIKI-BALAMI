@@ -10,11 +10,13 @@ import styles from "./MobileMenuBar.module.css";
 interface MobileMenuBarProps {
 	isJiggleMode: boolean;
 	onToggleJiggleMode: () => void;
+	showDesktop: boolean;
 }
 
 export default function MobileMenuBar({
 	isJiggleMode,
 	onToggleJiggleMode,
+	showDesktop,
 }: MobileMenuBarProps) {
 	const { focusedWindowId, getWindowById } = useWindowManager();
 
@@ -40,15 +42,17 @@ export default function MobileMenuBar({
 				<span className={styles.menuItem}>{getActiveAppName()}</span>
 			</div>
 			<div className={styles.menuBarRight}>
-				<button
-					className={`${styles.editButton} ${
-						isJiggleMode ? styles.editButtonActive : ""
-					}`}
-					onClick={onToggleJiggleMode}
-					title={isJiggleMode ? "Done" : "Customize Layout"}
-				>
-					{isJiggleMode ? <Check size={16} /> : <Settings2 size={16} />}
-				</button>
+				{showDesktop && (
+					<button
+						className={`${styles.editButton} ${
+							isJiggleMode ? styles.editButtonActive : ""
+						}`}
+						onClick={onToggleJiggleMode}
+						title={isJiggleMode ? "Done" : "Customize Layout"}
+					>
+						{isJiggleMode ? <Check size={16} /> : <Settings2 size={16} />}
+					</button>
+				)}
 				<MobileSystemStatus />
 			</div>
 		</div>

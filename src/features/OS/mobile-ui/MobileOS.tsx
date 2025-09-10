@@ -20,13 +20,8 @@ interface MobileOSProps {
 
 export default function MobileOS({ children }: MobileOSProps) {
 	const { isMobile } = useMobile();
-	const {
-		windows,
-		focusedWindowId,
-		openOrFocusApp,
-		minimizeWindow,
-		closeWindow,
-	} = useWindowManager();
+	const { windows, focusedWindowId, openOrFocusApp, minimizeWindow, closeWindow } =
+		useWindowManager();
 
 	// Mobile-specific state
 	const [mobilePortalRoot, setMobilePortalRoot] = useState<HTMLElement | null>(null);
@@ -106,7 +101,6 @@ export default function MobileOS({ children }: MobileOSProps) {
 
 	const handleForward = useCallback(() => {
 		// For now, just a placeholder - could implement forward history
-		
 	}, []);
 
 	const handleAppExpose = useCallback(() => {
@@ -129,6 +123,9 @@ export default function MobileOS({ children }: MobileOSProps) {
 
 			// Hide app expose
 			setShowAppExpose(false);
+
+			// Disable jiggle mode when launching an app
+			setIsJiggleMode(false);
 
 			// Launch app
 			openOrFocusApp(appId, app.name, React.createElement(app.component));
@@ -161,6 +158,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 					<MobileMenuBar
 						isJiggleMode={isJiggleMode}
 						onToggleJiggleMode={handleToggleJiggleMode}
+						showDesktop={showDesktop}
 					/>
 
 					{/* Main Content Area */}
