@@ -21,6 +21,25 @@
 	z-index: 0;
 }
 
+/* Overlay for background crossfade */
+.backgroundOverlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	opacity: 0;
+	transition: opacity 300ms ease;
+	z-index: 0; /* Same layer as background */
+}
+
+.backgroundOverlay.show {
+	opacity: 1;
+}
+
 /* Layer 1: Desktop Background & Apps */
 .desktopLayer {
 	position: absolute;
