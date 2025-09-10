@@ -1,15 +1,22 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { AppIcon, AVAILABLE_APPS, AppInfo } from "../../OS/desktop/AppIcons/AppIcons";
 import ContextMenu, {
 	createAppContextMenuItems,
 } from "../../OS/desktop/ContextMenu/ContextMenu";
 import { useWindowManager } from "../../OS";
+import { useWindowDimensions } from "../../OS/Window/WindowContext";
 import styles from "./AppLauncher.module.css";
 
 export default function AppLauncher() {
+	const { width, height } = useWindowDimensions();
+
+	// Map dimensions to semantic screen sizes (snap at 944px, ultra-compact at 340px)
+	const screen = useMemo(() => (width < 340 ? "xs" : width < 944 ? "sm" : "lg"), [width]);
+	const heightTier = useMemo(() => (height < 400 ? "short" : "tall"), [height]);
+
 	const [searchQuery, setSearchQuery] = useState("");
 	const { openOrFocusApp, createNewWindowForApp, getAllWindowsForApp } =
 		useWindowManager();
@@ -79,7 +86,7 @@ export default function AppLauncher() {
 	};
 
 	return (
-		<div className={styles.launcher}>
+		<div className={styles.launcher} data-screen={screen} data-h={heightTier}>
 			{/* Search Bar - macOS Tahoe style */}
 			<div className={styles.searchContainer}>
 				<div className={styles.searchWrapper}>
@@ -116,7 +123,7 @@ export default function AppLauncher() {
 							title={app.name}
 						>
 							<div className={styles.appIconContainer}>
-								<AppIcon app={app} size="large" />
+								<AppIcon app={app} size="medium" />
 							</div>
 						</div>
 					))
