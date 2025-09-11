@@ -14,6 +14,7 @@ import { MobileProvider } from "./MobileContext";
 import { BackgroundProvider } from "./BackgroundContext";
 import BackgroundDisplay from "./BackgroundDisplay";
 import { MobileOS } from "./mobile-ui";
+import LoadingScreen from "./LoadingScreen";
 import styles from "./OS.module.css";
 
 export interface WindowData {
@@ -94,8 +95,14 @@ export default function OS({ children }: OSProps) {
 	const [windows, setWindows] = useState<WindowData[]>([]);
 	const [nextZIndex, setNextZIndex] = useState(100); // Start windows at z-index 100
 	const [focusedWindowId, setFocusedWindowId] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const nextWindowId = useRef(1);
+
+	// Handle loading completion
+	const handleLoadingComplete = useCallback(() => {
+		setIsLoading(false);
+	}, []);
 
 	// Helper function to constrain window position and size to viewport
 	const constrainToViewport = useCallback(
@@ -496,11 +503,10 @@ export default function OS({ children }: OSProps) {
 	// Get current maximum z-index
 	const getCurrentMaxZIndex = useCallback(() => {
 		if (windows.length === 0) {
-			
 			return 100; // Base z-index when no windows
 		}
 		const maxZ = Math.max(...windows.map((w) => w.zIndex));
-		
+
 		return maxZ;
 	}, [windows]);
 
@@ -527,54 +533,57 @@ export default function OS({ children }: OSProps) {
 	};
 
 	return (
-		<DevProvider>
-			<MobileProvider>
-				<BackgroundProvider>
-					<WindowContext.Provider value={contextValue}>
-						<MobileOS>
-							<div className={styles.os}>
-								{/* Background Image Layer (z-index: 0) */}
-								<BackgroundDisplay />
+		<>
+			{isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
+			<DevProvider>
+				<MobileProvider>
+					<BackgroundProvider>
+						<WindowContext.Provider value={contextValue}>
+							<MobileOS>
+								<div className={styles.os}>
+									{/* Background Image Layer (z-index: 0) */}
+									<BackgroundDisplay />
 
-								{/* Layer 1: Desktop Background & Apps (z-index: 1) */}
-								<div className={styles.desktopLayer}>{children}</div>
+									{/* Layer 1: Desktop Background & Apps (z-index: 1) */}
+									<div className={styles.desktopLayer}>{children}</div>
 
-								{/* Layer 2: Windows Container (z-index: 100) - Constrained between menu bar and dock */}
-								<div className={styles.windowLayer}>
-									{visibleWindows.map((window) => (
-										<Window
-											key={window.id}
-											id={window.id}
-											title={window.title}
-											initialX={window.x}
-											initialY={window.y}
-											initialWidth={window.width}
-											initialHeight={window.height}
-											onClose={closeWindow}
-											onMinimize={minimizeWindow}
-											onMaximize={maximizeWindow}
-											onFocus={focusWindow}
-											onPositionUpdate={updateWindowPosition}
-											isFocused={window.id === focusedWindowId}
-											isMaximized={window.isMaximized}
-											isRestoring={window.isRestoring}
-											dockPosition={window.dockPosition}
-											zIndex={window.zIndex}
-										>
-											{window.content}
-										</Window>
-									))}
+									{/* Layer 2: Windows Container (z-index: 100) - Constrained between menu bar and dock */}
+									<div className={styles.windowLayer}>
+										{visibleWindows.map((window) => (
+											<Window
+												key={window.id}
+												id={window.id}
+												title={window.title}
+												initialX={window.x}
+												initialY={window.y}
+												initialWidth={window.width}
+												initialHeight={window.height}
+												onClose={closeWindow}
+												onMinimize={minimizeWindow}
+												onMaximize={maximizeWindow}
+												onFocus={focusWindow}
+												onPositionUpdate={updateWindowPosition}
+												isFocused={window.id === focusedWindowId}
+												isMaximized={window.isMaximized}
+												isRestoring={window.isRestoring}
+												dockPosition={window.dockPosition}
+												zIndex={window.zIndex}
+											>
+												{window.content}
+											</Window>
+										))}
+									</div>
+
+									{/* Layer 3: System UI Layer (z-index: 10000) - Menu Bar and Dock always on top */}
+									<div id="system-ui-layer" className={styles.systemUILayer}>
+										{/* This will be populated by Desktop component's MenuBar and Dock via portal */}
+									</div>
 								</div>
-
-								{/* Layer 3: System UI Layer (z-index: 10000) - Menu Bar and Dock always on top */}
-								<div id="system-ui-layer" className={styles.systemUILayer}>
-									{/* This will be populated by Desktop component's MenuBar and Dock via portal */}
-								</div>
-							</div>
-						</MobileOS>
-					</WindowContext.Provider>
-				</BackgroundProvider>
-			</MobileProvider>
-		</DevProvider>
+							</MobileOS>
+						</WindowContext.Provider>
+					</BackgroundProvider>
+				</MobileProvider>
+			</DevProvider>
+		</>
 	);
 }
