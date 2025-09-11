@@ -361,21 +361,6 @@ export default function MobileSystemStatus() {
 		return () => window.removeEventListener("keydown", handleKeyPress);
 	}, []);
 
-	// Listen for control center toggle from menu bar
-	useEffect(() => {
-		const handleToggleControlCenter = () => {
-			if (controlCenterMounted && controlCenterOpen) {
-				closeControlCenter();
-			} else {
-				openControlCenter();
-			}
-		};
-
-		window.addEventListener("toggleControlCenter", handleToggleControlCenter);
-		return () =>
-			window.removeEventListener("toggleControlCenter", handleToggleControlCenter);
-	}, [controlCenterMounted, controlCenterOpen]);
-
 	// Helpers
 	const formatBytes = (bytes: number) => {
 		if (bytes === 0) return "0 B";
@@ -414,18 +399,33 @@ export default function MobileSystemStatus() {
 		return Wifi;
 	}, [networkInfo.isOnline]);
 
-	const openControlCenter = () => {
+	const openControlCenter = useCallback(() => {
 		if (controlCenterMounted && controlCenterOpen) return;
 		setControlCenterMounted(true);
 		requestAnimationFrame(() => setControlCenterOpen(true));
-	};
+	}, [controlCenterMounted, controlCenterOpen]);
 
-	const closeControlCenter = () => {
+	const closeControlCenter = useCallback(() => {
 		if (!controlCenterMounted) return;
 		setControlCenterOpen(false);
 		setActiveDetail(null);
 		window.setTimeout(() => setControlCenterMounted(false), 180);
-	};
+	}, [controlCenterMounted]);
+
+	// Listen for control center toggle from menu bar
+	useEffect(() => {
+		const handleToggleControlCenter = () => {
+			if (controlCenterMounted && controlCenterOpen) {
+				closeControlCenter();
+			} else {
+				openControlCenter();
+			}
+		};
+
+		window.addEventListener("toggleControlCenter", handleToggleControlCenter);
+		return () =>
+			window.removeEventListener("toggleControlCenter", handleToggleControlCenter);
+	}, [controlCenterMounted, controlCenterOpen, closeControlCenter, openControlCenter]);
 
 	const timeString = currentTime.toLocaleTimeString([], {
 		hour: "2-digit",

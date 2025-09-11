@@ -164,7 +164,9 @@ export default function OS({ children }: OSProps) {
 					})
 				);
 			} catch (error) {
-				console.warn("Failed to load window positions:", error);
+				if (process.env.NODE_ENV === "development") {
+					console.warn("Failed to load window positions:", error);
+				}
 			}
 		}
 	}, [constrainToViewport]);
@@ -402,7 +404,9 @@ export default function OS({ children }: OSProps) {
 							height = saved.height;
 						}
 					} catch {
-						console.warn("Failed to load saved position for app:", appId);
+						if (process.env.NODE_ENV === "development") {
+							console.warn("Failed to load saved position for app:", appId);
+						}
 					}
 				}
 
@@ -460,7 +464,9 @@ export default function OS({ children }: OSProps) {
 						height = saved.height;
 					}
 				} catch {
-					console.warn("Failed to load saved position for app:", appId);
+					if (process.env.NODE_ENV === "development") {
+						console.warn("Failed to load saved position for app:", appId);
+					}
 				}
 			}
 
