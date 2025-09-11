@@ -20,6 +20,7 @@ import {
 	HardDrive,
 	Clock,
 	ChevronLeft,
+	X,
 } from "lucide-react";
 import styles from "./MobileSystemStatus.module.css";
 
@@ -443,6 +444,15 @@ export default function MobileSystemStatus() {
 							} ${activeDetail ? styles.hasDetail : ""}`}
 							onClick={(e) => e.stopPropagation()}
 						>
+							{/* Close Button */}
+							<button
+								className={styles.closeButton}
+								onClick={closeControlCenter}
+								title="Close Control Center"
+							>
+								<X size={20} />
+							</button>
+							
 							{/* First row: Connectivity */}
 							<div
 								className={`${styles.controlRow} ${
