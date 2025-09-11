@@ -19,9 +19,9 @@
 	min-height: 200px;
 	user-select: none;
 	/* Smooth transitions for liquid glass effect */
-	transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-		background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-		backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease-in-out,
+	transition: box-shadow 0.3s ease-in-out,
+		background 0.3s ease-in-out,
+		backdrop-filter 0.3s ease-in-out, width 0.3s ease-in-out,
 		height 0.3s ease-in-out, border-radius 0.3s ease-in-out;
 }
 

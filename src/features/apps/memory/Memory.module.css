@@ -126,7 +126,7 @@
 	font-size: 13px;
 	font-weight: 500;
 	outline: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s ease-in-out;
 }
 
 .searchInput:focus {
@@ -175,7 +175,7 @@
 	font-size: 13px;
 	font-weight: 600;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s ease-in-out;
 	backdrop-filter: blur(10px);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 	white-space: nowrap;
@@ -253,7 +253,7 @@
 	backdrop-filter: blur(18px);
 	border: 1px solid rgba(255, 255, 255, 0.14);
 	border-radius: 16px;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s ease-in-out;
 	box-shadow: 0 6px 28px rgba(0, 0, 0, 0.25);
 }
 
@@ -409,7 +409,7 @@
 	padding: 6px 12px;
 	border-radius: 999px;
 	cursor: pointer;
-	transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.25s ease-in-out;
 	backdrop-filter: blur(10px);
 	box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
 }
