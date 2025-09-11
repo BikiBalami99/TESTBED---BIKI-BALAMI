@@ -297,6 +297,21 @@ export default function MobileSystemStatus() {
 		return () => window.removeEventListener("keydown", handleKeyPress);
 	}, []);
 
+	// Listen for control center toggle from menu bar
+	useEffect(() => {
+		const handleToggleControlCenter = () => {
+			if (controlCenterMounted && controlCenterOpen) {
+				closeControlCenter();
+			} else {
+				openControlCenter();
+			}
+		};
+
+		window.addEventListener("toggleControlCenter", handleToggleControlCenter);
+		return () =>
+			window.removeEventListener("toggleControlCenter", handleToggleControlCenter);
+	}, [controlCenterMounted, controlCenterOpen]);
+
 	// Helpers
 	const formatBytes = (bytes: number) => {
 		if (bytes === 0) return "0 B";
@@ -407,19 +422,11 @@ export default function MobileSystemStatus() {
 			{/* Time Display */}
 			<span className={styles.time}>{timeString}</span>
 
-			{/* Control Center Button */}
-			<button
-				className={styles.controlCenterButton}
-				onClick={() =>
-					controlCenterMounted ? closeControlCenter() : openControlCenter()
-				}
-				title="Control Center"
-			>
-				<div className={styles.batteryIndicator}>
-					{React.createElement(getBatteryIcon(), { size: 16 })}
-					<span>{Math.round(batteryInfo.level * 100)}%</span>
-				</div>
-			</button>
+			{/* Battery Indicator (display only) */}
+			<div className={styles.batteryIndicator}>
+				{React.createElement(getBatteryIcon(), { size: 16 })}
+				<span>{Math.round(batteryInfo.level * 100)}%</span>
+			</div>
 
 			{/* Control Center Modal */}
 			{controlCenterMounted &&

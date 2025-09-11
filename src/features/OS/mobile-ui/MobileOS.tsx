@@ -111,6 +111,12 @@ export default function MobileOS({ children }: MobileOSProps) {
 		setIsJiggleMode(!isJiggleMode);
 	}, [isJiggleMode]);
 
+	const handleToggleControlCenter = useCallback(() => {
+		// Trigger control center by dispatching a custom event
+		// MobileSystemStatus will listen for this event
+		window.dispatchEvent(new CustomEvent("toggleControlCenter"));
+	}, []);
+
 	const handleAppLaunch = useCallback(
 		(appId: string) => {
 			const app = AVAILABLE_APPS.find((a) => a.id === appId);
@@ -159,6 +165,7 @@ export default function MobileOS({ children }: MobileOSProps) {
 						isJiggleMode={isJiggleMode}
 						onToggleJiggleMode={handleToggleJiggleMode}
 						showDesktop={showDesktop}
+						onToggleControlCenter={handleToggleControlCenter}
 					/>
 
 					{/* Main Content Area */}
