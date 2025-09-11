@@ -74,6 +74,7 @@ export default function SystemStatus() {
 		chargingTime: Infinity,
 		dischargingTime: Infinity,
 	});
+	const [batterySupported, setBatterySupported] = useState(false);
 
 	const [networkInfo, setNetworkInfo] = useState<NetworkInfo>({
 		isOnline: true, // Default to online to prevent hydration mismatch
@@ -128,24 +129,26 @@ export default function SystemStatus() {
 		return () => clearInterval(interval);
 	}, []);
 
-	// Battery API
+	// Battery API with Safari compatibility
 	useEffect(() => {
-		if ("getBattery" in navigator) {
-			const navigatorWithBattery = navigator as Navigator & {
-				getBattery(): Promise<{
-					level: number;
-					charging: boolean;
-					chargingTime: number;
-					dischargingTime: number;
-					addEventListener(event: string, callback: () => void): void;
-					removeEventListener(event: string, callback: () => void): void;
-				}>;
-			};
+		const updateBatteryInfo = async () => {
+			try {
+				// Check if Battery API is available
+				if ("getBattery" in navigator) {
+					const navigatorWithBattery = navigator as Navigator & {
+						getBattery(): Promise<{
+							level: number;
+							charging: boolean;
+							chargingTime: number;
+							dischargingTime: number;
+							addEventListener(event: string, callback: () => void): void;
+							removeEventListener(event: string, callback: () => void): void;
+						}>;
+					};
 
-			navigatorWithBattery
-				.getBattery()
-				.then((battery) => {
-					const updateBatteryInfo = () => {
+					const battery = await navigatorWithBattery.getBattery();
+
+					const updateBattery = () => {
 						setBatteryInfo({
 							level: battery.level,
 							charging: battery.charging,
@@ -154,69 +157,89 @@ export default function SystemStatus() {
 						});
 					};
 
-					updateBatteryInfo();
-					battery.addEventListener("chargingchange", updateBatteryInfo);
-					battery.addEventListener("levelchange", updateBatteryInfo);
+					// Initial update
+					updateBattery();
+					setBatterySupported(true);
 
+					// Add event listeners
+					battery.addEventListener("chargingchange", updateBattery);
+					battery.addEventListener("levelchange", updateBattery);
+
+					// Return cleanup function
 					return () => {
-						battery.removeEventListener("chargingchange", updateBatteryInfo);
-						battery.removeEventListener("levelchange", updateBatteryInfo);
+						battery.removeEventListener("chargingchange", updateBattery);
+						battery.removeEventListener("levelchange", updateBattery);
 					};
-				})
-				.catch(() => {
-					// Fallback for browsers that don't support battery API
-					setBatteryInfo({
-						level: 0.85,
-						charging: false,
-						chargingTime: Infinity,
-						dischargingTime: Infinity,
-					});
-				});
-		}
+				} else {
+					// Hide battery info for browsers without Battery API (including Safari on iOS)
+					console.warn("Battery API not available, hiding battery display");
+					setBatterySupported(false);
+				}
+			} catch (error) {
+				console.warn("Battery API error:", error);
+				// Hide battery info for any errors
+				setBatterySupported(false);
+			}
+		};
+
+		updateBatteryInfo();
 	}, []);
 
-	// Network Connection API
+	// Network Connection API with Safari compatibility
 	useEffect(() => {
 		const updateNetworkInfo = () => {
-			const navigatorWithConnection = navigator as Navigator & {
-				connection?: {
-					type?: string;
-					effectiveType?: string;
-					downlink?: number;
-					rtt?: number;
-					saveData?: boolean;
-					addEventListener?(event: string, callback: () => void): void;
-					removeEventListener?(event: string, callback: () => void): void;
+			try {
+				const navigatorWithConnection = navigator as Navigator & {
+					connection?: {
+						type?: string;
+						effectiveType?: string;
+						downlink?: number;
+						rtt?: number;
+						saveData?: boolean;
+						addEventListener?(event: string, callback: () => void): void;
+						removeEventListener?(event: string, callback: () => void): void;
+					};
+					mozConnection?: {
+						type?: string;
+						effectiveType?: string;
+						downlink?: number;
+						rtt?: number;
+						saveData?: boolean;
+					};
+					webkitConnection?: {
+						type?: string;
+						effectiveType?: string;
+						downlink?: number;
+						rtt?: number;
+						saveData?: boolean;
+					};
 				};
-				mozConnection?: {
-					type?: string;
-					effectiveType?: string;
-					downlink?: number;
-					rtt?: number;
-					saveData?: boolean;
-				};
-				webkitConnection?: {
-					type?: string;
-					effectiveType?: string;
-					downlink?: number;
-					rtt?: number;
-					saveData?: boolean;
-				};
-			};
 
-			const connection =
-				navigatorWithConnection.connection ||
-				navigatorWithConnection.mozConnection ||
-				navigatorWithConnection.webkitConnection;
+				const connection =
+					navigatorWithConnection.connection ||
+					navigatorWithConnection.mozConnection ||
+					navigatorWithConnection.webkitConnection;
 
-			setNetworkInfo({
-				isOnline: navigator.onLine,
-				connectionType: connection?.type || "unknown",
-				effectiveType: connection?.effectiveType || "4g",
-				downlink: connection?.downlink || 0,
-				rtt: connection?.rtt || 0,
-				saveData: connection?.saveData || false,
-			});
+				setNetworkInfo({
+					isOnline: navigator.onLine,
+					connectionType: connection?.type || "unknown",
+					effectiveType: connection?.effectiveType || "4g",
+					downlink: connection?.downlink || 0,
+					rtt: connection?.rtt || 0,
+					saveData: connection?.saveData || false,
+				});
+			} catch (error) {
+				console.warn("Network Connection API error:", error);
+				// Fallback for any errors
+				setNetworkInfo({
+					isOnline: navigator.onLine,
+					connectionType: "unknown",
+					effectiveType: "4g",
+					downlink: 0,
+					rtt: 0,
+					saveData: false,
+				});
+			}
 		};
 
 		updateNetworkInfo();
@@ -227,46 +250,84 @@ export default function SystemStatus() {
 		window.addEventListener("online", handleOnline);
 		window.addEventListener("offline", handleOffline);
 
-		// Listen for connection changes
-		const navigatorWithConnection = navigator as Navigator & {
-			connection?: {
-				addEventListener?(event: string, callback: () => void): void;
-				removeEventListener?(event: string, callback: () => void): void;
+		// Safely add connection change listener
+		try {
+			const navigatorWithConnection = navigator as Navigator & {
+				connection?: {
+					addEventListener?(event: string, callback: () => void): void;
+					removeEventListener?(event: string, callback: () => void): void;
+				};
 			};
-		};
-		const connection = navigatorWithConnection.connection;
-		if (connection?.addEventListener) {
-			connection.addEventListener("change", updateNetworkInfo);
+			const connection = navigatorWithConnection.connection;
+			if (connection?.addEventListener) {
+				connection.addEventListener("change", updateNetworkInfo);
+			}
+		} catch (error) {
+			console.warn("Failed to add connection change listener:", error);
 		}
 
 		return () => {
 			window.removeEventListener("online", handleOnline);
 			window.removeEventListener("offline", handleOffline);
-			if (connection?.removeEventListener) {
-				connection.removeEventListener("change", updateNetworkInfo);
+			try {
+				const navigatorWithConnection = navigator as Navigator & {
+					connection?: {
+						removeEventListener?(event: string, callback: () => void): void;
+					};
+				};
+				const connection = navigatorWithConnection.connection;
+				if (connection?.removeEventListener) {
+					connection.removeEventListener("change", updateNetworkInfo);
+				}
+			} catch (error) {
+				console.warn("Failed to remove connection change listener:", error);
 			}
 		};
 	}, []);
 
-	// Memory usage (Performance API)
+	// Memory usage (Performance API) with Safari compatibility
 	useEffect(() => {
 		const updateMemoryInfo = () => {
-			const performanceWithMemory = performance as Performance & {
-				memory?: {
-					usedJSHeapSize: number;
-					totalJSHeapSize: number;
-					jsHeapSizeLimit: number;
+			try {
+				const performanceWithMemory = performance as Performance & {
+					memory?: {
+						usedJSHeapSize: number;
+						totalJSHeapSize: number;
+						jsHeapSizeLimit: number;
+					};
 				};
-			};
 
-			if (performanceWithMemory.memory) {
-				const memory = performanceWithMemory.memory;
+				if (performanceWithMemory.memory) {
+					const memory = performanceWithMemory.memory;
+					setSystemInfo((prev) => ({
+						...prev,
+						memory: {
+							used: memory.usedJSHeapSize,
+							total: memory.totalJSHeapSize,
+							percentage: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
+						},
+					}));
+				} else {
+					// Fallback for browsers without memory API (like Safari)
+					console.warn("Memory API not available, using fallback");
+					setSystemInfo((prev) => ({
+						...prev,
+						memory: {
+							used: 0,
+							total: 0,
+							percentage: 0,
+						},
+					}));
+				}
+			} catch (error) {
+				console.warn("Memory API error:", error);
+				// Fallback for any errors
 				setSystemInfo((prev) => ({
 					...prev,
 					memory: {
-						used: memory.usedJSHeapSize,
-						total: memory.totalJSHeapSize,
-						percentage: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
+						used: 0,
+						total: 0,
+						percentage: 0,
 					},
 				}));
 			}
@@ -909,13 +970,15 @@ export default function SystemStatus() {
 				</div>
 			</SystemTooltip>
 
-			{/* Battery */}
-			<SystemTooltip content={createBatteryTooltip()} position="top">
-				<div className={styles.statusItem}>
-					{React.createElement(getBatteryIcon(), { size: 12, className: styles.icon })}
-					<span className={styles.text}>{Math.round(batteryInfo.level * 100)}%</span>
-				</div>
-			</SystemTooltip>
+			{/* Battery - only show if supported */}
+			{batterySupported && (
+				<SystemTooltip content={createBatteryTooltip()} position="top">
+					<div className={styles.statusItem}>
+						{React.createElement(getBatteryIcon(), { size: 12, className: styles.icon })}
+						<span className={styles.text}>{Math.round(batteryInfo.level * 100)}%</span>
+					</div>
+				</SystemTooltip>
+			)}
 
 			{/* Time */}
 			<SystemTooltip content={createTimeTooltip()} position="top">
