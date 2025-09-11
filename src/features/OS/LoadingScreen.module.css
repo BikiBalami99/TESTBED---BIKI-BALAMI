@@ -6,14 +6,7 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: linear-gradient(
-		135deg,
-		#1e1e1e 0%,
-		#2d2d2d 25%,
-		#1a1a1a 50%,
-		#2a2a2a 75%,
-		#1e1e1e 100%
-	);
+	background-color: black;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -71,6 +64,7 @@
 
 /* Status Text */
 .statusText {
+	margin-top: 1rem;
 	color: rgba(255, 255, 255, 0.6);
 	font-size: 0.8rem;
 	font-weight: 300;
